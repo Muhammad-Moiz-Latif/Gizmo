@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, replace, useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import logo from '../assets/blockchain (1).png';
@@ -28,7 +28,8 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
     const localWishList = useSelector((state: RootState) => state.localWishList.list);
-    const localCart = useSelector((state:RootState)=>state.localCart.list);
+    const localCart = useSelector((state: RootState) => state.localCart.list);
+    const navigate = useNavigate();
     var wishlistCount = 0;
     var cartCount = 0;
     if (UserId == undefined) {
@@ -38,6 +39,15 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
         wishlistCount = wishList.length;
         cartCount = cart.length
     }
+
+    function handleLogout() {
+        if (UserId == undefined) {
+            navigate('/Login');
+        } else {
+            navigate('/dashboard', {replace : true})
+        }
+    }
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -177,12 +187,12 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                                     {/* Divider above Logout */}
                                     <div className="my-1 border-t border-gray-600"></div>
 
-                                    <NavLink
-                                        to="/Login"
-                                        className={`block px-4 py-2 text-sm text-ghost_white ${UserId == undefined ? "hover:bg-green-700" : "hover:bg-red-700"} hover:text-ghost_white transition-colors duration-300`}
+                                    <button
+                                        onClick={handleLogout}
+                                        className={`w-full pr-[120px] py-2 text-sm text-ghost_white ${UserId == undefined ? "hover:bg-green-700" : "hover:bg-red-700"} hover:text-ghost_white transition-colors duration-300`}
                                     >
                                         {UserId == undefined ? "Login" : "Logout"}
-                                    </NavLink>
+                                    </button>
 
                                 </div>
                             )}

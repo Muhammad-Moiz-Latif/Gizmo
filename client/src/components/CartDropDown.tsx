@@ -4,6 +4,7 @@ import { RootState } from "../state/store";
 import { Plus, Minus, ShoppingCart, Trash2, CreditCard, X } from 'lucide-react';
 import { clearCartAsync, RemoveFromCartAsync, setCartAsync, updateCartAsync } from "../state/features/cartSlice";
 import { NavLink, useParams } from "react-router-dom";
+import { updateLocalCart, updateLocalCartItem } from "../state/features/localcartSlice";
 // import { incrementQuantity, decrementQuantity, removeFromCart, clearCart } from "../state/features/cartSlice";
 
 export const CartDropDown: React.FC = () => {
@@ -11,25 +12,27 @@ export const CartDropDown: React.FC = () => {
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const Cart = useSelector((state: RootState) => state.cart.list);
-    const localCart = useSelector((state: RootState)=>state.cart.list);
+    const localCart = useSelector((state: RootState) => state.localCart.list);
     const Devices = useSelector((state: RootState) => state.device.devices);
+    console.log(Devices);
+    console.log(localCart)
     let devicesInCart: any[] = [];
-    if(UserId == undefined){
-        if(Cart.length > 0){
+    if (UserId == undefined) {
+        if (localCart.length > 0) {
             devicesInCart = localCart.map(cartItem => {
-                const device = Devices.find(device => device.DeviceId === cartItem.DeviceId);
-                return { ...device, quantity: cartItem.Quantity };
+                const device = Devices.find(device => device.DeviceId === cartItem.deviceId);
+                return { ...device, quantity: cartItem.quantity };
             });
         }
     } else {
-        if(Cart.length > 0){
+        if (Cart.length > 0) {
             devicesInCart = Cart.map(cartItem => {
                 const device = Devices.find(device => device.DeviceId === cartItem.DeviceId);
                 return { ...device, quantity: cartItem.Quantity };
             });
         }
     }
-    
+
     const totalPrice = devicesInCart?.reduce((total, item) => total + (item?.Price || 0) * (item?.quantity || 0), 0);
 
     useEffect(() => {
@@ -54,23 +57,43 @@ export const CartDropDown: React.FC = () => {
     }, [handleClose]);
 
     function toggleIncrementCart(deviceId: string) {
-        const CartItem = Cart.find((item) => item.DeviceId === deviceId);
-        if (CartItem) {
-            const Quantity = CartItem.Quantity + 1;
+        if (UserId == undefined) {
+            const CartItem = localCart.find((item) => item.deviceId == deviceId);
+            if (CartItem) {
+                const Quantity = CartItem.quantity + 1;
+                dispatch(updateLocalCartItem( {deviceId : deviceId, quantity: Quantity }));
+                dispatch(updateLocalCart());
+            }
+        } else {
+            const CartItem = Cart.find((item) => item.DeviceId === deviceId);
+            if (CartItem) {
+                const Quantity = CartItem.Quantity + 1;
 
-            //@ts-ignore
-            dispatch(updateCartAsync({ UserId, Quantity: Quantity, DeviceId: deviceId }));
+                //@ts-ignore
+                dispatch(updateCartAsync({ UserId, Quantity: Quantity, DeviceId: deviceId }));
+            }
         }
+
     };
 
     function toggleDecrementCart(deviceId: string) {
-        const CartItem = Cart.find((item) => item.DeviceId === deviceId);
-        if (CartItem) {
-            const Quantity = CartItem.Quantity - 1;
+        if (UserId == undefined) {
+            const CartItem = localCart.find((item) => item.deviceId == deviceId);
+            if (CartItem) {
+                const Quantity = CartItem.quantity - 1;
+                dispatch(updateLocalCartItem({deviceId : deviceId, quantity: Quantity }));
+                dispatch(updateLocalCart());
+            }
+        } else {
+            const CartItem = Cart.find((item) => item.DeviceId === deviceId);
+            if (CartItem) {
+                const Quantity = CartItem.Quantity - 1;
 
-            //@ts-ignore
-            dispatch(updateCartAsync({ UserId, Quantity: Quantity, DeviceId: deviceId }));
+                //@ts-ignore
+                dispatch(updateCartAsync({ UserId, Quantity: Quantity, DeviceId: deviceId }));
+            }
         }
+
     }
 
     return (
@@ -131,8 +154,8 @@ export const CartDropDown: React.FC = () => {
                                                     }}
                                                     disabled={item.quantity === 1}
                                                     className={`p-1 rounded-full ${item.quantity === 1
-                                                            ? "bg-gray-500 cursor-not-allowed"
-                                                            : "bg-gray-700 hover:bg-gray-600"
+                                                        ? "bg-gray-500 cursor-not-allowed"
+                                                        : "bg-gray-700 hover:bg-gray-600"
                                                         }`}
                                                 >
                                                     <Minus size={16} />
@@ -165,8 +188,8 @@ export const CartDropDown: React.FC = () => {
                     </div>
                     <div className="space-y-2">
                         <button
-                        //@ts-ignore
-                            onClick={() => dispatch(clearCartAsync({UserId}))}
+                            //@ts-ignore
+                            onClick={() => dispatch(clearCartAsync({ UserId }))}
                             className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 flex items-center justify-center"
                         >
                             <Trash2 className="w-4 h-4 mr-2" />

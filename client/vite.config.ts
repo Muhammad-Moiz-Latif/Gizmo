@@ -9,4 +9,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    watch: {
+      usePolling: true, // Ensures Vite detects file changes
+    },
+    strictPort: true, // Prevents port conflicts
+    host: true, // Enables access from other devices
+  },
 })
