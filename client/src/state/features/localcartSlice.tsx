@@ -26,7 +26,7 @@ const cartSlice = createSlice({
 
         removeCartItemfromLocalStorage(state, action) {
             const CartItem = { deviceId: action.payload.deviceId, quantity: 1 };
-            state.list = state.list.filter((item: any) => item != CartItem);
+            state.list = state.list.filter((item: any) => item.deviceId != CartItem.deviceId);
         },
 
         updateLocalCartItem(state, action) {

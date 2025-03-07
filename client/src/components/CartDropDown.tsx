@@ -4,7 +4,7 @@ import { RootState } from "../state/store";
 import { Plus, Minus, ShoppingCart, Trash2, CreditCard, X } from 'lucide-react';
 import { clearCartAsync, RemoveFromCartAsync, setCartAsync, updateCartAsync } from "../state/features/cartSlice";
 import { NavLink, useParams } from "react-router-dom";
-import { updateLocalCart, updateLocalCartItem } from "../state/features/localcartSlice";
+import { removeCartItemfromLocalStorage, updateLocalCart, updateLocalCartItem } from "../state/features/localcartSlice";
 // import { incrementQuantity, decrementQuantity, removeFromCart, clearCart } from "../state/features/cartSlice";
 
 export const CartDropDown: React.FC = () => {
@@ -137,7 +137,7 @@ export const CartDropDown: React.FC = () => {
                                             </div>
                                             <button
                                                 //@ts-ignore
-                                                onClick={() => dispatch(RemoveFromCartAsync({ DeviceId: item.DeviceId, UserId: UserId }))}
+                                                onClick={() => (UserId == undefined) ? dispatch(removeCartItemfromLocalStorage({deviceId: item.DeviceId})) : dispatch(RemoveFromCartAsync({ DeviceId: item.DeviceId, UserId: UserId }))}
                                                 className="p-2 bg-red-600 rounded-full hover:bg-red-900 transition-colors duration-300"
                                                 aria-label="Remove from cart"
                                             >
