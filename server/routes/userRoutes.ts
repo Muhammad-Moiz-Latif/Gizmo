@@ -632,6 +632,42 @@ async function main() {
 
   })
 
+  router.post("/dashboard/:UserId/create-checkout-session", async (req,res) => {
+    try {
+      const products = req.body;
+      const {UserId} = req.params;
+      if (!Array.isArray(products) || products.length === 0) {
+         res.status(400).json({ error: "Invalid product data" });
+         return
+      }
+  
+      const lineItems = products.map((product: any) => ({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: product.DeviceName,
+            images: product.Images?.length > 0 ? [product.Images[0]] : [], // Use the first image
+          },
+          unit_amount: Math.round(Number(product.Price) * 100), // Convert to cents
+        },
+        quantity: Number(product.Quantity), // Ensure it's a number
+      }));
+  
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: lineItems,
+        mode: "payment",
+        success_url: "http://localhost:5173/success",
+        cancel_url: `http://localhost:5173/dashboard/${UserId}`,
+      });
+  
+      res.json({ id: session.id });
+    } catch (error: any) {
+      console.error("Error creating Checkout Session:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   router.post('/UserDashboard/:UserId/PlaceOrder', async (req, res) => {
     const { UserId } = req.params;
     const { formData, cart, totalPrice } = req.body;

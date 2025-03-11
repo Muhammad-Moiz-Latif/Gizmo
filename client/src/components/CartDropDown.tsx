@@ -3,11 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state/store";
 import { Plus, Minus, ShoppingCart, Trash2, CreditCard, X } from 'lucide-react';
 import { clearCartAsync, RemoveFromCartAsync, setCartAsync, updateCartAsync } from "../state/features/cartSlice";
-import { NavLink, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { removeCartItemfromLocalStorage, updateLocalCart, updateLocalCartItem } from "../state/features/localcartSlice";
-// import { incrementQuantity, decrementQuantity, removeFromCart, clearCart } from "../state/features/cartSlice";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
 
 export const CartDropDown: React.FC = () => {
+    const navigate = useNavigate();
     const { UserId } = useParams();
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +17,7 @@ export const CartDropDown: React.FC = () => {
     const localCart = useSelector((state: RootState) => state.localCart.list);
     const Devices = useSelector((state: RootState) => state.device.devices);
     console.log(Devices);
-    console.log(localCart)
+    console.log(Cart);
     let devicesInCart: any[] = [];
     if (UserId == undefined) {
         if (localCart.length > 0) {
@@ -94,6 +96,44 @@ export const CartDropDown: React.FC = () => {
             }
         }
 
+    }
+
+    async function handlePayment() {
+        const payDevices = Devices.filter((device) =>
+            Cart.some((item: any) => item.DeviceId === device.DeviceId)
+        );
+    
+        console.log(payDevices);
+    
+        if (UserId == undefined) {
+            navigate('/Login');
+            return;
+        }
+    
+        const stripe = await loadStripe("pk_test_51QlxBiRq46mJj6NwaS3TFwq9HbiC1lzMdaNwLP1Le6qRngqtreZkxaEzGEQkaufspjRKNiWvM0h6geJJZTvhf8ds00hjD7d4xT");
+    
+        try {
+            const response = await axios.post(
+                `http://localhost:3000/dashboard/${UserId}/create-checkout-session`,
+                payDevices
+            );
+    
+            const { id: sessionId } = response.data;
+    
+            if (!stripe) {
+                console.error("Stripe failed to initialize.");
+                return;
+            }
+    
+            // ✅ Correct function to redirect
+            const result = await stripe.redirectToCheckout({ sessionId });
+    
+            if (result.error) {
+                console.error("Stripe Checkout Error:", result.error.message);
+            }
+        } catch (error) {
+            console.error("Payment error:", error);
+        }
     }
 
     return (
@@ -199,10 +239,10 @@ export const CartDropDown: React.FC = () => {
                             <ShoppingCart className="w-4 h-4 mr-2" />
                             View Cart
                         </button>
-                        <NavLink to="Checkout" className="w-full px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200 transition-colors duration-300 flex items-center justify-center">
+                        <button onClick={handlePayment} className="w-full px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200 transition-colors duration-300 flex items-center justify-center">
                             <CreditCard className="w-4 h-4 mr-2" />
                             Proceed to Checkout
-                        </NavLink >
+                        </button >
                     </div>
                 </div>
             </div>

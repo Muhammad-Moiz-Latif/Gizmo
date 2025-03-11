@@ -16,6 +16,7 @@ import { LandingPage } from "./pages/LandingPage"
 import { ProductPage } from "./pages/ProductPage"
 import { CheckoutPage } from "./pages/CheckoutPage"
 import AdminLandingPage from "./pages/AdminLandingPage"
+import { SuccessTransaction } from "./components/SuccessTransaction"
 
 
 const router = createBrowserRouter([
@@ -40,13 +41,16 @@ const router = createBrowserRouter([
         element: <ProductPage/>
       },
       {
-        path:"Checkout",
+        path:"checkout",
         element: <CheckoutPage/>
       }
     ]
   },
   {
     path:"Login",element:<Login/>
+  },
+  {
+    path: "success", element:<SuccessTransaction/>
   },
   {
     path: 'dashboard/:UserId',
@@ -65,7 +69,7 @@ const router = createBrowserRouter([
         element: <ProductPage/>
       },
       {
-        path:"Checkout",
+        path:"checkout",
         element: <CheckoutPage/>
       }
     ]
