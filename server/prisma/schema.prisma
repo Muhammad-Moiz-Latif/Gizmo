@@ -48,7 +48,6 @@ model Device {
   SerialNumber   String
   status         Status        @default(PENDING)
   Price          Float // Price of the device
-  transactions   Transaction[]
   Reviews        Review[]
   Order          Order?        @relation(fields: [orderOrderId], references: [OrderId])
   orderOrderId   String?
@@ -57,10 +56,9 @@ model Device {
 
 model Transaction {
   TransactionId String        @id @default(uuid())
-  device        Device        @relation(fields: [deviceId], references: [DeviceId])
-  deviceId      String
   user          User          @relation(fields: [userId], references: [id])
   userId        String
+  sessionId     String     @unique
   price         Float
   paymentStatus PaymentStatus
   createdAt     DateTime      @default(now())

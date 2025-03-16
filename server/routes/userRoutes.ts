@@ -11,6 +11,7 @@ import { v4 as uuidv4, v4 } from 'uuid';
 import Stripe from "stripe";
 import { Cookie } from "express-session";
 import { verifyAdminToken } from "../middlewares/authMiddleware";
+import express from 'express';
 interface CustomRequest extends Request {
   files?: Express.Multer.File[]; // This ensures `files` is recognized
 }
@@ -18,7 +19,8 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 if (!stripeSecretKey) {
   throw new Error("Stripe secret key is not defined");
 }
-const stripe = new Stripe(stripeSecretKey);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-12-18.acacia" });
+
 export const router = Router();
 export const prisma = new PrismaClient();
 
@@ -657,80 +659,33 @@ async function main() {
         payment_method_types: ["card"],
         line_items: lineItems,
         mode: "payment",
-        success_url: "http://localhost:5173/success",
+        success_url: `http://localhost:5173/success/${UserId}/{CHECKOUT_SESSION_ID}`,
         cancel_url: `http://localhost:5173/dashboard/${UserId}`,
+        metadata: {UserId}
       });
   
-      res.json({ id: session.id });
+      res.json({ id: session.id});
     } catch (error: any) {
       console.error("Error creating Checkout Session:", error);
       res.status(500).json({ error: error.message });
     }
   });
 
-  router.post('/UserDashboard/:UserId/PlaceOrder', async (req, res) => {
-    const { UserId } = req.params;
-    const { formData, cart, totalPrice } = req.body;
-    const { address, city, country, zipCode } = formData;
-    const itempotencyKey = uuidv4();
-
-    try {
-      const customer = await stripe.customers.create({
-        email: formData.email,
-        name: formData.name,
-        address: {
-          line1: address,
-          city: city,
-          country: country,
-          postal_code: zipCode
-
-        }
-      })
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(totalPrice * 100), //convert to cents
-        currency: 'usd',
-        customer: customer.id,
-        automatic_payment_methods: {
-          enabled: true
-        },
-        confirm: true //automatically confirm the payments
-
-      })
-      if (paymentIntent.status !== 'succeeded') {
-        res.status(400).json({ message: 'Payment failed' });
-        return;
+  router.get('/transactionData/:sessionId',async (req,res) =>{
+    const {sessionId} = req.params;
+    const data = await prisma.transaction.findUnique({
+      where:{sessionId:sessionId}
+    });
+    if(data){
+      const User = await prisma.user.findUnique({
+        where:{id:data.userId}
+      });
+      if(User){
+        console.log(data,User);
+        res.status(200).send({data,User});
       }
-      // Create the order
-      const order = await prisma.order.create({
-        data: {
-          userId: UserId,
-          totalPrice: totalPrice,
-          address: address,
-          city: city,
-          country: country,
-          zipCode: zipCode,
-          status: "CONFIRMED",
-        },
-      });
-
-      // Create order items and connect them to the order
-      const orderItems = cart.map((item: any) => ({
-        orderId: order.OrderId,
-        deviceId: item.DeviceId,
-        quantity: item.Quantity,
-      }));
-
-      await prisma.orderItem.createMany({
-        data: orderItems,
-      });
-
-
-      res.status(201).json({ message: 'Order placed successfully', order });
-    } catch (error: any) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to place order', error: error.message });
-    }
-  });
+    };
+  })
 }
 
 main()

@@ -1,6 +1,5 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import { Login } from "./Layouts/Login"
-import { AdminLogin } from "./pages/AdminLogin"
 import { UserDashboard } from "./Layouts/UserDashboard"
 import { AdminDashboard } from "./Layouts/AdminDashboard"
 import { AdminDevices } from "./pages/AdminDevices"
@@ -50,7 +49,7 @@ const router = createBrowserRouter([
     path:"Login",element:<Login/>
   },
   {
-    path: "success", element:<SuccessTransaction/>
+    path: "success/:UserId/:SessionId", element:<SuccessTransaction/>
   },
   {
     path: 'dashboard/:UserId',

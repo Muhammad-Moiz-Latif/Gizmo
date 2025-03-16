@@ -63,7 +63,7 @@ export const CartDropDown: React.FC = () => {
             const CartItem = localCart.find((item) => item.deviceId == deviceId);
             if (CartItem) {
                 const Quantity = CartItem.quantity + 1;
-                dispatch(updateLocalCartItem( {deviceId : deviceId, quantity: Quantity }));
+                dispatch(updateLocalCartItem({ deviceId: deviceId, quantity: Quantity }));
                 dispatch(updateLocalCart());
             }
         } else {
@@ -83,7 +83,7 @@ export const CartDropDown: React.FC = () => {
             const CartItem = localCart.find((item) => item.deviceId == deviceId);
             if (CartItem) {
                 const Quantity = CartItem.quantity - 1;
-                dispatch(updateLocalCartItem({deviceId : deviceId, quantity: Quantity }));
+                dispatch(updateLocalCartItem({ deviceId: deviceId, quantity: Quantity }));
                 dispatch(updateLocalCart());
             }
         } else {
@@ -101,33 +101,38 @@ export const CartDropDown: React.FC = () => {
     async function handlePayment() {
         const payDevices = Devices.filter((device) =>
             Cart.some((item: any) => item.DeviceId === device.DeviceId)
-        );
-    
-        console.log(payDevices);
-    
+        ).map((device) => {
+            const CartItem = Cart.find((item) => item.DeviceId == device.DeviceId)
+            return {
+                ...device,
+                Quantity: CartItem?.Quantity
+            }
+        });
+
+
         if (UserId == undefined) {
             navigate('/Login');
             return;
         }
-    
+
         const stripe = await loadStripe("pk_test_51QlxBiRq46mJj6NwaS3TFwq9HbiC1lzMdaNwLP1Le6qRngqtreZkxaEzGEQkaufspjRKNiWvM0h6geJJZTvhf8ds00hjD7d4xT");
-    
+
         try {
             const response = await axios.post(
                 `http://localhost:3000/dashboard/${UserId}/create-checkout-session`,
                 payDevices
             );
-    
+
             const { id: sessionId } = response.data;
-    
+
             if (!stripe) {
                 console.error("Stripe failed to initialize.");
                 return;
             }
-    
+
             // ✅ Correct function to redirect
             const result = await stripe.redirectToCheckout({ sessionId });
-    
+
             if (result.error) {
                 console.error("Stripe Checkout Error:", result.error.message);
             }
@@ -177,7 +182,7 @@ export const CartDropDown: React.FC = () => {
                                             </div>
                                             <button
                                                 //@ts-ignore
-                                                onClick={() => (UserId == undefined) ? dispatch(removeCartItemfromLocalStorage({deviceId: item.DeviceId})) : dispatch(RemoveFromCartAsync({ DeviceId: item.DeviceId, UserId: UserId }))}
+                                                onClick={() => (UserId == undefined) ? dispatch(removeCartItemfromLocalStorage({ deviceId: item.DeviceId })) : dispatch(RemoveFromCartAsync({ DeviceId: item.DeviceId, UserId: UserId }))}
                                                 className="p-2 bg-red-600 rounded-full hover:bg-red-900 transition-colors duration-300"
                                                 aria-label="Remove from cart"
                                             >
