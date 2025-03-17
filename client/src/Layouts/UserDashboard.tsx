@@ -86,7 +86,7 @@ export const UserDashboard = () => {
 
 
   return (
-    <div className="w-screen min-h-screen">
+    <div className="max-w-screen min-h-screen">
       <UserNavbar ImageURl={image} />
       <Outlet />
       <Footer />

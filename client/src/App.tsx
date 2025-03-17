@@ -16,6 +16,7 @@ import { ProductPage } from "./pages/ProductPage"
 import { CheckoutPage } from "./pages/CheckoutPage"
 import AdminLandingPage from "./pages/AdminLandingPage"
 import { SuccessTransaction } from "./components/SuccessTransaction"
+import { AboutUs } from "./pages/AboutUs"
 
 
 const router = createBrowserRouter([
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: 'Device/:DeviceId',
         element: <ProductPage/>
+      },
+      {
+        path: 'aboutus',
+        element: <AboutUs/>
       },
       {
         path:"checkout",
@@ -66,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: 'Device/:DeviceId',
         element: <ProductPage/>
+      },
+      {
+        path: 'aboutus',
+        element: <AboutUs/>
       },
       {
         path:"checkout",

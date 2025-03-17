@@ -32,7 +32,7 @@ export const SuccessTransaction = () => {
             }
         }
         getData();
-    }, []);
+    }, [SessionId]);
 
     // Function to generate and download a PDF receipt
     const downloadReceipt = () => {

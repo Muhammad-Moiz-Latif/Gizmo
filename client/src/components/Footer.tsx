@@ -22,7 +22,7 @@ export const Footer: React.FC = () => {
           <ul className="space-y-4">
             {['Home', 'Shop', 'About Us', 'Contact'].map((item, index) => (
               <li key={index}>
-                <a href="#" className="text-gray-600 hover:text-black transition-colors duration-300">{item}</a>
+                <a href="" className="text-gray-600 hover:text-black transition-colors duration-300">{item}</a>
               </li>
             ))}
           </ul>

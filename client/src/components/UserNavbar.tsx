@@ -77,7 +77,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
 
                 {/* Center Section */}
                 <div className='hidden md:flex justify-center items-center space-x-4 ml-20'>
-                    <NavLink to={(UserId != undefined) ? `/UserDashboard/${UserId}` : "/"} className='text-base text-ghost_white-900 hover:opacity-70 transition-colors duration-300'>HOME</NavLink>
+                    <NavLink to={(UserId != undefined) ? `/dashboard/${UserId}` : "/"} className='text-base text-ghost_white-900 hover:opacity-70 transition-colors duration-300'>HOME</NavLink>
                     <div className='relative' ref={dropdownRef} onMouseEnter={() => setIsCategoryOpen(true)
                     }
                         onMouseLeave={() => setIsCategoryOpen(false)}>
@@ -107,9 +107,9 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                             </div>
                         )}
                     </div>
-                    <button className='bg-ghost_white-900 text-black rounded-md h-9 px-4 hover:bg-black hover:text-ghost_white-900 border-ghost_white border-2 hover:border-ghost_white-900 transition-colors duration-300 ease-in-out active:opacity-50 text-lg font-roboto tracking-tight'>
-                        Become a Seller
-                    </button>
+                    <NavLink to="aboutus" className='bg-ghost_white-900 text-black rounded-md h-9 pt-[2px] px-4 hover:bg-black hover:text-ghost_white-900 border-ghost_white border-2 hover:border-ghost_white-900 transition-colors duration-300 ease-in-out active:opacity-50 text-lg font-roboto tracking-tight'>
+                       About Us
+                    </NavLink>
                 </div>
 
                 {/* Right Section */}
