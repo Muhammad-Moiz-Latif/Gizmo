@@ -19,6 +19,8 @@ import { SuccessTransaction } from "./components/SuccessTransaction"
 import { AboutUs } from "./pages/AboutUs"
 import { FAQ } from "./pages/FAQ"
 import { Shipping } from "./pages/Shipping&Returns"
+import TermsConditions from "./pages/Terms&Conditions"
+import PrivacyPolicy from "./pages/Privacypolicy"
 
 
 const router = createBrowserRouter([
@@ -55,7 +57,12 @@ const router = createBrowserRouter([
         element:<Shipping/>
       },
       {
-        path:"terms&conditions"
+        path:"terms&conditions",
+        element:<TermsConditions/>
+      },
+      {
+        path:"privacypolicy",
+        element: <PrivacyPolicy/>
       },
       {
         path:"checkout",
@@ -99,7 +106,12 @@ const router = createBrowserRouter([
         element:<Shipping/>
       },
       {
-        path:"terms&conditions"
+        path:"terms&conditions",
+        element:<TermsConditions/>
+      },
+      {
+        path:"privacypolicy",
+        element: <PrivacyPolicy/>
       },
       {
         path:"checkout",

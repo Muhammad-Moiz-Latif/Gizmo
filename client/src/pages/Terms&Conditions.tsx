@@ -1,7 +1,7 @@
 "use client"
 
-import { Mail, MapPin, Clock, FileText, ChevronDown, ChevronUp } from 'lucide-react'
-import { useState } from "react"
+import { Mail, Clock, FileText, ChevronDown, ChevronUp } from 'lucide-react'
+import { useEffect, useState } from "react"
 
 export const TermsConditions = () => {
     const [activeSection, setActiveSection] = useState<string | null>(null)
@@ -141,7 +141,11 @@ export const TermsConditions = () => {
                 </ul>
             `
         }
-    ]
+    ];
+
+    // useEffect(()=>{
+    //     window.scroll(0,0);
+    // })
 
     return (
         <div className="bg-white min-h-screen font-sans">
