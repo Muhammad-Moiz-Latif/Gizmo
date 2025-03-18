@@ -18,6 +18,7 @@ import AdminLandingPage from "./pages/AdminLandingPage"
 import { SuccessTransaction } from "./components/SuccessTransaction"
 import { AboutUs } from "./pages/AboutUs"
 import { FAQ } from "./pages/FAQ"
+import { Shipping } from "./pages/Shipping&Returns"
 
 
 const router = createBrowserRouter([
@@ -50,9 +51,17 @@ const router = createBrowserRouter([
         element: <FAQ/>
       },
       {
+        path:"shipping&returns",
+        element:<Shipping/>
+      },
+      {
+        path:"terms&conditions"
+      },
+      {
         path:"checkout",
         element: <CheckoutPage/>
-      }
+      },
+
     ]
   },
   {
@@ -84,6 +93,13 @@ const router = createBrowserRouter([
       {
         path:'faq',
         element:<FAQ/>
+      },
+      {
+        path:"shipping&returns",
+        element:<Shipping/>
+      },
+      {
+        path:"terms&conditions"
       },
       {
         path:"checkout",
