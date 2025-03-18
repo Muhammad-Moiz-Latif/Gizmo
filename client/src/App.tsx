@@ -17,6 +17,7 @@ import { CheckoutPage } from "./pages/CheckoutPage"
 import AdminLandingPage from "./pages/AdminLandingPage"
 import { SuccessTransaction } from "./components/SuccessTransaction"
 import { AboutUs } from "./pages/AboutUs"
+import { FAQ } from "./pages/FAQ"
 
 
 const router = createBrowserRouter([
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: 'aboutus',
         element: <AboutUs/>
+      },
+      {
+        path:'faq',
+        element: <FAQ/>
       },
       {
         path:"checkout",
@@ -75,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: 'aboutus',
         element: <AboutUs/>
+      },
+      {
+        path:'faq',
+        element:<FAQ/>
       },
       {
         path:"checkout",

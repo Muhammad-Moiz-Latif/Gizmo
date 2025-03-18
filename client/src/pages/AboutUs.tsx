@@ -6,9 +6,13 @@ import person1 from '../assets/ceo.jpg';
 import person2 from '../assets/writing-down-plan.jpg';
 import person3 from '../assets/young-japanese-influencer-recording-vlog.jpg';
 import person4 from '../assets/eastern-woman.jpg';
+import { useEffect } from "react";
 
 
 export const AboutUs = () => {
+    useEffect(()=>{
+        window.scrollTo(0,0);
+    })
     return (
         <div className="bg-white min-h-screen font-sans">
             {/* Hero Section */}

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
   return (
@@ -20,9 +21,9 @@ export const Footer: React.FC = () => {
         <div>
           <h4 className="text-xl font-semibold mb-6">Quick Links</h4>
           <ul className="space-y-4">
-            {['Home', 'Shop', 'About Us', 'Contact'].map((item, index) => (
+            {[{name:'Home',path:'/'}, {name:'Shop',path:'Category'}, {name:'About Us',path:'aboutus'}, {name:'Contact',path:'contact'}].map((item, index) => (
               <li key={index}>
-                <a href="" className="text-gray-600 hover:text-black transition-colors duration-300">{item}</a>
+                <NavLink to={item.path} className="text-gray-600 hover:text-black transition-colors duration-300">{item.name}</NavLink>
               </li>
             ))}
           </ul>
@@ -30,9 +31,9 @@ export const Footer: React.FC = () => {
         <div>
           <h4 className="text-xl font-semibold mb-6">Customer Service</h4>
           <ul className="space-y-4">
-            {['FAQ', 'Shipping & Returns', 'Terms & Conditions', 'Privacy Policy'].map((item, index) => (
+            {[{name:'FAQ',path:'faq'}, {name:'Shipping & Returns',path:"shipping&returns"}, {name:'Terms & Conditions',path:"terms&conditions"}, {name:'Privacy Policy',path:"privacypolicy"}].map((item, index) => (
               <li key={index}>
-                <a href="#" className="text-gray-600 hover:text-black transition-colors duration-300">{item}</a>
+                <NavLink to={item.path} className="text-gray-600 hover:text-black transition-colors duration-300">{item.name}</NavLink>
               </li>
             ))}
           </ul>
