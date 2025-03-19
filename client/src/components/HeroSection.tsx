@@ -42,9 +42,9 @@ export const HeroSection: React.FC = () => {
                             Shop Now
                         </button>
                     </NavLink>
-                    <button className="w-64 h-12 border-2 border-primary-dark rounded-lg bg-primary-light text-primary-dark text-xl font-semibold tracking-wide hover:bg-primary-dark hover:text-primary-light transition-all duration-300 transform hover:scale-110 active:opacity-80 shadow-md hover:shadow-lg">
+                    <NavLink to="contactus" className="w-64 h-12 border-2 border-primary-dark rounded-lg bg-primary-light text-primary-dark text-xl font-semibold tracking-wide hover:bg-primary-dark hover:text-primary-light transition-all duration-300 transform hover:scale-110 active:opacity-80 shadow-md hover:shadow-lg pt-2">
                         Contact Us
-                    </button>
+                    </NavLink>
                 </div>
 
                 {/* Product Image */}

@@ -1,7 +1,7 @@
 "use client"
 
 import { Mail, Shield, Lock, Eye, Database, Globe, UserCheck, FileText, ChevronDown, ChevronUp } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const PrivacyPolicy = () => {
   const [activeSection, setActiveSection] = useState<string | null>(null)
@@ -218,6 +218,10 @@ export const PrivacyPolicy = () => {
             `,
     },
   ]
+
+  useEffect(()=>{
+    window.scroll(0,0)
+  },[])
 
   return (
     <div className="bg-white min-h-screen font-sans">

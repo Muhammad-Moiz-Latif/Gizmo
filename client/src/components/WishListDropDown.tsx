@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 
 export const WishListDropDown = () => {
     const {UserId} = useParams();
@@ -15,7 +15,7 @@ export const WishListDropDown = () => {
                 {wishListDevices.length > 0 ? (
                     <ul className="divide-y divide-gray-600">
                         {wishListDevices.map((item : any) => (
-                            <li
+                            <NavLink to={`Device/${item.DeviceId}`}
                             //@ts-ignore
                                 key={item.DeviceId}
                                 className="flex items-center gap-4 px-4 py-2 hover:bg-gray-800 cursor-pointer"
@@ -37,7 +37,7 @@ export const WishListDropDown = () => {
                                     </div>
                                     <div className="text-sm text-gray-500">${item.Price}</div>
                                 </div>
-                            </li>
+                            </NavLink>
                         ))}
                     </ul>
                 ) : (

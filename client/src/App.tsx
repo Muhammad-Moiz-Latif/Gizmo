@@ -21,6 +21,8 @@ import { FAQ } from "./pages/FAQ"
 import { Shipping } from "./pages/Shipping&Returns"
 import TermsConditions from "./pages/Terms&Conditions"
 import PrivacyPolicy from "./pages/Privacypolicy"
+import ContactUs from "./pages/ContactUs"
+import UserProfile from "./pages/Profile"
 
 
 const router = createBrowserRouter([
@@ -63,6 +65,10 @@ const router = createBrowserRouter([
       {
         path:"privacypolicy",
         element: <PrivacyPolicy/>
+      },
+      {
+        path:"contactus",
+        element:<ContactUs/>
       },
       {
         path:"checkout",
@@ -112,6 +118,14 @@ const router = createBrowserRouter([
       {
         path:"privacypolicy",
         element: <PrivacyPolicy/>
+      },
+      {
+        path:'contactus',
+        element:<ContactUs/>
+      },
+      {
+        path:'profile',
+        element:<UserProfile/>
       },
       {
         path:"checkout",

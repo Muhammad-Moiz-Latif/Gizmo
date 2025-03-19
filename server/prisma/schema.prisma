@@ -21,6 +21,7 @@ model User {
   transactions    Transaction[]
   Review          Review[]
   Order           Order[]
+  createdAt       DateTime      @default(now())
 }
 
 model Cart {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, replace, useNavigate, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import logo from '../assets/blockchain (1).png';
@@ -43,8 +43,10 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
     function handleLogout() {
         if (UserId == undefined) {
             navigate('/Login');
+
         } else {
-            navigate('/dashboard', {replace : true})
+            navigate('/dashboard', { replace: true });
+            window.location.reload();
         }
     }
 
@@ -70,7 +72,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
         <nav className="fixed w-full h-16 font-roboto px-4 md:px-8 lg:px-16 border-b border-ghost_white-900 bg-black z-50">
             <div className='flex justify-between items-center h-full'>
                 {/* Logo */}
-                <NavLink to="/" className='flex items-center'>
+                <NavLink to={(UserId == undefined) ? "/" : `/dashboard/${UserId}`} className='flex items-center'>
                     <img src={logo} alt="Gizmo logo" className='w-8 md:w-10' />
                     <span className='text-lg md:text-xl font-medium text-ghost_white-900 ml-1 tracking-wide'>GIZMO</span>
                 </NavLink>
@@ -108,7 +110,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                         )}
                     </div>
                     <NavLink to="aboutus" className='bg-ghost_white-900 text-black rounded-md h-9 pt-[2px] px-4 hover:bg-black hover:text-ghost_white-900 border-ghost_white border-2 hover:border-ghost_white-900 transition-colors duration-300 ease-in-out active:opacity-50 text-lg font-roboto tracking-tight'>
-                       About Us
+                        About Us
                     </NavLink>
                 </div>
 
@@ -131,7 +133,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                             </div>
                         )}
                     </div>
-                    <NavLink to="/wishlist" className='p-2  rounded-full transition-colors duration-300 relative' onMouseEnter={() => setIsWishList(true)}
+                    <NavLink to="" className='p-2  rounded-full transition-colors duration-300 relative' onMouseEnter={() => setIsWishList(true)}
                         onMouseLeave={() => setIsWishList(false)}>
                         <img src={wishlist} alt="Wishlist" className='w-5 h-5' />
                         {wishlistCount > 0 && (
@@ -172,17 +174,21 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                             {isOpen && (
                                 <div className="absolute right-0 w-48 bg-black rounded-md shadow-lg py-1 z-50">
                                     <ul className="divide-y divide-gray-600">
-                                        {['Profile', 'Settings', 'Activity Log', 'Help & Support'].map((item) => (
-                                            <li key={item}>
-                                                <a
-                                                    href={`#${item.toLowerCase().replace(/ & /g, '-').replace(' ', '-')}`}
+                                        {[
+                                            ...(UserId ? [{ name: 'Profile', path: 'profile' }] : []), // Ensures uniform structure
+                                            { name: 'Help & Support', path: '#' }, // Use '#' instead of an empty string
+                                        ].map((item, index) => (
+                                            <li key={index}>
+                                                <NavLink
+                                                    to={item.path}
                                                     className="block px-4 py-2 text-sm text-ghost_white hover:bg-ghost_white-500 hover:text-rich_black transition-colors duration-300"
                                                 >
-                                                    {item}
-                                                </a>
+                                                    {item.name}
+                                                </NavLink>
                                             </li>
                                         ))}
                                     </ul>
+
 
                                     {/* Divider above Logout */}
                                     <div className="my-1 border-t border-gray-600"></div>

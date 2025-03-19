@@ -231,6 +231,8 @@ async function main() {
     const User = await prisma.user.findUnique({
       where: {
         id: id
+      },include:{
+        transactions:true
       }
     });
     if (User) {

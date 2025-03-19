@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
+  const {UserId} = useParams();
   return (
     <footer className="bg-white text-black font-sans py-16 px-4 sm:px-6 lg:px-8 border-[1px] border-t-gray-200">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -21,7 +22,7 @@ export const Footer: React.FC = () => {
         <div>
           <h4 className="text-xl font-semibold mb-6">Quick Links</h4>
           <ul className="space-y-4">
-            {[{name:'Home',path:'/'}, {name:'Shop',path:'Category'}, {name:'About Us',path:'aboutus'}, {name:'Contact',path:'contact'}].map((item, index) => (
+            {[{name:'Home',path:(UserId == undefined) ? "/" : `/dashboard/${UserId}`}, {name:'Shop',path:'Category'}, {name:'About Us',path:'aboutus'}, {name:'Contact',path:'contactus'}].map((item, index) => (
               <li key={index}>
                 <NavLink to={item.path} className="text-gray-600 hover:text-black transition-colors duration-300">{item.name}</NavLink>
               </li>

@@ -143,9 +143,9 @@ export const TermsConditions = () => {
         }
     ];
 
-    // useEffect(()=>{
-    //     window.scroll(0,0);
-    // })
+    useEffect(()=>{
+        window.scroll(0,0);
+    },[])
 
     return (
         <div className="bg-white min-h-screen font-sans">
