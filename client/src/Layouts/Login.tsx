@@ -43,20 +43,20 @@ export const Login = () => {
         </div>
         <div className="md:w-1/2 p-6 md:p-8 overflow-auto">
           <div className="flex justify-center mb-6">
-            <NavLink
+            {/* <NavLink
               to='AdminLogin'
               onClick={toggleAdminUser}
               className={`px-6 py-2 rounded-l-full ${isAdmin ? 'bg-black text-white' : 'bg-gray-200 text-gray-700'} transition-colors duration-300`}
             >
               Admin
-            </NavLink>
-            <NavLink
+            </NavLink> */}
+            {/* <NavLink
             to="/"
               onClick={toggleAdminUser}
-              className={`px-6 py-2 rounded-r-full ${!isAdmin ? 'bg-black text-white' : 'bg-gray-200 text-gray-700'} transition-colors duration-300`}
+              className={`px-6 py-2 rounded-full ${!isAdmin ? 'bg-black text-white' : 'bg-gray-200 text-gray-700'} transition-colors duration-300`}
             >
               User
-            </NavLink>
+            </NavLink> */}
           </div>
           <h2 className="text-2xl md:text-4xl font-bold mb-3 text-gray-800">
             {isAdmin ? "Admin Login" : (isLogin ? "Welcome Back" : "Create an Account")}

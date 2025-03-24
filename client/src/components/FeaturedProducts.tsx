@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { addToCartAsync, setCartAsync, updateCartAsync } from '../state/features/cartSlice';
 import { addtoLocalStorage, removefromLocalStorage, updateLocalStorage } from '../state/features/localwishSlice';
 import { addCartItemtoLocalStorage, updateLocalCart, updateLocalCartItem } from '../state/features/localcartSlice';
+import toast from 'react-hot-toast';
 
 export const FeaturedProducts: React.FC = () => {
   const { UserId } = useParams();
@@ -76,22 +77,25 @@ export const FeaturedProducts: React.FC = () => {
       const cartItem = localCart.find((item) => item.deviceId === deviceId);
       if (cartItem) {
         //@ts-ignore
-        dispatch(updateLocalCartItem({ deviceId: deviceId, quantity: cartItem.quantity }))
+        dispatch(updateLocalCartItem({ deviceId: deviceId, quantity: cartItem.quantity + 1 }))
         dispatch(updateLocalCart());
+        toast.success("Cart updated")
       } else {
         //@ts-ignore
         dispatch(addCartItemtoLocalStorage({ deviceId: deviceId }))
         dispatch(updateLocalCart());
-
+        toast.success("Item added to Cart")
       }
     } else {
       const cartItem = cart.find((item) => item.DeviceId === deviceId);
       if (cartItem) {
         //@ts-ignore
         dispatch(updateCartAsync({ UserId, Quantity: cartItem.Quantity + 1, DeviceId: deviceId }));
+        toast.success("Cart updated")
       } else {
         //@ts-ignore
         dispatch(addToCartAsync({ UserId, Quantity: 1, DeviceId: deviceId }));
+        toast.success("Item added to Cart")
       }
     }
   };

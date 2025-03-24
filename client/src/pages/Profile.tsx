@@ -13,10 +13,11 @@ import {
   Package,
 } from "lucide-react"
 import axios from "axios"
-import { useNavigate, useParams } from "react-router-dom"
+import { NavLink, useNavigate, useParams } from "react-router-dom"
+import toast from "react-hot-toast"
 
 export default function UserProfile() {
-  const {UserId} = useParams();
+  const { UserId } = useParams();
   const [activeTab, setActiveTab] = useState<string>("overview")
   const [userData, setUserData] = useState<any>(null)
   const [loading, setLoading] = useState(true);
@@ -52,7 +53,7 @@ export default function UserProfile() {
   }
 
   useEffect(() => {
-    window.scroll(0,0);
+    window.scroll(0, 0);
     async function getData() {
       try {
         setLoading(true)
@@ -91,6 +92,20 @@ export default function UserProfile() {
       </div>
     )
   }
+
+  function handleSignOut() {
+      toast.success("SignOut successful", {
+        style: {}
+      });
+      localStorage.removeItem('Cart');
+      localStorage.removeItem('WishList');
+      setTimeout(() => {
+        navigate('/dashboard', { replace: true })
+        window.location.reload();
+      }, 1000);
+    }
+  
+
 
   const totalSpent = calculateTotalSpent(userData.transactions || [])
   const averageOrder = calculateAverageOrder(userData.transactions || [])
@@ -135,10 +150,7 @@ export default function UserProfile() {
             </div>
 
             <div className="md:ml-auto flex gap-3">
-              <button className="bg-transparent border border-white text-white px-4 py-2 rounded-md font-medium hover:bg-white hover:text-black transition-colors" onClick={()=>{
-                 navigate('/dashboard', {replace : true});
-                 window.location.reload();
-              }}>
+              <button className="bg-transparent border border-white text-white px-4 py-2 rounded-md font-medium hover:bg-white hover:text-black transition-colors" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4 inline mr-2" />
                 Sign Out
               </button>
@@ -169,7 +181,7 @@ export default function UserProfile() {
             >
               Wishlist
             </button>
-           
+
           </div>
         </div>
       </section>
@@ -245,9 +257,9 @@ export default function UserProfile() {
                       </p>
                     </div>
                     <div className="mt-4 md:mt-0">
-                      <button className="bg-white text-black px-4 py-2 rounded-md font-medium hover:bg-gray-200 transition-colors">
+                      <NavLink to={(UserId == undefined ? "/dashboard/wishlist" : `/dashboard/${UserId}/wishlist`)} className="bg-white text-black px-4 py-2 rounded-md font-medium hover:bg-gray-200 transition-colors">
                         View Wishlist
-                      </button>
+                      </NavLink>
                     </div>
                   </div>
                 </div>

@@ -84,6 +84,10 @@ export const UserDashboard = () => {
     }
   },[])
 
+  useEffect(()=>{
+    window.scroll(0,0);
+  },[])
+
 
 
   return (

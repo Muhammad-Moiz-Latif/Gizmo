@@ -155,10 +155,12 @@ export const CartDropDown: React.FC = () => {
 
     function handleClear() {
         if (UserId == undefined) {
-            dispatch(clearLocalCart())
+            dispatch(clearLocalCart());
+            toast.success('Cleared Cart');
         } else {
             //@ts-ignore
-            dispatch(clearCartAsync({ UserId }))
+            dispatch(clearCartAsync({ UserId }));
+            toast.success('Cleared Cart');
         }
     }
 

@@ -186,7 +186,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                             </div>
                         )}
                     </div>
-                    <NavLink to="" className='p-2  rounded-full transition-colors duration-300 relative' onMouseEnter={() => setIsWishList(true)}
+                    <NavLink to={(UserId==undefined)?"/dashboard/wishlist":`/dashboard/${UserId}/wishlist`} className='p-2  rounded-full transition-colors duration-300 relative' onMouseEnter={() => setIsWishList(true)}
                         onMouseLeave={() => setIsWishList(false)}>
                         <img src={wishlist} alt="Wishlist" className='w-5 h-5' />
                         {wishlistCount > 0 && (

@@ -6,24 +6,36 @@ import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "../state/store"
 import { useParams } from "react-router-dom"
 import { addToCartAsync, updateCartAsync } from "../state/features/cartSlice"
-import { ChevronLeft, ChevronRight, Plus, Minus, ShoppingCart, Heart, Share2, Check, Truck, Shield } from "lucide-react"
-import toast from "react-hot-toast";
-import { addToWishlistAsync, deleteFromWishListAsync } from '../state/features/wishSlice';
-import { updateLocalCart, addCartItemtoLocalStorage, updateLocalCartItem } from "@/state/features/localcartSlice";
+import { ChevronLeft, ChevronRight, Plus, Minus, ShoppingCart, Heart, Check, Truck, Shield } from "lucide-react"
+import toast from "react-hot-toast"
+import { addToWishlistAsync, deleteFromWishListAsync } from "../state/features/wishSlice"
+import { updateLocalCart, addCartItemtoLocalStorage, updateLocalCartItem } from "@/state/features/localcartSlice"
 import { updateLocalStorage, addtoLocalStorage, removefromLocalStorage } from "@/state/features/localwishSlice"
 
 export const ProductPage: React.FC = () => {
     const { DeviceId, UserId } = useParams()
-    const devices = useSelector((state: RootState) => state.device.devices);
-    const wishlist = useSelector((state: RootState) => state.wishList.list);
-    const localWishList = useSelector((state: RootState) => state.localWishList.list);
-    const Cart = useSelector((state: RootState) => state.cart.list);
-    const localCart = useSelector((state: RootState) => state.localCart.list);
+    const devices = useSelector((state: RootState) => state.device.devices)
+    const wishlist = useSelector((state: RootState) => state.wishList.list)
+    const localWishList = useSelector((state: RootState) => state.localWishList.list)
+    const Cart = useSelector((state: RootState) => state.cart.list)
+    const localCart = useSelector((state: RootState) => state.localCart.list)
     const device = devices.find((d) => d.DeviceId === DeviceId)
     const cart = device ? Cart.find((item) => item.DeviceId === device.DeviceId) : undefined
+    const localcart = device ? localCart.find((item) => item.deviceId == DeviceId) : undefined
     const dispatch = useDispatch()
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
-    const [activeSpec, setActiveSpec] = useState<string | null>(null);
+    const [activeSpec, setActiveSpec] = useState<string | null>(null)
+    const [hasMounted, setHasMounted] = useState(false)
+
+    useEffect(() => {
+        setHasMounted(true)
+    }, [])
+
+    useEffect(() => {
+        if (hasMounted) {
+            window.scroll(0, 0)
+        }
+    }, [hasMounted])
 
     if (!device) {
         return <div className="text-center py-10 text-gray-700">Device not found</div>
@@ -37,25 +49,45 @@ export const ProductPage: React.FC = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex - 1 < 0 ? device.Images.length - 1 : prevIndex - 1))
     }
 
-    console.log(Cart);
-
     function toggleIncrementCart(deviceId: string) {
-        const CartItem = Cart.find((item) => item.DeviceId === deviceId)
-        if (CartItem) {
-            const Quantity = CartItem.Quantity + 1
-            //@ts-ignore
-            dispatch(updateCartAsync({ UserId, Quantity: Quantity, DeviceId: deviceId }))
+        if (UserId == undefined) {
+            const CartItem = localCart.find((item) => item.deviceId == deviceId);
+            if (CartItem) {
+                const Quantity = CartItem.quantity + 1;
+                dispatch(updateLocalCartItem({ deviceId: deviceId, quantity: Quantity }));
+                dispatch(updateLocalCart());
+            }
+        } else {
+            const CartItem = Cart.find((item) => item.DeviceId === deviceId);
+            if (CartItem) {
+                const Quantity = CartItem.Quantity + 1;
+
+                //@ts-ignore
+                dispatch(updateCartAsync({ UserId, Quantity: Quantity, DeviceId: deviceId }));
+            }
         }
-    }
+    };
 
     function toggleDecrementCart(deviceId: string) {
-        const CartItem = Cart.find((item) => item.DeviceId === deviceId)
-        if (CartItem) {
-            const Quantity = CartItem.Quantity - 1
-            //@ts-ignore
-            dispatch(updateCartAsync({ UserId, Quantity: Quantity, DeviceId: deviceId }))
+        if (UserId == undefined) {
+            const CartItem = localCart.find((item) => item.deviceId == deviceId);
+            if (CartItem) {
+                const Quantity = CartItem.quantity - 1;
+                dispatch(updateLocalCartItem({ deviceId: deviceId, quantity: Quantity }));
+                dispatch(updateLocalCart());
+            }
+        } else {
+            const CartItem = Cart.find((item) => item.DeviceId === deviceId);
+            if (CartItem) {
+                const Quantity = CartItem.Quantity - 1;
+
+                //@ts-ignore
+                dispatch(updateCartAsync({ UserId, Quantity: Quantity, DeviceId: deviceId }));
+            }
         }
+
     }
+
 
     // Group specifications by category for better organization
     const groupedSpecs = Object.entries(device.Specifications).reduce(
@@ -68,59 +100,57 @@ export const ProductPage: React.FC = () => {
             return acc
         },
         {} as Record<string, { key: string; value: any }[]>,
-    );
+    )
 
     const toggleWishlist = (deviceId: string) => {
-        const isInReduxWishlist = wishlist.some(item => item === deviceId);
-        const isInLocalReduxWishlist = localWishList.some(item => item === deviceId);
+        const isInReduxWishlist = wishlist.some((item) => item === deviceId)
+        const isInLocalReduxWishlist = localWishList.some((item) => item === deviceId)
         if (UserId == undefined) {
             if (isInLocalReduxWishlist) {
                 //@ts-ignore
-                dispatch(removefromLocalStorage(deviceId));
+                dispatch(removefromLocalStorage(deviceId))
                 dispatch(updateLocalStorage())
             } else {
                 //@ts-ignore
-                dispatch(addtoLocalStorage(deviceId));
-                dispatch(updateLocalStorage());
+                dispatch(addtoLocalStorage(deviceId))
+                dispatch(updateLocalStorage())
             }
         } else {
             if (isInReduxWishlist) {
                 //@ts-ignore
-                dispatch(deleteFromWishListAsync({ productId: deviceId, UserId }));
+                dispatch(deleteFromWishListAsync({ productId: deviceId, UserId }))
             } else {
                 //@ts-ignore
-                dispatch(addToWishlistAsync({ productId: deviceId, UserId }));
-            }
-        }
-
-    };
-
-    function addCart(DeviceId: string) {
-        if (UserId == undefined) {
-            const cartItem = localCart.find((item) => item.deviceId == DeviceId);
-            if (cartItem) {
-                dispatch(updateLocalCartItem({ deviceId: DeviceId, quantity: cartItem.quantity }));
-                dispatch(updateLocalCart());
-            }
-            dispatch(addCartItemtoLocalStorage({ deviceId: DeviceId }))
-            dispatch(updateLocalCart());
-        } else {
-            const cartItem = Cart.find((item) => item.DeviceId === DeviceId);
-            if (cartItem) {
-                //@ts-ignore
-                dispatch(updateCartAsync({ UserId, Quantity: cartItem.Quantity + 1, DeviceId: DeviceId }));
-                toast.success('Cart updated');
-            } else {
-                //@ts-ignore
-                dispatch(addToCartAsync({ UserId, Quantity: 1, DeviceId: DeviceId }));
-                toast.success('Added to Cart succesfully');
+                dispatch(addToWishlistAsync({ productId: deviceId, UserId }))
             }
         }
     }
 
-    useEffect(() => {
-        window.scroll(0, 0);
-    }, [])
+    function addCart(DeviceId: string) {
+        if (UserId == undefined) {
+            const cartItem = localCart.find((item) => item.deviceId == DeviceId)
+            if (cartItem) {
+                dispatch(updateLocalCartItem({ deviceId: DeviceId, quantity: cartItem.quantity + 1 }))
+                dispatch(updateLocalCart())
+                toast.success("Cart updated")
+            } else {
+                dispatch(addCartItemtoLocalStorage({ deviceId: DeviceId }))
+                dispatch(updateLocalCart())
+                toast.success("Item added to Cart")
+            }
+        } else {
+            const cartItem = Cart.find((item) => item.DeviceId === DeviceId)
+            if (cartItem) {
+                //@ts-ignore
+                dispatch(updateCartAsync({ UserId, Quantity: cartItem.Quantity + 1, DeviceId: DeviceId }))
+                toast.success("Cart updated")
+            } else {
+                //@ts-ignore
+                dispatch(addToCartAsync({ UserId, Quantity: 1, DeviceId: DeviceId }))
+                toast.success("Item added to Cart")
+            }
+        }
+    }
 
     return (
         <div className="bg-white text-black min-h-screen font-sans pt-16 px-4 sm:px-6 lg:px-16">
@@ -171,8 +201,8 @@ export const ProductPage: React.FC = () => {
                                     key={index}
                                     onClick={() => setCurrentImageIndex(index)}
                                     className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all duration-200 ${index === currentImageIndex
-                                        ? "ring-2 ring-black ring-offset-2 shadow-md"
-                                        : "border border-gray-200 opacity-70 hover:opacity-100"
+                                            ? "ring-2 ring-black ring-offset-2 shadow-md"
+                                            : "border border-gray-200 opacity-70 hover:opacity-100"
                                         }`}
                                 >
                                     <img
@@ -196,15 +226,12 @@ export const ProductPage: React.FC = () => {
                                     className="p-2 rounded-full bg-black/10 hover:bg-black/20 transition-all duration-300 transform hover:scale-110 backdrop-blur-sm"
                                 >
                                     <Heart
-                                        className={`w-5 h-5 transition-colors duration-300 ${((UserId == undefined) ? localWishList : wishlist).some(item => item === device.DeviceId)
-                                            ? 'fill-red-500 text-red-500'
-                                            : 'text-gray-700'
+                                        className={`w-5 h-5 transition-colors duration-300 ${(UserId == undefined ? localWishList : wishlist).some((item) => item === device.DeviceId)
+                                                ? "fill-red-500 text-red-500"
+                                                : "text-gray-700"
                                             }`}
                                     />
                                 </button>
-                                {/* <button className="p-2 rounded-full bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
-                                    <Share2 size={20} />
-                                </button> */}
                             </div>
                         </div>
 
@@ -250,20 +277,22 @@ export const ProductPage: React.FC = () => {
                             <div className="flex items-center">
                                 <button
                                     onClick={() => {
-                                        if (cart && cart.Quantity > 1) {
+                                        if (UserId == undefined ? localcart && localcart.quantity > 1 : cart && cart.Quantity > 1) {
                                             toggleDecrementCart(device.DeviceId)
                                         }
                                     }}
-                                    disabled={!cart || cart.Quantity <= 1}
-                                    className={`p-3 border border-gray-300 rounded-l-md ${!cart || cart.Quantity <= 1
-                                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                        : "bg-white hover:bg-gray-100"
+                                    disabled={UserId == undefined ? !localcart || localcart.quantity <= 1 : !cart || cart.Quantity <= 1}
+                                    className={`p-3 border border-gray-300 rounded-l-md ${UserId == undefined
+                                            ? !localcart || localcart.quantity <= 1
+                                            : (!cart || cart.Quantity <= 1)
+                                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                : "bg-white hover:bg-gray-100"
                                         }`}
                                 >
                                     <Minus size={16} />
                                 </button>
                                 <div className="px-6 py-3 border-t border-b border-gray-300 min-w-[60px] text-center font-medium">
-                                    {cart?.Quantity || 0}
+                                    {UserId == undefined ? localcart?.quantity || 0 : cart?.Quantity || 0}
                                 </div>
                                 <button
                                     onClick={() => toggleIncrementCart(device.DeviceId)}
@@ -276,7 +305,10 @@ export const ProductPage: React.FC = () => {
 
                         {/* Action Buttons */}
                         <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-                            <button className="flex-1 bg-black text-white py-4 px-6 rounded-lg flex items-center justify-center hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl" onClick={() => addCart(device.DeviceId)}>
+                            <button
+                                className="flex-1 bg-black text-white py-4 px-6 rounded-lg flex items-center justify-center hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                onClick={() => addCart(device.DeviceId)}
+                            >
                                 <ShoppingCart size={20} className="mr-2" />
                                 <span className="font-medium">Add to Cart</span>
                             </button>

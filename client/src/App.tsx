@@ -25,6 +25,7 @@ import ContactUs from "./pages/ContactUs"
 import UserProfile from "./pages/Profile"
 import ShoppingCart from "./pages/ShoppingCart"
 import { Toaster } from "react-hot-toast"
+import { WishlistPage } from "./pages/Wishlist"
 
 
 const router = createBrowserRouter([
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
         path: "checkout",
         element: <CheckoutPage />
       },
+      {
+        path:"wishlist",
+        element:<WishlistPage/>
+      }
 
     ]
   },
@@ -140,6 +145,11 @@ const router = createBrowserRouter([
       {
         path: "checkout",
         element: <CheckoutPage />
+      },
+      {
+        path:"wishlist",
+        element:<WishlistPage/>
+
       }
     ]
   },
