@@ -85,12 +85,6 @@ export const Features: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="mt-16 text-center"
         >
-          <a 
-            href="#" 
-            className="inline-block bg-black text-white font-semibold py-3 px-10 rounded-full transition-all duration-300 transform hover:scale-105 hover:ring-2 hover:ring-offset-2 hover:tracking-wide hover:ring-black"
-          >
-            Join the Gizmo Family
-          </a>
         </motion.div>
       </div>
     </section>

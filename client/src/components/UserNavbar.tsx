@@ -9,6 +9,8 @@ import dropdown from "../assets/arrow-down-sign-to-navigate.png";
 import wishlist from '../assets/wishlist1.png';
 import { WishListDropDown } from './WishListDropDown';
 import { CartDropDown } from './CartDropDown';
+import defaultImg from '../assets/log-out.png';
+import toast from 'react-hot-toast';
 
 
 interface UserNavbarProps {
@@ -27,6 +29,10 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
     const cart = useSelector((state: RootState) => state.cart.list);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
+    const Devices = useSelector((state: RootState) => state.device.devices);
+    // Fix the state types and implement the search functionality
+    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+    const [Query, setQuery] = useState<any>();
     const localWishList = useSelector((state: RootState) => state.localWishList.list);
     const localCart = useSelector((state: RootState) => state.localCart.list);
     const navigate = useNavigate();
@@ -45,8 +51,16 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
             navigate('/Login');
 
         } else {
-            navigate('/dashboard', { replace: true });
-            window.location.reload();
+            toast.success("Logout successful", {
+                style: {}
+            });
+            localStorage.removeItem('Cart');
+            localStorage.removeItem('WishList');
+            setTimeout(() => {
+                navigate('/dashboard', { replace: true })
+                window.location.reload();
+            }, 1000);
+
         }
     }
 
@@ -68,6 +82,16 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
 
 
     }, []);
+
+    // Replace the commented out useEffect with this working implementation
+    useEffect(() => {
+        if (Query && Query.trim() !== "") {
+            setFilteredProducts(Devices.filter((product) => product.DeviceName.toLowerCase().includes(Query.toLowerCase())))
+        } else {
+            setFilteredProducts([])
+        }
+    }, [Query, Devices])
+
     return (
         <nav className="fixed w-full h-16 font-roboto px-4 md:px-8 lg:px-16 border-b border-ghost_white-900 bg-black z-50">
             <div className='flex justify-between items-center h-full'>
@@ -116,20 +140,49 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
 
                 {/* Right Section */}
                 <div className='flex items-center space-x-4 md:space-x-2'>
-                    <div className='relative' ref={searchRef}>
+                    <div className="relative" ref={searchRef}>
                         <button
                             onClick={() => setIsSearchOpen(!isSearchOpen)}
-                            className='p-2 rounded-full transition-colors duration-300'
+                            className="p-2 rounded-full transition-colors duration-300"
                         >
-                            <img src={search} alt="Search" className='w-5 h-5' />
+                            <img src={search || "/placeholder.svg"} alt="Search" className="w-5 h-5" />
                         </button>
                         {isSearchOpen && (
-                            <div className='absolute right-0 mt-2 w-72 bg-ghost_white rounded-md shadow-lg p-2'>
+                            <div className="absolute right-0 mt-2 w-72 bg-ghost_white rounded-md shadow-lg p-2">
                                 <input
-                                    type='text'
-                                    placeholder='Search for a product'
-                                    className='w-full h-9 px-3 outline-none rounded-lg border border-indigo_dye-300 focus:border-black focus:ring-1 focus:ring-black transition-all duration-300'
+                                    type="text"
+                                    placeholder="Search for a product"
+                                    className="w-full h-9 px-3 outline-none rounded-lg border border-indigo_dye-300 focus:border-black focus:ring-1 focus:ring-black transition-all duration-300"
+                                    value={Query}
+                                    onChange={(e) => setQuery(e.target.value)}
                                 />
+                                {filteredProducts && filteredProducts.length > 0 && (
+                                    <div className="mt-2 max-h-60 overflow-y-auto bg-black rounded-md">
+                                        {filteredProducts.map((product: any) => (
+                                            <div
+                                                key={product.DeviceId}
+                                                className="flex items-center p-2 hover:opacity-55 cursor-pointer border-b border-gray-700"
+                                                onClick={() => {
+                                                    navigate(UserId ? `/dashboard/${UserId}/Device/${product.DeviceId}` : `/dashboard/Device/${product.DeviceId}`)
+                                                    setIsSearchOpen(false)
+                                                    setQuery("")
+                                                }}
+                                            >
+                                                <img
+                                                    src={product.Images && product.Images.length > 0 ? product.Images[0] : "/placeholder.svg"}
+                                                    alt={product.DeviceName}
+                                                    className="w-10 h-10 object-cover rounded-md mr-2"
+                                                />
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium text-ghost_white-900 group-hover:text-black truncate">
+                                                        {product.DeviceName}
+                                                    </p>
+                                                    <p className="text-xs text-ghost_white-500">${product.Price.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -164,7 +217,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                         >
                             <button className="flex items-center space-x-1 p-1 rounded-full transition-colors duration-300 hover:opacity-70">
                                 <img
-                                    src={ImageURl || ""}
+                                    src={ImageURl || defaultImg}
                                     alt="User profile"
                                     className="rounded-full w-6 h-6"
                                 />

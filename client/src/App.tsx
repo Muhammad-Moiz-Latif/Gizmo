@@ -23,12 +23,14 @@ import TermsConditions from "./pages/Terms&Conditions"
 import PrivacyPolicy from "./pages/Privacypolicy"
 import ContactUs from "./pages/ContactUs"
 import UserProfile from "./pages/Profile"
+import ShoppingCart from "./pages/ShoppingCart"
+import { Toaster } from "react-hot-toast"
 
 
 const router = createBrowserRouter([
   {
-    path:'/',
-    element: <Navigate to="/dashboard" replace/>
+    path: '/',
+    element: <Navigate to="/dashboard" replace />
   },
   {
     path: '/dashboard',
@@ -40,48 +42,52 @@ const router = createBrowserRouter([
       },
       {
         path: 'Category/:CategoryId',
-        element: <ProductsPage/>
+        element: <ProductsPage />
       },
       {
         path: 'Device/:DeviceId',
-        element: <ProductPage/>
+        element: <ProductPage />
       },
       {
         path: 'aboutus',
-        element: <AboutUs/>
+        element: <AboutUs />
       },
       {
-        path:'faq',
-        element: <FAQ/>
+        path: 'faq',
+        element: <FAQ />
       },
       {
-        path:"shipping&returns",
-        element:<Shipping/>
+        path: "shipping&returns",
+        element: <Shipping />
       },
       {
-        path:"terms&conditions",
-        element:<TermsConditions/>
+        path: "terms&conditions",
+        element: <TermsConditions />
       },
       {
-        path:"privacypolicy",
-        element: <PrivacyPolicy/>
+        path: "privacypolicy",
+        element: <PrivacyPolicy />
       },
       {
-        path:"contactus",
-        element:<ContactUs/>
+        path: "contactus",
+        element: <ContactUs />
       },
       {
-        path:"checkout",
-        element: <CheckoutPage/>
+        path: 'cart',
+        element: <ShoppingCart />
+      },
+      {
+        path: "checkout",
+        element: <CheckoutPage />
       },
 
     ]
   },
   {
-    path:"Login",element:<Login/>
+    path: "Login", element: <Login />
   },
   {
-    path: "success/:UserId/:SessionId", element:<SuccessTransaction/>
+    path: "success/:UserId/:SessionId", element: <SuccessTransaction />
   },
   {
     path: 'dashboard/:UserId',
@@ -93,43 +99,47 @@ const router = createBrowserRouter([
       },
       {
         path: 'Category/:CategoryId',
-        element: <ProductsPage/>
+        element: <ProductsPage />
       },
       {
         path: 'Device/:DeviceId',
-        element: <ProductPage/>
+        element: <ProductPage />
       },
       {
         path: 'aboutus',
-        element: <AboutUs/>
+        element: <AboutUs />
       },
       {
-        path:'faq',
-        element:<FAQ/>
+        path: 'faq',
+        element: <FAQ />
       },
       {
-        path:"shipping&returns",
-        element:<Shipping/>
+        path: "shipping&returns",
+        element: <Shipping />
       },
       {
-        path:"terms&conditions",
-        element:<TermsConditions/>
+        path: "terms&conditions",
+        element: <TermsConditions />
       },
       {
-        path:"privacypolicy",
-        element: <PrivacyPolicy/>
+        path: "privacypolicy",
+        element: <PrivacyPolicy />
       },
       {
-        path:'contactus',
-        element:<ContactUs/>
+        path: 'contactus',
+        element: <ContactUs />
       },
       {
-        path:'profile',
-        element:<UserProfile/>
+        path: 'profile',
+        element: <UserProfile />
       },
       {
-        path:"checkout",
-        element: <CheckoutPage/>
+        path: 'cart',
+        element: <ShoppingCart />
+      },
+      {
+        path: "checkout",
+        element: <CheckoutPage />
       }
     ]
   },
@@ -138,8 +148,8 @@ const router = createBrowserRouter([
     element: <AdminDashboard />,
     children: [
       {
-        index:true,
-        element:<AdminLandingPage/>
+        index: true,
+        element: <AdminLandingPage />
       },
 
       {
@@ -173,7 +183,11 @@ const router = createBrowserRouter([
 
 export default function App() {
   return (
+
     <Provider store={store}>
+      <Toaster position="top-center" toastOptions={{
+        duration: 2000,
+      }} />
       <RouterProvider router={router}></RouterProvider>
     </Provider>
   )

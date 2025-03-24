@@ -64,6 +64,7 @@ export const UserDashboard = () => {
           const response = await axios.get(`http://localhost:3000/UserDashboard/${UserId}`);
           if (response && response.data) {
             // console.log(response.data);
+           
             setImage(response.data.UserInfo.img);
           }
         } else {

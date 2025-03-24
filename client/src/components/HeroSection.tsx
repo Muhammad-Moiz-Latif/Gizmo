@@ -24,7 +24,7 @@ export const HeroSection: React.FC = () => {
         }
     }, []);
     return (
-        <div className="w-full min-h-screen bg-ghost_white-900 font-roboto px-4 sm:px-6 md:px-8 lg:px-16 flex flex-col items-center justify-start relative overflow-hidden">
+        <div className="w-full h-screen bg-ghost_white-900 font-roboto px-4 sm:px-6 md:px-8 lg:px-16 flex flex-col items-center justify-start relative overflow-hidden">
             {/* Main Content */}
             <div className={`max-w-4xl w-full flex flex-col justify-center items-center text-center relative z-20 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
                 {/* Title and Description */}
@@ -53,15 +53,15 @@ export const HeroSection: React.FC = () => {
                 </div>
 
                 {/* Enlarged Company Name */}
-                <div className={`text-[5rem] sm:text-[7rem] md:text-[9rem] lg:text-[20rem] font-bold text-primary-dark z-30 opacity-5 tracking-widest -mt-[379px] transition-transform duration-1500 ease-in-out delay-1000 ${isVisible ? 'scale-100 opacity-5' : 'scale-90 opacity-0'}`}>
+                <div className={`text-[5rem] sm:text-[7rem] md:text-[9rem] lg:text-[22rem] font-bold text-primary-dark z-30 opacity-[0.03] tracking-wider -mt-[580px] transition-transform duration-1500 ease-in-out delay-1000 ${isVisible ? 'scale-100 opacity-5' : 'scale-90 opacity-0'}`}>
                     GIZMO
                 </div>
             </div>
 
-            {/* Background Animation */}
+            {/* Background Animation
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-10">
                 <div className="animate-float absolute bottom-[45%] left-[23.7%] w-24 h-24 bg-stone-400 rounded-full opacity-15"></div>
-            </div>
+            </div> */}
         </div>
     );
 };

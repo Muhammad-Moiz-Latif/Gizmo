@@ -103,7 +103,6 @@ async function main() {
     const Cart = await prisma.cart.findMany({
       where: { userId: UserId }
     })
-    console.log({ CurrentCart: Cart });
     if (Cart) {
       res.status(200).json({ Cart });
     }
@@ -202,6 +201,8 @@ async function main() {
         res.cookie('authToken', token);
         res.json({ message: 'User has logged in successfully', user: { id: checkUser.id, username: checkUser.username } });
         console.log('User has logged in successfully');
+      } else {
+        res.json({message:"Incorrect info"});
       }
     }
   })
@@ -521,37 +522,46 @@ async function main() {
 
 
 
-  router.post('/UserDashboard/:UserId/Cart/Remove', async (req: Request<{ UserId: string }>, res: Response): Promise<void> => {
+  router.post('/UserDashboard/:UserId/Cart/Remove', async (req, res) => {
+    console.log("Remove route hit"); // Debugging log
+    const { UserId } = req.params;
+    const { DeviceId } = req.body;
+  
     try {
-      const { UserId } = req.params;
-      const { DeviceId } = req.body;
-      // Check if user exists and include CartDevices
       const checkUser = await prisma.user.findUnique({
         where: { id: UserId },
         include: { CartDevices: true },
       });
-
-      // Find the device in the user's cart
-      const deviceInCart = checkUser?.CartDevices.find((item) => item.DeviceId === DeviceId);
-      if (deviceInCart) {
-        // Remove the device from the cart
-        await prisma.cart.delete({
-          where: { DeviceId_userId: {
-            DeviceId:DeviceId,
-            userId:UserId
-          } },
-        });
-        const newCart = (await prisma.cart.findMany());
-        res.status(200).json({ message: "Device removed from the cart.", newCart });
+  
+      if (!checkUser) {
+        res.status(404).json({ error: "User not found" });
+        return;
       }
-
-
+  
+      const deviceInCart = checkUser.CartDevices.find((item) => item.DeviceId === DeviceId);
+      if (!deviceInCart) {
+        res.status(404).json({ error: "Device not found in cart" });
+        return;
+      }
+  
+      await prisma.cart.delete({
+        where: {
+          DeviceId_userId: {
+            DeviceId,
+            userId: UserId,
+          },
+        },
+      });
+  
+      const newCart = await prisma.cart.findMany();
+      res.status(200).json({ message: "Device removed", newCart });
+  
     } catch (error) {
-      console.error("Error removing device from cart:", error);
-      res.status(500).json({ error: "Failed to remove device from cart." });
+      console.error("Error removing device:", error);
+      res.status(500).json({ error: "Failed to remove device" });
     }
   });
-
+  
   router.post('/UserDashboard/:UserId/Cart/Update', async (req, res) => {
     const { UserId } = req.params;
     const { DeviceId, Quantity } = req.body;
@@ -560,6 +570,14 @@ async function main() {
       where: { id: UserId }
     });
     if (checkUser) {
+      const existingCart = await prisma.cart.findUnique({
+        where: { DeviceId_userId: { DeviceId, userId: UserId } }
+      });
+      
+      if (!existingCart) {
+        res.status(404).json({ message: "Cart item not found" });
+        return;
+      }
       await prisma.cart.update({
         where: { DeviceId_userId: {
           DeviceId:DeviceId,
@@ -570,7 +588,7 @@ async function main() {
         }
       });
       const updatedCart = await prisma.cart.findMany();
-      console.log(updatedCart);
+      console.log({updatedCart:updatedCart});
       res.status(200).json(updatedCart);
     };
 
@@ -625,10 +643,14 @@ async function main() {
   router.post('/UserDashboard/:UserId/Cart/Clear', async (req, res) => {
     const { UserId } = req.params;
     try {
-      const Cart = await prisma.cart.deleteMany({
+      await prisma.cart.deleteMany({
         where: { userId: UserId }
       });
-      res.status(200).json({ message: "Cart" });
+      const currentCart = await prisma.user.findUnique({
+        where:{id:UserId},
+        include:{CartDevices:true}
+      })
+      res.status(200).json({ message: "Cart Deleted", currentCart: currentCart});
     } catch (error) {
       console.error("Error clearing cart:", error);
       res.status(500).json({ error: "Failed to clear cart." });

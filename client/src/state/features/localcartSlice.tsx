@@ -34,6 +34,11 @@ const cartSlice = createSlice({
             state.list = state.list.map((item) => item.deviceId === CartItem.deviceId ? { ...item, quantity: CartItem.quantity } : item)
         },
 
+        clearLocalCart(state) {
+            localStorage.removeItem('Cart');
+            state.list = [];
+        },
+
         syncLocalCart(state) {
             const localCart = JSON.parse(localStorage.getItem('cart') || "[]");
             state.list = localCart;
@@ -46,6 +51,6 @@ const cartSlice = createSlice({
     }
 });
 
-export const { addCartItemtoLocalStorage, removeCartItemfromLocalStorage, syncLocalCart, updateLocalCart, updateLocalCartItem } = cartSlice.actions;
+export const { addCartItemtoLocalStorage, removeCartItemfromLocalStorage, clearLocalCart, syncLocalCart, updateLocalCart, updateLocalCartItem } = cartSlice.actions;
 
 export default cartSlice.reducer;

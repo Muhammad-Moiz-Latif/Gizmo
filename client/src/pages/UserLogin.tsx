@@ -6,6 +6,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import googleicon from '../assets/google.png';
+import toast, { Toaster } from 'react-hot-toast';
 
 const loginSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
@@ -21,6 +22,7 @@ interface UserLoginProps {
 export function UserLogin({ toggleForm }: UserLoginProps) {
   const navigate = useNavigate();
   const [isHidden, setIsHidden] = useState(true);
+  const [incorrectData, setData] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -36,10 +38,15 @@ export function UserLogin({ toggleForm }: UserLoginProps) {
       const response = await axios.post('http://localhost:3000/UserLogin', data, {
         withCredentials: true
       });
-      if (response) {
+      if (response.data.user) {
         console.log(response.data);
         reset();
-        navigate(`/UserDashboard/${response.data.user.id}`);
+        toast.success("Logged in successfully!", { position: "top-center" });
+        setTimeout(() => { navigate(`/dashboard/${response.data.user.id}`); }, 1000);
+        setData(false);
+      } else {
+        setData(true);
+        console.log(response.data);
       }
     } catch (error) {
       console.error("Form submission error:", error);
@@ -84,6 +91,7 @@ export function UserLogin({ toggleForm }: UserLoginProps) {
           </button>
         </div>
         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+        {incorrectData && <p className="text-red-500 text-sm mt-1">Incorrect Username or password</p>}
         <button
           className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition duration-300"
           type="submit"

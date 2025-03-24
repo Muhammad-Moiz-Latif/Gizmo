@@ -38,7 +38,7 @@ export const RemoveFromCartAsync = createAsyncThunk(
         const response = await axios.post(`http://localhost:3000/UserDashboard/${UserId}/Cart/Remove`, { DeviceId });
         if (response && response.data) {
             console.log(response.data.newCart);
-            dispatch(removeFromCart(response.data));
+            dispatch(removeFromCart(response.data.newCart));
         }
     }
 )
@@ -68,7 +68,6 @@ const cartSlice = createSlice({
     name: "Cart",
     initialState,
     reducers: {
-        // Set the entire Cart, ensuring all items have inCart as false
         setCart: (state, action) => {
             if (action.payload.length > 0 && !action.payload[0].DeviceName) {
                 state.list = action.payload
@@ -88,10 +87,11 @@ const cartSlice = createSlice({
 
         //remove from Cart
         removeFromCart: (state, action) => {
-            state.list = action.payload.newCart;
+            state.list = action.payload;
         },
 
         updateCart: (state, action) => {
+            console.log(action.payload);
             state.list = action.payload;
         }
 

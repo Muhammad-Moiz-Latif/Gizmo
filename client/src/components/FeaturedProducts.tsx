@@ -104,14 +104,14 @@ export const FeaturedProducts: React.FC = () => {
   }, [dispatch, UserId]);
 
   return (
-    <section className="h-screen w-full bg-black text-white relative overflow-hidden flex items-center">
+    <section className="h-screen lg:h-[34rem] mb-8 w-full bg-black text-white relative overflow-hidden flex items-center">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black opacity-90" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 w-full relative">
-        <h2 className="text-4xl font-bold text-center mt-20 mb-3">
+        <h2 className="text-4xl lg:text-3xl font-bold text-center mt-20 lg:mt-10 mb-4 lg:mb-3">
           Featured Products
         </h2>
 
@@ -121,13 +121,13 @@ export const FeaturedProducts: React.FC = () => {
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
               {featuredDevices.map((device: any, index) => (
                 <div key={index} className="w-full flex-shrink-0 px-4">
-                  <div className="max-w-xl mx-auto rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-700 transition-all duration-300 bg-gradient-to-b from-gray-900 to-black mb-10">
+                  <div className="w-full lg:w-[30rem] mx-auto rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-700 transition-all duration-300 bg-gradient-to-b from-gray-900 to-black mb-10">
                     <div className="relative group bg-white">
                       <img
                         src={device.Images[1]}
                         alt={device.DeviceName}
                         onClick={() => navigate(`Device/${device.DeviceId}`)}
-                        className="w-full h-72 object-contain transition-all duration-500 transform group-hover:scale-105 cursor-pointer p-4"
+                        className="w-full h-60 object-contain transition-all duration-500 transform group-hover:scale-105 cursor-pointer p-4"
                       />
                       <button
                         onClick={() => toggleWishlist(device.DeviceId)}
@@ -166,7 +166,7 @@ export const FeaturedProducts: React.FC = () => {
           <button
             onClick={prevSlide}
             disabled={isAnimating}
-            className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white/10 text-white p-4 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute -left-1 top-1/2 transform -translate-y-1/2 bg-white/10 text-white p-4 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -174,13 +174,13 @@ export const FeaturedProducts: React.FC = () => {
           <button
             onClick={nextSlide}
             disabled={isAnimating}
-            className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white/10 text-white p-4 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute -right-1 top-1/2 transform -translate-y-1/2 bg-white/10 text-white p-4 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="flex justify-center mt-8 space-x-3">
+        {/* <div className="flex justify-center mt-8 space-x-3">
           {featuredDevices.map((_, index) => (
             <button
               key={index}
@@ -191,7 +191,7 @@ export const FeaturedProducts: React.FC = () => {
                 }`}
             />
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   );

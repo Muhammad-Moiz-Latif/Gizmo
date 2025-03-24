@@ -1,18 +1,18 @@
 import React from "react";
-import nvidia from '../assets/Logo-nvidia-transparent-PNG.png';
+import asus from '../assets/Asus-Logo-1995.png';
 import apple from '../assets/apple.jpg';
 import logitech from '../assets/logitech.png';
-import microsoft from '../assets/microsoft.png';
-import paypal from '../assets/paypal.png';
+import hp from '../assets/HP.png';
+import sony from '../assets/Sony-logo.png';
 import samsung from '../assets/samsung.png';
 
 const partners = [
-  { id: 1, name: "Apple", logo: apple },
-  { id: 2, name: "Samsung", logo: samsung },
-  { id: 3, name: "Logitech", logo: logitech },
-  { id: 4, name: "Microsoft", logo: microsoft },
-  { id: 5, name: "NVIDIA", logo: nvidia },
-  { id: 6, name: "PayPal", logo: paypal },
+  { id: 1, name: "", logo: apple },
+  { id: 2, name: "", logo: samsung },
+  { id: 3, name: "", logo: logitech },
+  { id: 4, name: "", logo: sony },
+  { id: 5, name: "", logo: hp },
+  { id: 6, name: "", logo: asus },
 ];
 
 export const Testimonials: React.FC = () => {

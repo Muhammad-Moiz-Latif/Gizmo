@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state/store";
+import { NavLink } from "react-router-dom";
 import { Plus, Minus, ShoppingCart, Trash2, CreditCard, X } from 'lucide-react';
 import { clearCartAsync, RemoveFromCartAsync, setCartAsync, updateCartAsync } from "../state/features/cartSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { removeCartItemfromLocalStorage, updateLocalCart, updateLocalCartItem } from "../state/features/localcartSlice";
+import { clearLocalCart, removeCartItemfromLocalStorage, updateLocalCart, updateLocalCartItem } from "../state/features/localcartSlice";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export const CartDropDown: React.FC = () => {
     const navigate = useNavigate();
@@ -14,10 +16,9 @@ export const CartDropDown: React.FC = () => {
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const Cart = useSelector((state: RootState) => state.cart.list);
+    console.log(Cart);
     const localCart = useSelector((state: RootState) => state.localCart.list);
     const Devices = useSelector((state: RootState) => state.device.devices);
-    console.log(Devices);
-    console.log(Cart);
     let devicesInCart: any[] = [];
     if (UserId == undefined) {
         if (localCart.length > 0) {
@@ -141,6 +142,26 @@ export const CartDropDown: React.FC = () => {
         }
     }
 
+    function handleRemoval(DeviceId: string) {
+        if (UserId == undefined) {
+            dispatch(removeCartItemfromLocalStorage({ deviceId: DeviceId }));
+            toast.success('Item removed from cart');
+        } else {
+            //@ts-ignore
+            dispatch(RemoveFromCartAsync({ DeviceId: DeviceId, UserId: UserId }));
+            toast.success('Item removed from cart');
+        }
+    }
+
+    function handleClear() {
+        if (UserId == undefined) {
+            dispatch(clearLocalCart())
+        } else {
+            //@ts-ignore
+            dispatch(clearCartAsync({ UserId }))
+        }
+    }
+
     return (
         <div
             className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 z-50 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
@@ -159,9 +180,9 @@ export const CartDropDown: React.FC = () => {
                 <div className="flex-grow overflow-y-auto">
                     {devicesInCart.length > 0 ? (
                         <ul className="divide-y divide-gray-600">
-                            {devicesInCart?.map((item: any) => (
+                            {devicesInCart?.map((item: any, index) => (
                                 <li
-                                    key={item.DeviceId}
+                                    key={`${item.id}-${index}`}
                                     className="flex items-center gap-4 px-4 py-2 hover:bg-gray-800"
                                 >
                                     {/* Device Image */}
@@ -182,7 +203,7 @@ export const CartDropDown: React.FC = () => {
                                             </div>
                                             <button
                                                 //@ts-ignore
-                                                onClick={() => (UserId == undefined) ? dispatch(removeCartItemfromLocalStorage({ deviceId: item.DeviceId })) : dispatch(RemoveFromCartAsync({ DeviceId: item.DeviceId, UserId: UserId }))}
+                                                onClick={() => handleRemoval(item.DeviceId)}
                                                 className="p-2 bg-red-600 rounded-full hover:bg-red-900 transition-colors duration-300"
                                                 aria-label="Remove from cart"
                                             >
@@ -234,16 +255,16 @@ export const CartDropDown: React.FC = () => {
                     <div className="space-y-2">
                         <button
                             //@ts-ignore
-                            onClick={() => dispatch(clearCartAsync({ UserId }))}
+                            onClick={handleClear}
                             className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 flex items-center justify-center"
                         >
                             <Trash2 className="w-4 h-4 mr-2" />
                             Clear Cart
                         </button>
-                        <button className="w-full px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors duration-300 flex items-center justify-center">
+                        <NavLink to={UserId == undefined ? "/Login" : "cart"} className="w-full px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors duration-300 flex items-center justify-center">
                             <ShoppingCart className="w-4 h-4 mr-2" />
                             View Cart
-                        </button>
+                        </NavLink>
                         <button onClick={handlePayment} className="w-full px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200 transition-colors duration-300 flex items-center justify-center">
                             <CreditCard className="w-4 h-4 mr-2" />
                             Proceed to Checkout

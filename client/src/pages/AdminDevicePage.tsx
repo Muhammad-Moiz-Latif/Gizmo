@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { string } from 'zod';
 
 interface Device {
     DeviceId: string;

@@ -5,6 +5,7 @@ import * as z from "zod";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import googleicon from "../assets/google.png";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const signupSchema = z.object({
   username: z.string().min(6, { message: "Username must be atleast 6 characters long" }).max(35, { message: "Username should be 35 characters long at max" }),
@@ -41,6 +42,7 @@ export function UserSignup({ toggleForm }: UserSignupProps) {
     try {
       const response = await axios.post('http://localhost:3000/Signup', data);
       if (response) {
+        toast.success('Account created successfully!');
         reset();
       }
     } catch (error) {
