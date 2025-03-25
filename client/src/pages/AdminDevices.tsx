@@ -21,7 +21,6 @@ interface Category {
 export const AdminDevices = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [devices, setDevices] = useState<Device[]>([])
-    const [categories, setCategories] = useState<Category[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [deviceToDelete, setDeviceToDelete] = useState<Device | null>(null)
@@ -50,7 +49,6 @@ export const AdminDevices = () => {
                     })
 
                     setDevices(mappedDevices)
-                    setCategories(categories)
                 }
             } catch (error: any) {
                 console.error('Error fetching devices:', error.message)

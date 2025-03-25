@@ -5,7 +5,6 @@ import { AdminLogin } from "../pages/AdminLogin";
 import logo from "../assets/blockchain.png";
 import img from "../assets/sarah-dorweiler-QeVmJxZOv3k-unsplash.jpg";
 import adminImg from "../assets/admin-background.jpg";
-import { NavLink } from "react-router-dom";
 import { UserLogin } from "../pages/UserLogin";
 import { UserSignup } from "../pages/UserSignup";
 
@@ -18,10 +17,10 @@ export const Login = () => {
     setIsAdmin(false);
   };
 
-  const toggleAdminUser = () => {
-    setIsAdmin(!isAdmin);
-    setIsLogin(true);
-  };
+  // const toggleAdminUser = () => {
+  //   setIsAdmin(!isAdmin);
+  //   setIsLogin(true);
+  // };
 
   return (
     <div className="min-h-screen w-screen bg-zinc-300 flex items-center justify-center p-4 font-roboto">

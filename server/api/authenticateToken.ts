@@ -12,9 +12,9 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   try {
     // Verify the token using your secret key
     const decoded = jwt.verify(token, "SECRET_KEY");
-
+    console.log(decoded);
     // Attach the decoded user data to the request object
-    req.user = decoded;
+    // req.user = decoded;
 
     // Proceed to the next middleware or route handler
     next();

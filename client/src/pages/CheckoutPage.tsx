@@ -3,8 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state/store";
 import { clearCartAsync, updateCartAsync } from "../state/features/cartSlice";
 import { motion, AnimatePresence } from "framer-motion";
-import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+// import { loadStripe } from "@stripe/stripe-js";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -42,7 +41,7 @@ export const CheckoutPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     async function PlaceOrder() {
-      const stripe = await loadStripe("pk_test_51QlxBiRq46mJj6NwaS3TFwq9HbiC1lzMdaNwLP1Le6qRngqtreZkxaEzGEQkaufspjRKNiWvM0h6geJJZTvhf8ds00hjD7d4xT");
+      // const stripe = await loadStripe("pk_test_51QlxBiRq46mJj6NwaS3TFwq9HbiC1lzMdaNwLP1Le6qRngqtreZkxaEzGEQkaufspjRKNiWvM0h6geJJZTvhf8ds00hjD7d4xT");
       const totalPrice = calculateTotal();
       const response = await axios.post(`http://localhost:3000/UserDashboard/${UserId}/PlaceOrder`, { formData, cart, totalPrice });
       if (response) {
@@ -62,9 +61,9 @@ export const CheckoutPage: React.FC = () => {
       if (sessionId) {
         //@ts-ignore
         dispatch(clearCartAsync({ UserId }));
-        const stripeResult = stripe?.redirectToCheckout({
-          sessionId: sessionId
-        })
+        // const stripeResult = stripe?.redirectToCheckout({
+        //   sessionId: sessionId
+        // })
       }
 
     };
