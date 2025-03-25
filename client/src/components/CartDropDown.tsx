@@ -119,6 +119,7 @@ export const CartDropDown: React.FC = () => {
         const stripe = await loadStripe("pk_test_51QlxBiRq46mJj6NwaS3TFwq9HbiC1lzMdaNwLP1Le6qRngqtreZkxaEzGEQkaufspjRKNiWvM0h6geJJZTvhf8ds00hjD7d4xT");
 
         try {
+            toast.success('Proceeding to checkout...');
             const response = await axios.post(
                 `http://localhost:3000/dashboard/${UserId}/create-checkout-session`,
                 payDevices
