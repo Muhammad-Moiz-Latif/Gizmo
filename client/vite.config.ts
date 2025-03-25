@@ -17,6 +17,6 @@ export default defineConfig({
     host: true,
   },
   build: {
-    outDir: "../dist", // 👈 Places the build files outside "client"
+    outDir: "dist", // 👈 Places the build files outside "client"
   },
 });
