@@ -16,12 +16,13 @@ const passport_1 = __importDefault(require("passport"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const userRoutes_1 = require("../routes/userRoutes");
 dotenv_1.default.config();
-const clientID = process.env.clientId;
+const clientID = process.env.clientID;
 const clientSecret = process.env.clientSecret;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 passport_1.default.serializeUser((user, done) => {
     done(null, user.id);
 });
+console.log(process.env.clientID);
 passport_1.default.deserializeUser((id, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Find the user by ID when deserializing
