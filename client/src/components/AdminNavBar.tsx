@@ -11,7 +11,7 @@ export const AdminNavBar: React.FC = () => {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   async function handleClick(){
-    const response = await axios(`${process.env.PUBLIC_API_URL}/AdminLogout`,{withCredentials:true});
+    const response = await axios(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminLogout`,{withCredentials:true});
     console.log(response.data);
     navigate('/AdminLogin');
   }

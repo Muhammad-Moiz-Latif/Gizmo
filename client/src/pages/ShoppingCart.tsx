@@ -171,7 +171,7 @@ export const ShoppingCart = () => {
     try {
       toast.success('Proceeding to checkout...');
       const response = await axios.post(
-        `${process.env.PUBLIC_API_URL}/dashboard/${UserId}/create-checkout-session`,
+        `${import.meta.env.VITE_PUBLIC_API_URL}/dashboard/${UserId}/create-checkout-session`,
         payDevices
       );
 

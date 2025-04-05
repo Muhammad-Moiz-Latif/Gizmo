@@ -29,7 +29,7 @@ export const EditDevice: React.FC = () => {
         const fetchDeviceDetails = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${process.env.PUBLIC_API_URL}/AdminDashboard/GetDevice/${id}`);
+                const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/GetDevice/${id}`);
                 const { fixedDevices, categories } = response.data;
                 setDevice({
                     DeviceId: fixedDevices.DeviceId,
@@ -91,7 +91,7 @@ export const EditDevice: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await axios.post(`${process.env.PUBLIC_API_URL}/AdminDashboard/UpdateDevice/${id}`, device);
+            await axios.post(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/UpdateDevice/${id}`, device);
             navigate('/AdminDashboard/Devices');
         } catch (error) {
             console.error('Error updating device:', error);

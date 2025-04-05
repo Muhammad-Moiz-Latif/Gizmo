@@ -57,7 +57,7 @@ export default function UserProfile() {
     async function getData() {
       try {
         setLoading(true)
-        const response = await axios.get(`${process.env.PUBLIC_API_URL}/UserDashboard/${UserId}`)
+        const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}`)
         if (response && response.data) {
           setUserData(response.data.UserInfo);
           console.log(response.data);
