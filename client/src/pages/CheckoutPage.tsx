@@ -43,7 +43,7 @@ export const CheckoutPage: React.FC = () => {
     async function PlaceOrder() {
       // const stripe = await loadStripe("pk_test_51QlxBiRq46mJj6NwaS3TFwq9HbiC1lzMdaNwLP1Le6qRngqtreZkxaEzGEQkaufspjRKNiWvM0h6geJJZTvhf8ds00hjD7d4xT");
       const totalPrice = calculateTotal();
-      const response = await axios.post(`http://localhost:3000/UserDashboard/${UserId}/PlaceOrder`, { formData, cart, totalPrice });
+      const response = await axios.post(`${process.env.PUBLIC_API_URL}/UserDashboard/${UserId}/PlaceOrder`, { formData, cart, totalPrice });
       if (response) {
         console.log(response.data);
         setShowPopup(true);

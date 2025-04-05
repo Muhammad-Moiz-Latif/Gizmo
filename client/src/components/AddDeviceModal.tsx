@@ -27,7 +27,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ onClose }) => {
     useEffect(() => {
         const getData = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/AdminDashboard/getCategory`);
+                const response = await axios.get(`${process.env.PUBLIC_API_URL}/AdminDashboard/getCategory`);
                 if (response && response.data) {
                     setCategories(response.data);
                     return response.data;
@@ -74,7 +74,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ onClose }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/AdminDashboard/AddDevice', formData, {
+            const response = await axios.post(`${process.env.PUBLIC_API_URL}/AdminDashboard/AddDevice`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

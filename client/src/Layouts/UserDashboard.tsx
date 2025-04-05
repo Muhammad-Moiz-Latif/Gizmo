@@ -27,7 +27,7 @@ export const UserDashboard = () => {
     if (categories.length === 0) {
       const getCategories = async () => {
         try {
-          const response = await axios.get("http://localhost:3000/AdminDashboard/GetCategory");
+          const response = await axios.get(`${process.env.PUBLIC_API_URL}/AdminDashboard/GetCategory`);
           if (response && response.data) {
             dispatch(setCategories(response.data));
           }
@@ -43,7 +43,7 @@ export const UserDashboard = () => {
     if (devices.length === 0) {
       const getDevices = async () => {
         try {
-          const response = await axios.get("http://localhost:3000/AdminDashboard/GetDevices");
+          const response = await axios.get(`${process.env.PUBLIC_API_URL}/AdminDashboard/GetDevices`);
           if (response && response.data) {
             dispatch(setDevices(response.data.fixedDevices));
             if (cart.length === 0) {
@@ -61,7 +61,7 @@ export const UserDashboard = () => {
     const getData = async () => {
       try {
         if (UserId != undefined) {
-          const response = await axios.get(`http://localhost:3000/UserDashboard/${UserId}`);
+          const response = await axios.get(`${process.env.PUBLIC_API_URL}/UserDashboard/${UserId}`);
           if (response && response.data) {
             // console.log(response.data);
            

@@ -72,7 +72,7 @@ export const AdminDevices = () => {
     const handleDeleteConfirm = async () => {
         if (deviceToDelete) {
             try {
-                await axios.post(`http://localhost:3000/AdminDashboard/DeleteDevice/${deviceToDelete.DeviceId}`);
+                await axios.post(`${process.env.PUBLIC_API_URL}/AdminDashboard/DeleteDevice/${deviceToDelete.DeviceId}`);
                 setDevices(devices.filter((d) => d.DeviceId !== deviceToDelete.DeviceId));
             } catch (error) {
                 console.error('Error deleting device:', error);

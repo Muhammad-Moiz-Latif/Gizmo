@@ -57,7 +57,7 @@ export default function UserProfile() {
     async function getData() {
       try {
         setLoading(true)
-        const response = await axios.get(`http://localhost:3000/UserDashboard/${UserId}`)
+        const response = await axios.get(`${process.env.PUBLIC_API_URL}/UserDashboard/${UserId}`)
         if (response && response.data) {
           setUserData(response.data.UserInfo);
           console.log(response.data);

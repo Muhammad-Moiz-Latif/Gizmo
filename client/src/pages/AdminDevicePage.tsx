@@ -27,7 +27,7 @@ export const DeviceDetails = () => {
             try {
                 setIsLoading(true);
                 console.log(id);
-                const response = await axios.get(`http://localhost:3000/AdminDashboard/GetDevice/${id}`);
+                const response = await axios.get(`${process.env.PUBLIC_API_URL}/AdminDashboard/GetDevice/${id}`);
                 const { fixedDevices, categories } = response.data;
                 console.log(fixedDevices, categories);
                 setDevice({

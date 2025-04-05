@@ -121,7 +121,7 @@ export const CartDropDown: React.FC = () => {
         try {
             toast.success('Proceeding to checkout...');
             const response = await axios.post(
-                `http://localhost:3000/dashboard/${UserId}/create-checkout-session`,
+                `${process.env.PUBLIC_API_URL}/dashboard/${UserId}/create-checkout-session`,
                 payDevices
             );
 

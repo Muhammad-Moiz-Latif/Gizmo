@@ -9,7 +9,7 @@ export const AllUsers = () => {
         async function getUsers() {
             try {
                 const response = await axios.get(
-                    "http://localhost:3000/AdminDashboard/Users",
+                    `${process.env.PUBLIC_API_URL}/AdminDashboard/Users`,
                     { withCredentials: true }
                 );
                 setUserData(response.data);

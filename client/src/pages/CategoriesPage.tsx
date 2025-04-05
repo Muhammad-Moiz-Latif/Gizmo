@@ -42,7 +42,7 @@ export default function CategoriesPage() {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(`http://localhost:3000/AdminDashboard/GetCategory`);
+        const response = await axios.get(`${process.env.PUBLIC_API_URL}/AdminDashboard/GetCategory`);
         if (response?.data) {
           setCategories(response.data);
         }
@@ -69,7 +69,7 @@ export default function CategoriesPage() {
     images.forEach((image) => formData.append("images", image));
 
     try {
-      const response = await axios.post(`http://localhost:3000/AdminDashboard/AddCategory`, formData, {
+      const response = await axios.post(`${process.env.PUBLIC_API_URL}/AdminDashboard/AddCategory`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (response?.data) {
@@ -90,7 +90,7 @@ export default function CategoriesPage() {
     if (!confirm("Are you sure you want to delete this category?")) return;
 
     try {
-      await axios.post(`http://localhost:3000/AdminDashboard/DeleteCategory/${categoryId}`);
+      await axios.post(`${process.env.PUBLIC_API_URL}/AdminDashboard/DeleteCategory/${categoryId}`);
       setCategories((prevCategories) =>
         prevCategories.filter((category) => category.CategoryId !== categoryId)
       );

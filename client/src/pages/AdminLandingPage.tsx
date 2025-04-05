@@ -10,7 +10,7 @@ const AdminLandingPage: React.FC = () => {
         async function getData() {
             try {
                 setLoading(true);
-                const response = await axios.get(`http://localhost:3000/AdminDashboard/getData`);
+                const response = await axios.get(`${process.env.PUBLIC_API_URL}/AdminDashboard/getData`);
                 if (response.data) {
                     console.log(response.data);
                     const { Users, Devices, Orders, totalPrice } = response.data;

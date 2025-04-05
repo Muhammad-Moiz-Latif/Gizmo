@@ -36,7 +36,7 @@ export function AdminLogin() {
     //   navigate('/AdminDashboard');
     // }
     try {
-      const response  = await axios.post('http://localhost:3000/AdminLogin',{
+      const response  = await axios.post(`${import.meta.env.PUBLIC_API_URL}/AdminLogin`,{
         password:data.password
       },{
         withCredentials:true
