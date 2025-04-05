@@ -16,7 +16,7 @@ const passport_1 = __importDefault(require("passport"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const userRoutes_1 = require("../routes/userRoutes");
 dotenv_1.default.config();
-const clientID = process.env.clientID;
+const clientID = process.env.clientId;
 const clientSecret = process.env.clientSecret;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 passport_1.default.serializeUser((user, done) => {
