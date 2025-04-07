@@ -60,6 +60,7 @@ async function main() {
 
   router.get('/AdminDashboard/getData', async (req, res) => {
     try {
+      console.log('I am here');
       const Users = await prisma.user.findMany();
       const Devices = await prisma.user.findMany();
       const Orders = await prisma.order.findMany();
@@ -251,6 +252,7 @@ async function main() {
   });
 
   router.get('/AdminDashboard/getCategory', async (req, res) => {
+    console.log(req.body);
     const allCategories = await prisma.category.findMany();
     if (allCategories) {
       res.json(allCategories);

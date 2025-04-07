@@ -22,13 +22,13 @@ export const UserDashboard = () => {
   const categories = useSelector((state: RootState) => state.category.categories);
   const devices = useSelector((state: RootState) => state.device.devices);
   const cart = useSelector((state: RootState) => state.cart.list);
-
+  console.log(devices);
   useEffect(() => {
     if (categories.length === 0) {
       const getCategories = async () => {
         try {
           console.log(import.meta.env.VITE_PUBLIC_API_URL)
-          const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/GetCategory`);
+          const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/getCategory`);
           if (response && response.data) {
             dispatch(setCategories(response.data));
           }
