@@ -20,7 +20,7 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: "https://gizmo-o5jq.vercel.app",
   credentials: true
 }));
 
