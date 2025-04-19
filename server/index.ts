@@ -20,9 +20,9 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: "https://gizmo-o5jq.vercel.app",
-  credentials: true
+  origin: "*", // Allow all origins
 }));
+
 
 // Session setup
 const key = process.env.SESSIONKEY || 'default_secret_key'; // Fallback if SESSIONKEY is not set
