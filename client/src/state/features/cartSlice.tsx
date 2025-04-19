@@ -16,7 +16,7 @@ const initialState: CartState = {
 
 export const setCartAsync = createAsyncThunk(
     'Cart/Update', async ({ UserId }: { UserId: string }, { dispatch }) => {
-        const response = await axios.get(`${process.env.PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Set`);
+        const response = await axios.get(`${process.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Set`);
         if (response && response.data.Cart) {
             dispatch(setCart(response.data.Cart));
         }
@@ -24,7 +24,7 @@ export const setCartAsync = createAsyncThunk(
 )
 export const addToCartAsync = createAsyncThunk(
     "Cart/Add", async ({ UserId, Quantity, DeviceId }: { UserId: string, Quantity: number, DeviceId: string }, { dispatch }) => {
-        const response = await axios.post(`${process.env.PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Add`, { Quantity, DeviceId });
+        const response = await axios.post(`${process.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Add`, { Quantity, DeviceId });
         if (response && response.data) {
             console.log(response.data);
             dispatch(addToCart(response.data));
@@ -35,7 +35,7 @@ export const addToCartAsync = createAsyncThunk(
 export const RemoveFromCartAsync = createAsyncThunk(
     "Cart/Remove", async ({ UserId, DeviceId }: { UserId: string, DeviceId: string }, { dispatch }) => {
         console.log('Removing the cart');
-        const response = await axios.post(`${process.env.PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Remove`, { DeviceId });
+        const response = await axios.post(`${process.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Remove`, { DeviceId });
         if (response && response.data) {
             console.log(response.data.newCart);
             dispatch(removeFromCart(response.data.newCart));
@@ -45,7 +45,7 @@ export const RemoveFromCartAsync = createAsyncThunk(
 
 export const updateCartAsync = createAsyncThunk(
     'Cart/Update', async ({ UserId, DeviceId, Quantity }: { UserId: string, DeviceId: string, Quantity: number }, { dispatch }) => {
-        const response = await axios.post(`${process.env.PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Update`, { DeviceId , Quantity});
+        const response = await axios.post(`${process.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Update`, { DeviceId , Quantity});
         if(response && response.data){
             console.log(response.data);
             dispatch(updateCart(response.data))
