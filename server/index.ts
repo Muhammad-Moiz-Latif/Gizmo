@@ -13,6 +13,16 @@ import Stripe from "stripe";
 dotenv.config();
 
 const app = express();
+const allowedOrigins = [
+  'http://localhost:5173',              // Local frontend
+  'https://gizmo-seven.vercel.app',
+  'https://gizmo-o5jq.vercel.app'        // Deployed frontend
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 
 // Session setup
 const key = process.env.SESSIONKEY || 'default_secret_key'; // Fallback if SESSIONKEY is not set
@@ -30,6 +40,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
+
 app.post(
   "/stripe/webhook",
   express.raw({ type: "application/json" }), // Ensures raw body is available
@@ -79,7 +90,7 @@ app.post(
 
         //✅ Store transaction in DB(adjust based on your DB)
         const transaction = await prisma.transaction.create({
-            data: { userId, price: totalAmount ? totalAmount/100 : 0, paymentStatus: "COMPLETED", sessionId:sessionId }
+          data: { userId, price: totalAmount ? totalAmount / 100 : 0, paymentStatus: "COMPLETED", sessionId: sessionId }
         });
 
         // console.log("✅ Transaction stored in DB.",transaction);
@@ -96,16 +107,7 @@ app.post(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const allowedOrigins = [
-  'http://localhost:5173',              // Local frontend
-  'https://gizmo-seven.vercel.app',
-  'https://gizmo-o5jq.vercel.app'        // Deployed frontend
-];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
 
 
 // Use authRoutes for /auth routes
