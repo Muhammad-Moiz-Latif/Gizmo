@@ -98,7 +98,8 @@ app.use(express.urlencoded({ extended: true }));
 
 const allowedOrigins = [
   'http://localhost:5173',              // Local frontend
-  'https://gizmo-seven.vercel.app'      // Deployed frontend
+  'https://gizmo-seven.vercel.app',
+  'https://gizmo-o5jq.vercel.app'        // Deployed frontend
 ];
 
 app.use(cors({
