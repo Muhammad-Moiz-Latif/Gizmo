@@ -117,6 +117,9 @@ app.use("/auth", authRoutes);
 app.use("/", testRoutes);
 
 
+prisma.$connect()
+  .then(() => console.log("DB connected"))
+  .catch((err) => console.error("DB connection failed:", err));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
