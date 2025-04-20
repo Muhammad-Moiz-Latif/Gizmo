@@ -13,15 +13,13 @@ import Stripe from "stripe";
 dotenv.config();
 
 const app = express();
-const allowedOrigins = [
-  'http://localhost:5173',              // Local frontend
-  'https://gizmo-seven.vercel.app',
-  'https://gizmo-o5jq.vercel.app'        // Deployed frontend
-];
+// const allowedOrigins = [
+//   'http://localhost:5173',              // Local frontend
+//   'https://gizmo-seven.vercel.app',
+//   'https://gizmo-o5jq.vercel.app'        // Deployed frontend
+// ];
 
-app.use(cors({
-  origin: "*", // Allow all origins
-}));
+app.use(cors());
 
 
 // Session setup
