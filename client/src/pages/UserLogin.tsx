@@ -105,7 +105,7 @@ export function UserLogin({ toggleForm }: UserLoginProps) {
         </div>
         <button
           type="button"
-          onClick={() => window.location.href = 'http://localhost:3000/auth/google'}
+          onClick={() => window.location.href = `${import.meta.env.VITE_PUBLIC_API_URL}/auth/google`}
           className="w-full bg-white text-black py-2 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-300"
         >
           <div className="flex gap-2 justify-center items-center">
