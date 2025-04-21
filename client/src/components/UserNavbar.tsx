@@ -148,7 +148,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                             <img src={search || "/placeholder.svg"} alt="Search" className="w-5 h-5" />
                         </button>
                         {isSearchOpen && (
-                            <div className="absolute right-0 mt-2 w-72 bg-ghost_white rounded-md shadow-lg p-2">
+                            <div className="absolute -right-28 lg:right-0 mt-2 w-72 bg-ghost_white rounded-md shadow-lg p-2">
                                 <input
                                     type="text"
                                     placeholder="Search for a product"
