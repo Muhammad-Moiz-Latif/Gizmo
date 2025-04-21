@@ -14,11 +14,14 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigin = "https://gizmo-o5jq.vercel.app";
+const allowedOrigins = [
+  "http://localhost:5173", 
+  "https://gizmo-o5jq.vercel.app"
+];
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: allowedOrigins,
     credentials: true, // 👈 allow cookies, authorization headers, etc.
   })
 );
