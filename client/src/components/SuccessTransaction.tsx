@@ -5,9 +5,11 @@ import checked from "../assets/checked.png"
 import home from "../assets/home.png"
 import reciept from "../assets/receipt.png"
 import { format } from "date-fns"
-import { NavLink, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 import { jsPDF } from "jspdf"
+import { useDispatch } from "react-redux"
+import { clearCartAsync } from "@/state/features/cartSlice"
 
 export const SuccessTransaction = () => {
   const { UserId } = useParams()
@@ -17,6 +19,8 @@ export const SuccessTransaction = () => {
   const [refNo, setrefNo] = useState("")
   const [name, setName] = useState("")
   const [IsLoading, setIsLoading] = useState(true)
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function getData() {
@@ -53,6 +57,8 @@ export const SuccessTransaction = () => {
     doc.text(`Total Payment: $${price}`, 20, 80)
 
     doc.save(`Receipt_${refNo}.pdf`)
+
+
   }
 
   if (IsLoading) {
@@ -75,6 +81,12 @@ export const SuccessTransaction = () => {
     )
   }
 
+  function handleNavigation(){
+    //@ts-ignore
+    dispatch(clearCartAsync({ UserId }));
+    navigate(`/dashboard/${UserId}`);
+  }
+  
   return (
     <div className="w-full min-h-screen flex justify-center items-center font-roboto p-4 py-8">
       <div className="w-full max-w-md rounded-3xl flex flex-col items-center px-4 sm:px-6 md:px-8 py-6 border border-green-200 bg-green-50">
@@ -126,13 +138,13 @@ export const SuccessTransaction = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row w-full gap-3 mt-2">
-          <NavLink
-            to={`/dashboard/${UserId}`}
+          <button
+            onClick={handleNavigation}
             className="w-full h-12 border border-green-700 rounded-md text-green-700 flex items-center justify-center hover:bg-green-50 transition-colors"
           >
             <img src={home || "/placeholder.svg"} alt="Home" className="w-5 h-5 mr-2" />
             Continue Shopping
-          </NavLink>
+          </button>
           <button
             onClick={downloadReceipt}
             className="w-full h-12 border rounded-md text-white bg-green-700 flex items-center justify-center hover:bg-green-800 transition-colors"

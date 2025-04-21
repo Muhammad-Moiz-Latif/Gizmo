@@ -40,7 +40,7 @@ export function UserSignup({ toggleForm }: UserSignupProps) {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
-      const response = await axios.post(`${process.env.PUBLIC_API_URL}/Signup`, data);
+      const response = await axios.post(`${process.env.VITE_PUBLIC_API_URL}/Signup`, data);
       if (response) {
         toast.success('Account created successfully!');
         reset();
@@ -133,7 +133,7 @@ export function UserSignup({ toggleForm }: UserSignupProps) {
       </div>
       <button
         type="button"
-        onClick={() => window.location.href = '${process.env.PUBLIC_API_URL}/auth/google'}
+        onClick={() => window.location.href = '${process.env.VITE_PUBLIC_API_URL}/auth/google'}
         className="w-full bg-white text-black py-2 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-300 mt-3"
       >
         <div className="flex gap-2 justify-center items-center">

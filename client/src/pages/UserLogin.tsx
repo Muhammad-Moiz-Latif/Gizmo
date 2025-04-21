@@ -35,7 +35,7 @@ export function UserLogin({ toggleForm }: UserLoginProps) {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await axios.post(`${process.env.PUBLIC_API_URL}/UserLogin`, data, {
+      const response = await axios.post(`${process.env.VITE_PUBLIC_API_URL}/UserLogin`, data, {
         withCredentials: true
       });
       if (response.data.user) {
