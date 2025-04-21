@@ -4,6 +4,9 @@ import  '../config/passport-setup';
 
 export const router = Router();
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+
 router.get('/login', (req, res) => {
     res.send('This is the login page')
 })
@@ -21,16 +24,16 @@ router.get('/google',
   router.get(
     '/google/redirect',
     passport.authenticate('google', {
-      failureRedirect: 'http://localhost:5173', // Handle failure cases
+      failureRedirect: `${FRONTEND_URL}`, // Handle failure cases
     }),
     (req, res) => {
       if (req.user) {
         // Assuming `req.user` contains the authenticated user object
         //@ts-ignore
         const userId = req.user.id; // Extract the user ID
-        res.redirect(`http://localhost:5173/dashboard/${userId}`); // Pass userId as query parameter
+        res.redirect(`${FRONTEND_URL}/dashboard/${userId}`); // Pass userId as query parameter
       } else {
-        res.redirect('http://localhost:5173'); // Redirect to home on failure
+        res.redirect(`${FRONTEND_URL}`); // Redirect to home on failure
       }
     }
   );
