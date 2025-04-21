@@ -40,7 +40,7 @@ export function UserSignup({ toggleForm }: UserSignupProps) {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
-      const response = await axios.post(`${process.env.VITE_PUBLIC_API_URL}/Signup`, data);
+      const response = await axios.post(`${import.meta.env.VITE_PUBLIC_API_URL}/Signup`, data);
       if (response) {
         toast.success('Account created successfully!');
         reset();
