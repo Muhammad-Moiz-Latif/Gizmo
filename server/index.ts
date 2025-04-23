@@ -5,6 +5,7 @@ import cors from 'cors';
 import passport from 'passport';
 import { router as authRoutes } from './routes/authRoutes';
 import { prisma, router as testRoutes } from './routes/userRoutes';
+import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 import Stripe from "stripe";
@@ -47,7 +48,7 @@ app.use(cookieParser());
 app.post(
   "/stripe/webhook",
   express.raw({ type: "application/json" }), // Ensures raw body is available
-  async (req, res) => {
+  async (req : Request, res : Response) => {
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
