@@ -661,7 +661,7 @@ async function main() {
 
   })
 
-  router.post("/dashboard/:UserId/create-checkout-session", async (req,res) => {
+  router.post("/dashboard/:UserId/create-checkout-session", async (req:Request,res:Response) => {
     try {
       const products = req.body;
       const {UserId} = req.params;
@@ -698,7 +698,7 @@ async function main() {
     }
   });
 
-  router.get('/transactionData/:sessionId',async (req,res) =>{
+  router.get('/transactionData/:sessionId',async (req : Request,res : Response) =>{
     const {sessionId} = req.params;
     const data = await prisma.transaction.findUnique({
       where:{sessionId:sessionId}
