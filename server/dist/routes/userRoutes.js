@@ -57,6 +57,7 @@ function main() {
         });
         exports.router.get('/AdminDashboard/getData', (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('I am here');
                 const Users = yield exports.prisma.user.findMany();
                 const Devices = yield exports.prisma.user.findMany();
                 const Orders = yield exports.prisma.order.findMany();
@@ -227,6 +228,7 @@ function main() {
             }
         }));
         exports.router.get('/AdminDashboard/getCategory', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            console.log(req.body);
             const allCategories = yield exports.prisma.category.findMany();
             if (allCategories) {
                 res.json(allCategories);

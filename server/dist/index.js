@@ -23,6 +23,14 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const stripe_1 = __importDefault(require("stripe"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://gizmo-o5jq.vercel.app"
+];
+app.use((0, cors_1.default)({
+    origin: allowedOrigins,
+    credentials: true, // 👈 allow cookies, authorization headers, etc.
+}));
 // Session setup
 const key = process.env.SESSIONKEY || 'default_secret_key'; // Fallback if SESSIONKEY is not set
 const stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-12-18.acacia" });
@@ -93,14 +101,14 @@ app.post("/stripe/webhook", express_1.default.raw({ type: "application/json" }),
 }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, cors_1.default)({
-    origin: "http://localhost:5173",
-    credentials: true
-}));
 // Use authRoutes for /auth routes
 app.use("/auth", authRoutes_1.router);
 // Use testRoutes for other routes
 app.use("/", userRoutes_1.router);
-app.listen(3000, () => {
-    console.log('App listening for requests on port 3000');
+userRoutes_1.prisma.$connect()
+    .then(() => console.log("DB connected"))
+    .catch((err) => console.error("DB connection failed:", err));
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`App listening on port ${port}`);
 });

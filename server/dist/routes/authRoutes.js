@@ -8,6 +8,7 @@ const express_1 = require("express");
 const passport_1 = __importDefault(require("passport"));
 require("../config/passport-setup");
 exports.router = (0, express_1.Router)();
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 exports.router.get('/login', (req, res) => {
     res.send('This is the login page');
 });
@@ -19,15 +20,15 @@ exports.router.get('/google', passport_1.default.authenticate('google', { scope:
 );
 // Google OAuth callback
 exports.router.get('/google/redirect', passport_1.default.authenticate('google', {
-    failureRedirect: 'http://localhost:5173', // Handle failure cases
+    failureRedirect: `${FRONTEND_URL}`, // Handle failure cases
 }), (req, res) => {
     if (req.user) {
         // Assuming `req.user` contains the authenticated user object
         //@ts-ignore
         const userId = req.user.id; // Extract the user ID
-        res.redirect(`http://localhost:5173/dashboard/${userId}`); // Pass userId as query parameter
+        res.redirect(`${FRONTEND_URL}/dashboard/${userId}`); // Pass userId as query parameter
     }
     else {
-        res.redirect('http://localhost:5173'); // Redirect to home on failure
+        res.redirect(`${FRONTEND_URL}`); // Redirect to home on failure
     }
 });

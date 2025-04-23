@@ -16,13 +16,12 @@ const passport_1 = __importDefault(require("passport"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const userRoutes_1 = require("../routes/userRoutes");
 dotenv_1.default.config();
-const clientID = import.meta.env.clientID;
-const clientSecret = import.meta.env.clientSecret;
+const clientID = process.env.clientID;
+const clientSecret = process.env.clientSecret;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 passport_1.default.serializeUser((user, done) => {
     done(null, user.id);
 });
-console.log(import.meta.env.clientID);
 passport_1.default.deserializeUser((id, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Find the user by ID when deserializing
@@ -41,10 +40,13 @@ passport_1.default.deserializeUser((id, done) => __awaiter(void 0, void 0, void 
         done(error);
     }
 }));
+const isProd = process.env.NODE_ENV === 'production';
 passport_1.default.use(new GoogleStrategy({
     clientID: clientID,
     clientSecret: clientSecret,
-    callbackURL: "/auth/google/redirect",
+    callbackURL: isProd
+        ? 'https://gizmo-sci1.onrender.com/auth/google/redirect' // Production backend
+        : 'http://localhost:3000/auth/google/redirect', // Local dev
 }, 
 //@ts-ignore
 (accessToken, refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
