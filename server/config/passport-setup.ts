@@ -30,10 +30,14 @@ passport.deserializeUser(async (id: any, done: any) => {
   }
 });
 
+const isProd = process.env.NODE_ENV === 'production';
+
 passport.use(new GoogleStrategy({
   clientID: clientID!,
   clientSecret: clientSecret!,
-  callbackURL: "/auth/google/redirect",
+  callbackURL: isProd
+    ? 'https://gizmo-sci1.onrender.com/auth/google/redirect' // Production backend
+    : 'http://localhost:3000/auth/google/redirect',          // Local dev
 },
 
   //@ts-ignore
