@@ -15,13 +15,21 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://gizmo-kkv5.onrender.com"
+  "http://localhost:3000",
+  "https://gizmo-jb17.vercel.app",
+  process.env.FRONTEND_URL || ""
 ];
 
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
     credentials: true, // 👈 allow cookies, authorization headers, etc.
   })
 );
