@@ -2,9 +2,13 @@
   "compilerOptions": {
     "target": "ES2018",
     "lib": [
-      "ES2018"
+      "ES2018",
+      "dom"
     ],
-    "noImplicitAny": true,
+    "types": [
+      "node"
+    ],
+    "noImplicitAny": false,
     "module": "CommonJS",
     "esModuleInterop": true,
     "strict": true,
