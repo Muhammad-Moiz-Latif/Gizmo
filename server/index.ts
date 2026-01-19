@@ -14,7 +14,8 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:5173", 
+  "http://localhost:5173",
+  "https://gizmo-kkv5.onrender.com"
 ];
 
 
@@ -47,7 +48,7 @@ app.use(cookieParser());
 app.post(
   "/stripe/webhook",
   express.raw({ type: "application/json" }), // Ensures raw body is available
-  async (req : Request, res : Response) => {
+  async (req: Request, res: Response) => {
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
