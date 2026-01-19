@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -22,10 +13,10 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 passport_1.default.serializeUser((user, done) => {
     done(null, user.id);
 });
-passport_1.default.deserializeUser((id, done) => __awaiter(void 0, void 0, void 0, function* () {
+passport_1.default.deserializeUser(async (id, done) => {
     try {
         // Find the user by ID when deserializing
-        const user = yield userRoutes_1.prisma.user.findUnique({
+        const user = await userRoutes_1.prisma.user.findUnique({
             where: { id: id },
         });
         // If user is found, pass it to done
@@ -39,7 +30,7 @@ passport_1.default.deserializeUser((id, done) => __awaiter(void 0, void 0, void 
     catch (error) {
         done(error);
     }
-}));
+});
 const isProd = process.env.NODE_ENV === 'production';
 passport_1.default.use(new GoogleStrategy({
     clientID: clientID,
@@ -49,10 +40,10 @@ passport_1.default.use(new GoogleStrategy({
         : 'http://localhost:3000/auth/google/redirect', // Local dev
 }, 
 //@ts-ignore
-(accessToken, refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
+async (accessToken, refreshToken, profile, done) => {
     try {
         // Check if the user already exists in the database by their email
-        const existingUser = yield userRoutes_1.prisma.user.findUnique({
+        const existingUser = await userRoutes_1.prisma.user.findUnique({
             where: {
                 identifier: profile.emails[0].value, // Use Google account's email as identifier
             }
@@ -67,7 +58,7 @@ passport_1.default.use(new GoogleStrategy({
             // Generate a unique username if the user doesn't exist
             let username = profile.displayName;
             // Create a new user if they don't exist
-            const newUser = yield userRoutes_1.prisma.user.create({
+            const newUser = await userRoutes_1.prisma.user.create({
                 data: {
                     username: username, // Ensure unique username
                     password: generateRandomPassword(12), // Generate random password
@@ -84,7 +75,7 @@ passport_1.default.use(new GoogleStrategy({
         console.log('Error during Google strategy: ', error);
         return done(error); // Handle errors gracefully
     }
-})));
+}));
 function generateRandomPassword(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
     let password = '';
@@ -94,3 +85,4 @@ function generateRandomPassword(length) {
     }
     return password;
 }
+//# sourceMappingURL=passport-setup.js.map

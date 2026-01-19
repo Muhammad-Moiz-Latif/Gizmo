@@ -32,3 +32,4 @@ exports.router.get('/google/redirect', passport_1.default.authenticate('google',
         res.redirect(`${FRONTEND_URL}`); // Redirect to home on failure
     }
 });
+//# sourceMappingURL=authRoutes.js.map

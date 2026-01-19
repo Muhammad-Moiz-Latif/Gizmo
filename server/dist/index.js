@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -25,7 +16,6 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://gizmo-o5jq.vercel.app"
 ];
 app.use((0, cors_1.default)({
     origin: allowedOrigins,
@@ -45,7 +35,7 @@ app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 app.use((0, cookie_parser_1.default)());
 app.post("/stripe/webhook", express_1.default.raw({ type: "application/json" }), // Ensures raw body is available
-(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+async (req, res) => {
     var _a;
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -73,20 +63,20 @@ app.post("/stripe/webhook", express_1.default.raw({ type: "application/json" }),
             const totalAmount = session.amount_total;
             const currency = session.currency;
             var UserName = "";
-            const User = yield userRoutes_1.prisma.user.findUnique({
+            const User = await userRoutes_1.prisma.user.findUnique({
                 where: { id: userId }
             });
             if (User) {
                 UserName = User.username;
             }
             // ✅ Get line items
-            const lineItems = yield stripe.checkout.sessions.listLineItems(sessionId);
+            const lineItems = await stripe.checkout.sessions.listLineItems(sessionId);
             console.log(sessionId);
             console.log(lineItems);
             console.log(totalAmount ? totalAmount / 100 : 0);
             console.log("✅ Payment Successful:");
             //✅ Store transaction in DB(adjust based on your DB)
-            const transaction = yield userRoutes_1.prisma.transaction.create({
+            const transaction = await userRoutes_1.prisma.transaction.create({
                 data: { userId, price: totalAmount ? totalAmount / 100 : 0, paymentStatus: "COMPLETED", sessionId: sessionId }
             });
             // console.log("✅ Transaction stored in DB.",transaction);
@@ -98,7 +88,7 @@ app.post("/stripe/webhook", express_1.default.raw({ type: "application/json" }),
         }
     }
     res.json({ received: true });
-}));
+});
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // Use authRoutes for /auth routes
@@ -108,7 +98,8 @@ app.use("/", userRoutes_1.router);
 userRoutes_1.prisma.$connect()
     .then(() => console.log("DB connected"))
     .catch((err) => console.error("DB connection failed:", err));
-const port = process.env.PORT || 3000;
+const port = 3000;
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
 });
+//# sourceMappingURL=index.js.map

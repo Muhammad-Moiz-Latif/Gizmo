@@ -21,3 +21,4 @@
 //   }
 // };
 // export default authenticateToken;
+//# sourceMappingURL=authenticateToken.js.map

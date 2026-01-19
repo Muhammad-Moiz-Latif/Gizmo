@@ -7,7 +7,6 @@ import { setCategories } from '../state/features/categoriesSlice';
 import { RootState } from '../state/store';
 import { setDevices } from '../state/features/devicesSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { setCart } from "../state/features/cartSlice";
 import { Footer } from "../components/Footer";
 import defaultImg from '../assets/user.png';
 import { syncLocalStorage } from "../state/features/localwishSlice";
@@ -21,7 +20,6 @@ export const UserDashboard = () => {
   const dispatch = useDispatch();
   const categories = useSelector((state: RootState) => state.category.categories);
   const devices = useSelector((state: RootState) => state.device.devices);
-  const cart = useSelector((state: RootState) => state.cart.list);
   console.log(devices);
   useEffect(() => {
     const categoriesArray = Array.isArray(categories) ? categories : []
