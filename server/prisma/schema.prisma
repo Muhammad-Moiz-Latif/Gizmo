@@ -8,61 +8,61 @@ datasource db {
 }
 
 model User {
-  id              String        @id @default(uuid())
-  username        String        @unique
-  identifier      String        @unique // Can store either email or Google ID
-  authType        AuthType      @default(EMAIL)
-  password        String
+  id         String   @id @default(uuid())
+  password   String
+  role       Role     @default(USER)
+  username   String   @unique
+  authType   AuthType @default(EMAIL)
+  identifier String   @unique
+  createdAt  DateTime @default(now())
   img             String
-  role            Role          @default(USER)
-  devices         Device[]
   WishListDevices String[]
   CartDevices     Cart[]
-  transactions    Transaction[]
-  Review          Review[]
+  devices         Device[]
   Order           Order[]
-  createdAt       DateTime      @default(now())
+  Review          Review[]
+  transactions    Transaction[]
 }
 
 model Cart {
-  DeviceId String  
+  DeviceId String
   Quantity Int
-  user     User?   @relation(fields: [userId], references: [id])
   userId   String
-  @@id([DeviceId , userId]) //composite primary key
+  user     User   @relation(fields: [userId], references: [id])
+  @@id([DeviceId, userId])
 }
 
 model Device {
-  DeviceId       String        @id @default(uuid())
-  Quantity       Int
+  DeviceId       String      @id @default(uuid())
   DeviceName     String
-  user           User?         @relation(fields: [userId], references: [id])
   userId         String?
   Brand          String
   Model          String
-  Category       Category      @relation(fields: [categoryid], references: [CategoryId])
-  categoryid     String
-  Condition      String // e.g., New, Used, Refurbished
-  Specifications Json // For storing CPU, RAM, Storage, etc.
+  Quantity       Int
   Description    String
-  Images         String[] // Array of image URLs
-  SerialNumber   String
-  status         Status        @default(PENDING)
-  Price          Float // Price of the device
-  Reviews        Review[]
-  Order          Order?        @relation(fields: [orderOrderId], references: [OrderId])
+  Price          Float
+  Specifications Json
+  categoryid     String
+  Images         String[]
   orderOrderId   String?
+  Category       Category    @relation(fields: [categoryid], references: [CategoryId])
+  Order          Order?      @relation(fields: [orderOrderId], references: [OrderId])
+  user           User?       @relation(fields: [userId], references: [id])
   OrderItem      OrderItem[]
+  Reviews        Review[]
+  Condition      String
+  SerialNumber   String
+  status         Status      @default(PENDING)
 }
 
 model Transaction {
   TransactionId String        @id @default(uuid())
-  user          User          @relation(fields: [userId], references: [id])
   userId        String
-  sessionId     String     @unique
   price         Float
   paymentStatus PaymentStatus
   createdAt     DateTime      @default(now())
+  sessionId     String        @unique
+  user          User          @relation(fields: [userId], references: [id])
 }
 
 model Category {
@@ -75,26 +75,39 @@ model Category {
 
 model Order {
   OrderId    String      @id @default(uuid())
-  user       User        @relation(fields: [userId], references: [id]) // Relation to the user
   userId     String
   createdAt  DateTime    @default(now())
-  items      OrderItem[] // One-to-many relation with OrderItem for devices and quantities
-  totalPrice Float // Total price of the order
-  status     OrderStatus // Enum to represent order status
-  address    String // Shipping address
-  city       String // City
-  country    String // Country
-  zipCode    String // Zip code
+  totalPrice Float
+  status     OrderStatus
+  address    String
+  city       String
+  country    String
+  zipCode    String
   Device     Device[]
+  user       User        @relation(fields: [userId], references: [id])
+  items      OrderItem[]
 }
 
 model OrderItem {
   id       String @id @default(uuid())
-  order    Order  @relation(fields: [orderId], references: [OrderId])
   orderId  String
-  device   Device @relation(fields: [deviceId], references: [DeviceId])
   deviceId String
-  quantity Int // Quantity of this device in the order
+  quantity Int
+  device   Device @relation(fields: [deviceId], references: [DeviceId])
+  order    Order  @relation(fields: [orderId], references: [OrderId])
+}
+
+model Review {
+  ReviewId    String   @id @default(uuid())
+  description String
+  rating      Float
+  userId      String
+  deviceId    String
+  createdAt   DateTime @default(now())
+  device      Device   @relation(fields: [deviceId], references: [DeviceId])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, deviceId])
 }
 
 enum OrderStatus {
@@ -103,19 +116,6 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
-}
-
-model Review {
-  ReviewId    String   @id @default(uuid()) // Unique identifier for the review
-  description String // The review content
-  rating      Float // The rating given by the user
-  user        User     @relation(fields: [userId], references: [id]) // Relation to the user
-  userId      String // Foreign key for the user
-  device      Device   @relation(fields: [deviceId], references: [DeviceId]) // Relation to the device
-  deviceId    String // Foreign key for the device
-  createdAt   DateTime @default(now()) // Timestamp for when the review was created
-
-  @@unique([userId, deviceId]) // Ensure a user can review a device only once
 }
 
 enum Role {

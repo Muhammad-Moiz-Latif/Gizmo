@@ -41,8 +41,9 @@ export const FeaturedProducts: React.FC = () => {
   }, [])
 
   const featuredDevices = React.useMemo(() => {
+    const devicesArray = Array.isArray(allDevices) ? allDevices : []
     const uniqueBrands = new Set()
-    return allDevices
+    return devicesArray
       .filter((device) => {
         if (uniqueBrands.size < 5 && !uniqueBrands.has(device.Brand)) {
           uniqueBrands.add(device.Brand)
@@ -155,7 +156,7 @@ export const FeaturedProducts: React.FC = () => {
                   <div className="w-full mx-auto rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-700 transition-all duration-300 bg-gradient-to-b from-gray-900 to-black mb-10">
                     <div className="relative group bg-white">
                       <img
-                        src={device.Images[1] || "/placeholder.svg"}
+                        src={device.Images && device.Images.length > 1 ? device.Images[1] : (device.Images && device.Images.length > 0 ? device.Images[0] : "/placeholder.svg")}
                         alt={device.DeviceName}
                         onClick={() => navigate(`Device/${device.DeviceId}`)}
                         className={`w-full ${isMobile ? "h-60" : "h-40 md:h-48"} object-contain transition-all duration-500 transform group-hover:scale-105 cursor-pointer p-4`}
@@ -168,11 +169,10 @@ export const FeaturedProducts: React.FC = () => {
                         className="absolute top-4 right-4 p-2 md:p-3 rounded-full bg-black/10 hover:bg-black/20 transition-all duration-300 transform hover:scale-110 backdrop-blur-sm"
                       >
                         <Heart
-                          className={`w-4 h-4 md:w-5 md:h-5 transition-colors duration-300 ${
-                            (UserId == undefined ? localWishList : wishlist).some((item) => item === device.DeviceId)
-                              ? "fill-red-500 text-red-500"
-                              : "text-gray-700"
-                          }`}
+                          className={`w-4 h-4 md:w-5 md:h-5 transition-colors duration-300 ${(UserId == undefined ? localWishList : wishlist).some((item) => item === device.DeviceId)
+                            ? "fill-red-500 text-red-500"
+                            : "text-gray-700"
+                            }`}
                         />
                       </button>
                       <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-gray-500 to-transparent" />
@@ -229,9 +229,8 @@ export const FeaturedProducts: React.FC = () => {
             <button
               key={index}
               onClick={() => !isAnimating && setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-white scale-125" : "bg-gray-600 hover:bg-gray-500"
-              }`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-white scale-125" : "bg-gray-600 hover:bg-gray-500"
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

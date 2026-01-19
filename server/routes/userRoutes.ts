@@ -1,17 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { PrismaClient } from "@prisma/client";
-import e, { Router } from "express";
+import { Router } from "express";
 import bcrypt from "bcrypt";
 import { Request, Response } from 'express';
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { v4 as uuidv4, v4 } from 'uuid';
 import Stripe from "stripe";
-import { Cookie } from "express-session";
-import { verifyAdminToken } from "../middlewares/authMiddleware";
-import express from 'express';
+
 
 interface CustomRequest extends Request {
   files?: Express.Multer.File[]; // This ensures `files` is recognized
@@ -50,31 +47,28 @@ const upload = multer({ storage });
 
 async function main() {
   //the default route
-  router.get('/', (req : Request, res : Response) => {
+  router.get('/', (req: Request, res: Response) => {
     res.send('Im a fucking genius I am');
   })
   // Status route to check server health
-  router.get('/status', (req : Request, res : Response) => {
+  router.get('/status', (req: Request, res: Response) => {
     res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
   });
 
 
-  router.get('/AdminDashboard/getData', async (req : Request, res : Response) => {
+  router.get('/AdminDashboard/getData', async (req: Request, res: Response) => {
     try {
-      console.log('I am here');
       const Users = await prisma.user.findMany();
-      const Devices = await prisma.user.findMany();
+      const Devices = await prisma.device.findMany();
       const Orders = await prisma.order.findMany();
       const totalPrice = Orders.reduce((sum, item) => sum + item.totalPrice, 0);
-      if (Users && Devices && Orders && totalPrice) {
-        res.status(200).json({ Users, Devices, Orders, totalPrice });
-      }
+      res.status(200).json({ Users, Devices, Orders, totalPrice });
     } catch (error) {
-
+      res.status(400).json({ message: "Could not get data" });
     }
   })
 
-  router.get('/AdminDashboard/GetDevices', async (req : Request, res : Response) => {
+  router.get('/AdminDashboard/GetDevices', async (req: Request, res: Response) => {
     try {
       const devices = await prisma.device.findMany();
       const categories = await prisma.category.findMany();
@@ -89,7 +83,7 @@ async function main() {
     }
   });
 
-  router.get('/UserDashboard/:UserId/Wishlist/Get', async (req : Request, res : Response) => {
+  router.get('/UserDashboard/:UserId/Wishlist/Get', async (req: Request, res: Response) => {
     const { UserId } = req.params;
     const User = await prisma.user.findUnique({
       where: { id: UserId }
@@ -100,7 +94,7 @@ async function main() {
     }
   });
 
-  router.get('/UserDashboard/:UserId/Cart/Set', async (req : Request, res : Response) => {
+  router.get('/UserDashboard/:UserId/Cart/Set', async (req: Request, res: Response) => {
     const { UserId } = req.params;
     const Cart = await prisma.cart.findMany({
       where: { userId: UserId }
@@ -110,7 +104,7 @@ async function main() {
     }
   });
 
-  router.get('/AdminDashboard/GetDevice/:id', async (req : Request, res : Response) => {
+  router.get('/AdminDashboard/GetDevice/:id', async (req: Request, res: Response) => {
     try {
       const devices = await prisma.device.findUnique({
         where: { DeviceId: req.params.id }
@@ -134,7 +128,7 @@ async function main() {
     }
   });
 
-  router.get('/UserDashboard/:UserId/Device/:DeviceId/Get', async (req : Request, res : Response) => {
+  router.get('/UserDashboard/:UserId/Device/:DeviceId/Get', async (req: Request, res: Response) => {
     const { UserId, DeviceId } = req.params;
     const User = await prisma.user.findUnique({
       where: { id: UserId }
@@ -157,7 +151,7 @@ async function main() {
 
   });
 
-  router.post('/AdminLogin', async (req : Request, res : Response) => {
+  router.post('/AdminLogin', async (req: Request, res: Response) => {
     const { password } = req.body;
     if (password != 'iamadmin') {
       res.status(401).json({ message: "Invalid Password" });
@@ -175,12 +169,12 @@ async function main() {
     res.json({ message: "Login successful" });
   });
 
-  router.get('/AdminLogout', async (req : Request, res : Response) => {
+  router.get('/AdminLogout', async (req: Request, res: Response) => {
     res.clearCookie('AdminToken');
     res.status(200).json({ message: "Logged out successfully" });
   })
 
-  router.post('/UserLogin', async (req : Request, res : Response) => {
+  router.post('/UserLogin', async (req: Request, res: Response) => {
     const { username, password } = req.body;
     const checkUser = await prisma.user.findUnique({
       where: {
@@ -204,12 +198,12 @@ async function main() {
         res.json({ message: 'User has logged in successfully', user: { id: checkUser.id, username: checkUser.username } });
         console.log('User has logged in successfully');
       } else {
-        res.json({message:"Incorrect info"});
+        res.json({ message: "Incorrect info" });
       }
     }
   })
 
-  router.post('/Signup', async (req : Request, res : Response) => {
+  router.post('/Signup', async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -225,34 +219,34 @@ async function main() {
     res.json(user);
   })
   // Profile route to mimic a protected resource
-  router.get('/profile', (req : Request, res : Response) => {
+  router.get('/profile', (req: Request, res: Response) => {
     res.send('This is a user profile page. Authentication required.');
   });
 
-  router.get('/UserDashboard/:id', async (req : Request, res : Response) => {
+  router.get('/UserDashboard/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const User = await prisma.user.findUnique({
       where: {
         id: id
-      },include:{
-        transactions:true
+      }, include: {
+        transactions: true
       }
     });
     if (User) {
       res.status(200).json({ UserInfo: User })
-    } else { 
-      res.status(400).json({message:"No user found"})
+    } else {
+      res.status(400).json({ message: "No user found" })
     }
   })
 
-  router.get('/AdminDashboard/Users',async (req : Request, res : Response) => {
+  router.get('/AdminDashboard/Users', async (req: Request, res: Response) => {
     const AllUsers = await prisma.user.findMany();
     if (AllUsers) {
       res.json(AllUsers);
     }
   });
 
-  router.get('/AdminDashboard/getCategory', async (req : Request, res : Response) => {
+  router.get('/AdminDashboard/getCategory', async (req: Request, res: Response) => {
     console.log(req.body);
     const allCategories = await prisma.category.findMany();
     if (allCategories) {
@@ -261,7 +255,7 @@ async function main() {
   })
 
 
-  router.post('/AdminDashboard/AddDevice', upload.array('images'), async (req : Request, res : Response) => {
+  router.post('/AdminDashboard/AddDevice', upload.array('images'), async (req: Request, res: Response) => {
     try {
       console.log('hello');
       const {
@@ -324,7 +318,7 @@ async function main() {
     }
   });
 
-  router.post('/AdminDashboard/UpdateDevice/:id', async (req : Request, res : Response) => {
+  router.post('/AdminDashboard/UpdateDevice/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const {
       DeviceName,
@@ -359,7 +353,7 @@ async function main() {
   })
 
 
-  router.post('/AdminDashboard/AddCategory', upload.single('images'), async (req : Request, res : Response) => {
+  router.post('/AdminDashboard/AddCategory', upload.single('images'), async (req: Request, res: Response) => {
     const { CategoryName, Description } = req.body;
     const Image = req.file?.path;
     const AddCategory = await prisma.category.create({
@@ -377,7 +371,7 @@ async function main() {
   })
 
   // Route to delete a category
-  router.post('/AdminDashboard/DeleteCategory/:id', async (req : Request, res : Response) => {
+  router.post('/AdminDashboard/DeleteCategory/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
       const deletedCategory = await prisma.category.delete({
@@ -390,7 +384,7 @@ async function main() {
     }
   });
 
-  router.post('/AdminDashboard/DeleteDevice/:id', async (req : Request, res : Response) => {
+  router.post('/AdminDashboard/DeleteDevice/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
       const deletedDevice = await prisma.device.delete({
@@ -406,7 +400,7 @@ async function main() {
 
   router.post(
     "/UserDashboard/:UserId/WishList/Add",
-    async (req : Request, res : Response) => {
+    async (req: Request, res: Response) => {
       try {
         const { UserId } = req.params;
         const { productId } = req.body;
@@ -472,7 +466,7 @@ async function main() {
 
 
 
-  router.post("/UserDashboard/:UserId/Cart/Add", async (req : Request, res : Response) => {
+  router.post("/UserDashboard/:UserId/Cart/Add", async (req: Request, res: Response) => {
     try {
       const { UserId } = req.params;
       const { DeviceId } = req.body;
@@ -485,19 +479,23 @@ async function main() {
       }
       // Check if the device is already in the cart
       const existingCartItem = await prisma.cart.findUnique({
-        where: { DeviceId_userId: {
-          DeviceId: DeviceId,
-          userId:UserId
-        } },
+        where: {
+          DeviceId_userId: {
+            DeviceId: DeviceId,
+            userId: UserId
+          }
+        },
       });
       let updatedCartItem;
       if (existingCartItem) {
         // If the device exists in the cart, increment the quantity
         const updatedCartItem = await prisma.cart.update({
-          where: { DeviceId_userId: {
-            DeviceId:existingCartItem.DeviceId,
-            userId:existingCartItem.userId
-          } },
+          where: {
+            DeviceId_userId: {
+              DeviceId: existingCartItem.DeviceId,
+              userId: existingCartItem.userId
+            }
+          },
           data: {
             Quantity: existingCartItem.Quantity + 1,
           }
@@ -525,28 +523,28 @@ async function main() {
 
 
 
-  router.post('/UserDashboard/:UserId/Cart/Remove', async (req : Request, res : Response) => {
+  router.post('/UserDashboard/:UserId/Cart/Remove', async (req: Request, res: Response) => {
     console.log("Remove route hit"); // Debugging log
     const { UserId } = req.params;
     const { DeviceId } = req.body;
-  
+
     try {
       const checkUser = await prisma.user.findUnique({
         where: { id: UserId },
         include: { CartDevices: true },
       });
-  
+
       if (!checkUser) {
         res.status(404).json({ error: "User not found" });
         return;
       }
-  
+
       const deviceInCart = checkUser.CartDevices.find((item) => item.DeviceId === DeviceId);
       if (!deviceInCart) {
         res.status(404).json({ error: "Device not found in cart" });
         return;
       }
-  
+
       await prisma.cart.delete({
         where: {
           DeviceId_userId: {
@@ -555,17 +553,17 @@ async function main() {
           },
         },
       });
-  
+
       const newCart = await prisma.cart.findMany();
       res.status(200).json({ message: "Device removed", newCart });
-  
+
     } catch (error) {
       console.error("Error removing device:", error);
       res.status(500).json({ error: "Failed to remove device" });
     }
   });
-  
-  router.post('/UserDashboard/:UserId/Cart/Update', async (req : Request, res : Response) => {
+
+  router.post('/UserDashboard/:UserId/Cart/Update', async (req: Request, res: Response) => {
     const { UserId } = req.params;
     const { DeviceId, Quantity } = req.body;
 
@@ -576,28 +574,30 @@ async function main() {
       const existingCart = await prisma.cart.findUnique({
         where: { DeviceId_userId: { DeviceId, userId: UserId } }
       });
-      
+
       if (!existingCart) {
         res.status(404).json({ message: "Cart item not found" });
         return;
       }
       await prisma.cart.update({
-        where: { DeviceId_userId: {
-          DeviceId:DeviceId,
-          userId:UserId
-        } },
+        where: {
+          DeviceId_userId: {
+            DeviceId: DeviceId,
+            userId: UserId
+          }
+        },
         data: {
           Quantity: Quantity
         }
       });
       const updatedCart = await prisma.cart.findMany();
-      console.log({updatedCart:updatedCart});
+      console.log({ updatedCart: updatedCart });
       res.status(200).json(updatedCart);
     };
 
   });
 
-  router.post('/UserDashboard/:UserId/Device/:DeviceId/Create', async (req : Request, res : Response) => {
+  router.post('/UserDashboard/:UserId/Device/:DeviceId/Create', async (req: Request, res: Response) => {
     const { UserId, DeviceId } = req.params;
     const { rating, review, date } = req.body;
     const checkReview = await prisma.review.findUnique({
@@ -643,17 +643,17 @@ async function main() {
 
   });
 
-  router.post('/UserDashboard/:UserId/Cart/Clear', async (req : Request, res : Response) => {
+  router.post('/UserDashboard/:UserId/Cart/Clear', async (req: Request, res: Response) => {
     const { UserId } = req.params;
     try {
       await prisma.cart.deleteMany({
         where: { userId: UserId }
       });
       const currentCart = await prisma.user.findUnique({
-        where:{id:UserId},
-        include:{CartDevices:true}
+        where: { id: UserId },
+        include: { CartDevices: true }
       })
-      res.status(200).json({ message: "Cart Deleted", currentCart: currentCart});
+      res.status(200).json({ message: "Cart Deleted", currentCart: currentCart });
     } catch (error) {
       console.error("Error clearing cart:", error);
       res.status(500).json({ error: "Failed to clear cart." });
@@ -661,15 +661,15 @@ async function main() {
 
   })
 
-  router.post("/dashboard/:UserId/create-checkout-session", async (req:Request,res:Response) => {
+  router.post("/dashboard/:UserId/create-checkout-session", async (req: Request, res: Response) => {
     try {
       const products = req.body;
-      const {UserId} = req.params;
+      const { UserId } = req.params;
       if (!Array.isArray(products) || products.length === 0) {
-         res.status(400).json({ error: "Invalid product data" });
-         return
+        res.status(400).json({ error: "Invalid product data" });
+        return
       }
-  
+
       const lineItems = products.map((product: any) => ({
         price_data: {
           currency: "usd",
@@ -681,35 +681,35 @@ async function main() {
         },
         quantity: Number(product.Quantity), // Ensure it's a number
       }));
-  
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: lineItems,
         mode: "payment",
         success_url: `http://localhost:5173/success/${UserId}/{CHECKOUT_SESSION_ID}`,
         cancel_url: `http://localhost:5173/dashboard/${UserId}`,
-        metadata: {UserId}
+        metadata: { UserId }
       });
-  
-      res.json({ id: session.id});
+
+      res.json({ id: session.id });
     } catch (error: any) {
       console.error("Error creating Checkout Session:", error);
       res.status(500).json({ error: error.message });
     }
   });
 
-  router.get('/transactionData/:sessionId',async (req : Request,res : Response) =>{
-    const {sessionId} = req.params;
+  router.get('/transactionData/:sessionId', async (req: Request, res: Response) => {
+    const { sessionId } = req.params;
     const data = await prisma.transaction.findUnique({
-      where:{sessionId:sessionId}
+      where: { sessionId: sessionId }
     });
-    if(data){
+    if (data) {
       const User = await prisma.user.findUnique({
-        where:{id:data.userId}
+        where: { id: data.userId }
       });
-      if(User){
-        console.log(data,User);
-        res.status(200).send({data,User});
+      if (User) {
+        console.log(data, User);
+        res.status(200).send({ data, User });
       }
     };
   })

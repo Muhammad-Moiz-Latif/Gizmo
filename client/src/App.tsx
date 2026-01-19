@@ -193,7 +193,6 @@ const router = createBrowserRouter([
 
 export default function App() {
   return (
-
     <Provider store={store}>
       <Toaster position="top-center" toastOptions={{
         duration: 2000,

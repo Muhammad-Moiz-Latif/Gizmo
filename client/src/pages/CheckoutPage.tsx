@@ -12,6 +12,7 @@ export const CheckoutPage: React.FC = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state: RootState) => state.cart.list);
   const devices = useSelector((state: RootState) => state.device.devices);
+  const devicesArray = Array.isArray(devices) ? devices : []
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -33,7 +34,7 @@ export const CheckoutPage: React.FC = () => {
 
   const calculateTotal = () => {
     return cart.reduce((total, item) => {
-      const device = devices.find((d) => d.DeviceId === item.DeviceId);
+      const device = devicesArray.find((d) => d.DeviceId === item.DeviceId);
       return total + (device ? device.Price * item.Quantity : 0);
     }, 0);
   };
@@ -136,7 +137,7 @@ export const CheckoutPage: React.FC = () => {
           >
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Order Summary</h2>
             {cart.map((item) => {
-              const device = devices.find((d) => d.DeviceId === item.DeviceId);
+              const device = devicesArray.find((d) => d.DeviceId === item.DeviceId);
               return device ? (
                 <motion.div
                   key={item.DeviceId}
@@ -144,7 +145,7 @@ export const CheckoutPage: React.FC = () => {
                   whileHover={{ scale: 1.02 }}
                 >
                   <div className="flex items-center">
-                    <img src={device.Images[0]} alt={device.DeviceName} className="w-16 h-16 object-cover rounded-md mr-4" />
+                    <img src={device.Images && device.Images.length > 0 ? device.Images[0] : "/placeholder.svg"} alt={device.DeviceName} className="w-16 h-16 object-cover rounded-md mr-4" />
                     <div>
                       <h3 className="font-semibold text-gray-800">{device.DeviceName}</h3>
                       <p className="text-gray-500">${device.Price.toFixed(2)}</p>

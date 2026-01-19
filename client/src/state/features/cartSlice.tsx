@@ -45,8 +45,8 @@ export const RemoveFromCartAsync = createAsyncThunk(
 
 export const updateCartAsync = createAsyncThunk(
     'Cart/Update', async ({ UserId, DeviceId, Quantity }: { UserId: string, DeviceId: string, Quantity: number }, { dispatch }) => {
-        const response = await axios.post(`${import.meta.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Update`, { DeviceId , Quantity});
-        if(response && response.data){
+        const response = await axios.post(`${import.meta.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Update`, { DeviceId, Quantity });
+        if (response && response.data) {
             console.log(response.data);
             dispatch(updateCart(response.data))
         }
@@ -54,9 +54,9 @@ export const updateCartAsync = createAsyncThunk(
 )
 
 export const clearCartAsync = createAsyncThunk(
-    'Cart/Clear', async ({ UserId} : {UserId : string} , {dispatch})=>{
+    'Cart/Clear', async ({ UserId }: { UserId: string }, { dispatch }) => {
         const response = await axios.post(`http://localhost:3000/UserDashboard/${UserId}/Cart/Clear`);
-        if(response){
+        if (response) {
             dispatch(updateCart([]));
         }
     }
@@ -69,7 +69,7 @@ const cartSlice = createSlice({
     initialState,
     reducers: {
         setCart: (state, action) => {
-            if (action.payload.length > 0 && !action.payload[0].DeviceName) {
+            if (action.payload && action.payload.length > 0 && !action.payload[0].DeviceName) {
                 state.list = action.payload
             }
         },

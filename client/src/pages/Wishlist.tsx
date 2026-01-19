@@ -21,14 +21,15 @@ export const WishlistPage: React.FC = () => {
   const allDevices = useSelector((state: RootState) => state.device.devices)
   const wishlist = useSelector((state: RootState) => state.wishList.list)
   const localWishList = useSelector((state: RootState) => state.localWishList.list)
-  const cart = useSelector((state:RootState)=>state.cart.list);
-  const localCart = useSelector((state:RootState)=>state.localCart.list);
+  const cart = useSelector((state: RootState) => state.cart.list);
+  const localCart = useSelector((state: RootState) => state.localCart.list);
 
   // Determine which wishlist to use based on whether user is logged in
   const activeWishlist = UserId ? wishlist : localWishList
 
   // Filter devices to only include those in the active wishlist
-  const wishlistItems = allDevices.filter((device) => activeWishlist.includes(device.DeviceId))
+  const allDevicesArray = Array.isArray(allDevices) ? allDevices : []
+  const wishlistItems = allDevicesArray.filter((device) => activeWishlist.includes(device.DeviceId))
 
   // Handle removing item from wishlist
   const removeFromWishlist = (deviceId: string) => {

@@ -1,6 +1,5 @@
 import express from 'express';
 import session from 'express-session'; // Add this line
-import cookieSession from 'cookie-session'; // If you want to use cookie-based sessions
 import cors from 'cors';
 import passport from 'passport';
 import { router as authRoutes } from './routes/authRoutes';
@@ -10,15 +9,14 @@ import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 import Stripe from "stripe";
 
-
 dotenv.config();
 
 const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173", 
-  "https://gizmo-o5jq.vercel.app"
 ];
+
 
 app.use(
   cors({
@@ -39,6 +37,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
+
 
 // Passport middleware for session handling
 app.use(passport.initialize());
@@ -127,7 +126,9 @@ prisma.$connect()
   .then(() => console.log("DB connected"))
   .catch((err) => console.error("DB connection failed:", err));
 
-const port = process.env.PORT || 3000;
+
+const port = 3000;
+
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });

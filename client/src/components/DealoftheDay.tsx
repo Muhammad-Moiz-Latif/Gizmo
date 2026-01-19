@@ -6,8 +6,8 @@ import { Clock, ShoppingCart } from "lucide-react"
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "../state/store"
 import { useParams } from "react-router-dom"
-import { updateLocalCart, addCartItemtoLocalStorage, updateLocalCartItem} from "@/state/features/localcartSlice"
-import { updateCartAsync , addToCartAsync } from "@/state/features/cartSlice"
+import { updateLocalCart, addCartItemtoLocalStorage, updateLocalCartItem } from "@/state/features/localcartSlice"
+import { updateCartAsync, addToCartAsync } from "@/state/features/cartSlice"
 import toast from "react-hot-toast"
 
 interface TimeLeft {
@@ -19,10 +19,11 @@ interface TimeLeft {
 
 export const DealOfTheDay: React.FC = () => {
   const devices = useSelector((state: RootState) => state.device.devices);
-  const cart = useSelector((state:RootState)=>state.cart.list);
-  const localCart = useSelector((state:RootState)=>state.localCart.list);
+  const devicesArray = Array.isArray(devices) ? devices : []
+  const cart = useSelector((state: RootState) => state.cart.list);
+  const localCart = useSelector((state: RootState) => state.localCart.list);
   const dispatch = useDispatch();
-  const dealDevice = devices[0]
+  const dealDevice = devicesArray[0]
   const { UserId } = useParams();
   const endTime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString()
 
@@ -56,7 +57,7 @@ export const DealOfTheDay: React.FC = () => {
 
   const discountedPrice = dealDevice ? dealDevice.Price * 0.8 : 0
 
-  
+
   const handleClick = (deviceId: string) => {
     if (UserId == undefined) {
       const cartItem = localCart.find((item) => item.deviceId === deviceId);
@@ -98,7 +99,7 @@ export const DealOfTheDay: React.FC = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-gray-50 rounded-full transform scale-90"></div>
               <img
-                src={dealDevice.Images[1] || "/placeholder.svg"}
+                src={dealDevice.Images && dealDevice.Images.length > 1 ? dealDevice.Images[0] : (dealDevice.Images && dealDevice.Images.length > 0 ? dealDevice.Images[0] : "/placeholder.svg")}
                 alt={dealDevice.DeviceName}
                 className="w-full max-w-md h-auto relative z-10"
               />
@@ -134,7 +135,7 @@ export const DealOfTheDay: React.FC = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full md:w-auto px-6 py-3 bg-black text-white font-bold rounded hover:bg-gray-800 transition-colors flex items-center justify-center gap-2" onClick={()=>handleClick(dealDevice.DeviceId)}>
+            <button className="w-full md:w-auto px-6 py-3 bg-black text-white font-bold rounded hover:bg-gray-800 transition-colors flex items-center justify-center gap-2" onClick={() => handleClick(dealDevice.DeviceId)}>
               <ShoppingCart className="w-5 h-5" />
               <span>ADD TO CART</span>
             </button>

@@ -31,8 +31,9 @@ export const ProductsPage: React.FC = () => {
   const devicesPerPage = 8
 
   // Filter devices based on the selected category
+  const devicesArray = Array.isArray(devices) ? devices : []
   //@ts-ignore
-  const filteredDevices = CategoryId === "all" ? devices : devices.filter((device) => device.categoryid === CategoryId)
+  const filteredDevices = CategoryId === "all" ? devicesArray : devicesArray.filter((device) => device.categoryid === CategoryId)
 
   // Function to update the categoryId in the URL without reloading the page
   const changeCategory = (categoryId: string) => {
@@ -121,28 +122,26 @@ export const ProductsPage: React.FC = () => {
             {/* All Devices Button */}
             <button
               onClick={() => changeCategory("all")}
-              className={`px-6 py-2 rounded-full text-sm md:text-base font-medium transition-transform transform duration-300 ease-in-out border ${
-                CategoryId === "all"
-                  ? "bg-gradient-to-r from-black to-gray-800 text-white border-white shadow-lg scale-110"
-                  : "bg-white text-black hover:bg-gray-100 border-black"
-              }`}
+              className={`px-6 py-2 rounded-full text-sm md:text-base font-medium transition-transform transform duration-300 ease-in-out border ${CategoryId === "all"
+                ? "bg-gradient-to-r from-black to-gray-800 text-white border-white shadow-lg scale-110"
+                : "bg-white text-black hover:bg-gray-100 border-black"
+                }`}
             >
               All Devices
             </button>
 
             {/* Category Buttons */}
-            {categories.map((category: any) => (
+            {(Array.isArray(categories) ? categories : []).map((category: any) => (
               <button
                 //@ts-ignore
                 onClick={() => changeCategory(category.CategoryId)}
                 //@ts-ignore
                 key={category.CategoryId}
                 //@ts-ignore
-                className={`px-6 py-2 rounded-full text-sm md:text-base font-medium transition-transform transform duration-300 ease-in-out border ${
-                  category.CategoryId === CategoryId
-                    ? "bg-gradient-to-r from-black to-gray-800 text-white border-white shadow-lg scale-110"
-                    : "bg-white text-black hover:bg-gray-100 border-black"
-                }`}
+                className={`px-6 py-2 rounded-full text-sm md:text-base font-medium transition-transform transform duration-300 ease-in-out border ${category.CategoryId === CategoryId
+                  ? "bg-gradient-to-r from-black to-gray-800 text-white border-white shadow-lg scale-110"
+                  : "bg-white text-black hover:bg-gray-100 border-black"
+                  }`}
               >
                 {category.CategoryName}
               </button>
@@ -181,11 +180,10 @@ export const ProductsPage: React.FC = () => {
                       className="absolute top-4 right-4 z-30 p-2 rounded-full shadow-md hover:shadow-lg transition-all"
                     >
                       <Heart
-                        className={`w-6 h-6 transition-colors duration-300 ${
-                          (UserId == undefined ? localWishList : wishlist).some((item) => item === device.DeviceId)
-                            ? "fill-red-500 text-red-500"
-                            : "text-gray-700"
-                        }`}
+                        className={`w-6 h-6 transition-colors duration-300 ${(UserId == undefined ? localWishList : wishlist).some((item) => item === device.DeviceId)
+                          ? "fill-red-500 text-red-500"
+                          : "text-gray-700"
+                          }`}
                       />
                     </button>
                   </div>
@@ -235,9 +233,8 @@ export const ProductsPage: React.FC = () => {
                 }, 100)
               }}
               disabled={currentPage === 1}
-              className={`w-28 py-2 bg-gradient-to-r from-black to-gray-800 text-white rounded-lg transition-opacity ${
-                currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
-              }`}
+              className={`w-28 py-2 bg-gradient-to-r from-black to-gray-800 text-white rounded-lg transition-opacity ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
+                }`}
             >
               Previous
             </button>
@@ -254,11 +251,10 @@ export const ProductsPage: React.FC = () => {
                       setCurrentPage(index + 1)
                     }, 200)
                   }}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                    currentPage === index + 1
-                      ? "bg-gradient-to-r from-black to-gray-800 text-white font-bold"
-                      : "bg-white text-black border border-gray-300 hover:bg-gray-100"
-                  }`}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${currentPage === index + 1
+                    ? "bg-gradient-to-r from-black to-gray-800 text-white font-bold"
+                    : "bg-white text-black border border-gray-300 hover:bg-gray-100"
+                    }`}
                 >
                   {index + 1}
                 </button>
@@ -275,11 +271,10 @@ export const ProductsPage: React.FC = () => {
                 }, 200)
               }}
               disabled={currentPage === Math.ceil(filteredDevices.length / devicesPerPage)}
-              className={`w-28 py-2 bg-gradient-to-r from-black to-gray-800 text-white rounded-lg transition-opacity ${
-                currentPage === Math.ceil(filteredDevices.length / devicesPerPage)
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:opacity-90"
-              }`}
+              className={`w-28 py-2 bg-gradient-to-r from-black to-gray-800 text-white rounded-lg transition-opacity ${currentPage === Math.ceil(filteredDevices.length / devicesPerPage)
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:opacity-90"
+                }`}
             >
               Next
             </button>

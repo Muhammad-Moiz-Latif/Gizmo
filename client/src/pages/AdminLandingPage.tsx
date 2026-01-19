@@ -11,8 +11,8 @@ const AdminLandingPage: React.FC = () => {
             try {
                 setLoading(true);
                 const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/getData`);
-                if (response.data) {
-                    console.log(response.data);
+                console.log(response.data);
+                if (response.status === 200 && response.data) {
                     const { Users, Devices, Orders, totalPrice } = response.data;
                     setData({
                         Users,
@@ -31,10 +31,10 @@ const AdminLandingPage: React.FC = () => {
     }, []);
 
     const stats = [
-        { label: 'Total Users', value: data.Users.length, icon: '👥' },
-        { label: 'Total Products', value: data.Devices.length, icon: '📦' },
-        { label: 'Total Orders', value: data.Orders.length, icon: '🛒' },
-        { label: 'Total Revenue', value: `$${data.totalPrice.toFixed(2)}`, icon: '💰' },
+        { label: 'Total Users', value: (Array.isArray(data.Users) ? data.Users : []).length, icon: '👥' },
+        { label: 'Total Products', value: (Array.isArray(data.Devices) ? data.Devices : []).length, icon: '📦' },
+        { label: 'Total Orders', value: (Array.isArray(data.Orders) ? data.Orders : []).length, icon: '🛒' },
+        { label: 'Total Revenue', value: `$${(typeof data.totalPrice === 'number' ? data.totalPrice : 0).toFixed(2)}`, icon: '💰' },
     ];
 
     if (loading) {
@@ -73,14 +73,14 @@ const AdminLandingPage: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.Users.slice(0, 3).map((order:any, index) => (
+                            {(Array.isArray(data.Users) ? data.Users : []).slice(0, 3).map((order: any, index) => (
                                 <tr key={order.id} className={index % 2 === 0 ? '' : 'bg-gray-50'}>
                                     <td className="py-3 px-4">Order placed</td>
                                     <td className="py-3 px-4">{order.username || 'Unknown User'}</td>
                                     <td className="py-3 px-4">{order.id}</td>
                                 </tr>
                             ))}
-                            {data.Orders.length === 0 && (
+                            {(Array.isArray(data.Orders) ? data.Orders : []).length === 0 && (
                                 <tr>
                                     <td colSpan={3} className="py-3 px-4 text-center">No recent activity</td>
                                 </tr>

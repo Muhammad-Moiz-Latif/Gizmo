@@ -33,7 +33,8 @@ export const CategoryCarousel: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  const maxIndex = Math.max(0, categories.length - itemsPerPage)
+  const categoriesArray = Array.isArray(categories) ? categories : []
+  const maxIndex = Math.max(0, categoriesArray.length - itemsPerPage)
 
   const scroll = (direction: "left" | "right") => {
     setCurrentIndex((prev) => {
@@ -55,9 +56,8 @@ export const CategoryCarousel: React.FC = () => {
           <button
             onClick={() => scroll("left")}
             disabled={currentIndex === 0}
-            className={`absolute -left-2 sm:-left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 text-white backdrop-blur-sm border border-white/20 rounded-full p-2 sm:p-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 ${
-              currentIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-white/20"
-            }`}
+            className={`absolute -left-2 sm:-left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 text-white backdrop-blur-sm border border-white/20 rounded-full p-2 sm:p-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 ${currentIndex === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-white/20"
+              }`}
             aria-label="Scroll left"
           >
             <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
@@ -71,7 +71,7 @@ export const CategoryCarousel: React.FC = () => {
                 transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`,
               }}
             >
-              {categories.map((category: any) => (
+              {categoriesArray.map((category: any) => (
                 <div
                   key={category.CategoryId}
                   className="flex-none px-2 sm:px-3"
@@ -127,9 +127,8 @@ export const CategoryCarousel: React.FC = () => {
           <button
             onClick={() => scroll("right")}
             disabled={currentIndex === maxIndex}
-            className={`absolute -right-2 sm:-right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 text-white backdrop-blur-sm border border-white/20 rounded-full p-2 sm:p-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 ${
-              currentIndex === maxIndex ? "opacity-50 cursor-not-allowed" : "hover:bg-white/20"
-            }`}
+            className={`absolute -right-2 sm:-right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 text-white backdrop-blur-sm border border-white/20 rounded-full p-2 sm:p-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 ${currentIndex === maxIndex ? "opacity-50 cursor-not-allowed" : "hover:bg-white/20"
+              }`}
             aria-label="Scroll right"
           >
             <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
@@ -142,9 +141,8 @@ export const CategoryCarousel: React.FC = () => {
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-white scale-125" : "bg-white/30 hover:bg-white/50"
-              }`}
+              className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-white scale-125" : "bg-white/30 hover:bg-white/50"
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

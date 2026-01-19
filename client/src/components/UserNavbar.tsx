@@ -86,7 +86,8 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
     // Replace the commented out useEffect with this working implementation
     useEffect(() => {
         if (Query && Query.trim() !== "") {
-            setFilteredProducts(Devices.filter((product) => product.DeviceName.toLowerCase().includes(Query.toLowerCase())))
+            const devicesArray = Array.isArray(Devices) ? Devices : []
+            setFilteredProducts(devicesArray.filter((product) => product.DeviceName.toLowerCase().includes(Query.toLowerCase())))
         } else {
             setFilteredProducts([])
         }
@@ -117,7 +118,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                         {isCategoryOpen && (
                             <div className="absolute left-0 w-48 bg-black rounded-md shadow-lg py-1 z-50">
                                 <ul className="divide-y divide-gray-600">
-                                    {categories.map((category: any) => (
+                                    {(Array.isArray(categories) ? categories : []).map((category: any) => (
                                         <li key={category.CategoryName}>
                                             <NavLink
                                                 key={category.CategoryId}
@@ -186,7 +187,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                             </div>
                         )}
                     </div>
-                    <NavLink to={(UserId==undefined)?"/dashboard/wishlist":`/dashboard/${UserId}/wishlist`} className='p-2  rounded-full transition-colors duration-300 relative' onMouseEnter={() => setIsWishList(true)}
+                    <NavLink to={(UserId == undefined) ? "/dashboard/wishlist" : `/dashboard/${UserId}/wishlist`} className='p-2  rounded-full transition-colors duration-300 relative' onMouseEnter={() => setIsWishList(true)}
                         onMouseLeave={() => setIsWishList(false)}>
                         <img src={wishlist} alt="Wishlist" className='w-5 h-5' />
                         {wishlistCount > 0 && (
@@ -229,7 +230,7 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                                     <ul className="divide-y divide-gray-600">
                                         {[
                                             ...(UserId ? [{ name: 'Profile', path: 'profile' }] : []), // Ensures uniform structure
-                                            { name: 'Help & Support', path: '#' }, // Use '#' instead of an empty string
+                                            // { name: 'Help & Support', path: '#' }, // Use '#' instead of an empty string
                                         ].map((item, index) => (
                                             <li key={index}>
                                                 <NavLink

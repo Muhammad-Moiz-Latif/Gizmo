@@ -9,17 +9,18 @@ export const HeroSection: React.FC = () => {
     const [Category, setCategory] = useState({ CategoryId: "", CategoryName: "", Description: "", Image: "" });
     const { UserId } = useParams();
     const category = useSelector((state: RootState) => state.category.categories);
+    const categoryArray = Array.isArray(category) ? category : [];
     useEffect(() => {
         setIsVisible(true);
-        if (category && category.length > 0) {
+        if (categoryArray && categoryArray.length > 0) {
             setCategory({
-                CategoryId: category[0].CategoryId,
+                CategoryId: categoryArray[0].CategoryId,
                 //@ts-ignore
-                CategoryName: category[0].CategoryName,
+                CategoryName: categoryArray[0].CategoryName,
                 //@ts-ignore
-                Description: category[0].Description,
+                Description: categoryArray[0].Description,
                 //@ts-ignore
-                Image: category[0].Image
+                Image: categoryArray[0].Image
             });
         }
     }, []);
@@ -37,7 +38,7 @@ export const HeroSection: React.FC = () => {
 
                 {/* Buttons */}
                 <div className={`flex flex-col sm:flex-row gap-6 justify-center z-40 transition-all duration-1000 ease-out delay-500 ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
-                    <NavLink to={`/dashboard/${UserId ? UserId : ""}/Category/${Category.CategoryId}` || ""}>
+                    <NavLink to={UserId ? `/dashboard/${UserId}/Category/${Category.CategoryId}` : `/dashboard/Category/${Category.CategoryId}`}>
                         <button className="w-64 h-12 border-2 border-primary-dark rounded-lg bg-black text-ghost_white-900 text-xl font-semibold tracking-wide hover:bg-primary-dark hover:text-white transition-all duration-300 transform hover:scale-110 active:opacity-80 shadow-md hover:shadow-lg">
                             Shop Now
                         </button>

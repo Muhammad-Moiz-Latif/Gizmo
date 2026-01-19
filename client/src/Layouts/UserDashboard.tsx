@@ -24,10 +24,10 @@ export const UserDashboard = () => {
   const cart = useSelector((state: RootState) => state.cart.list);
   console.log(devices);
   useEffect(() => {
-    if (categories.length === 0) {
+    const categoriesArray = Array.isArray(categories) ? categories : []
+    if (categoriesArray.length === 0) {
       const getCategories = async () => {
         try {
-          console.log(import.meta.env.VITE_PUBLIC_API_URL)
           const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/getCategory`);
           if (response && response.data) {
             dispatch(setCategories(response.data));
@@ -38,19 +38,21 @@ export const UserDashboard = () => {
       };
       getCategories();
     }
-  }, [dispatch, categories.length]);
+  }, [dispatch, categories]);
 
-  
+
   useEffect(() => {
-    if (devices.length === 0) {
+    const devicesArray = Array.isArray(devices) ? devices : []
+    if (devicesArray.length === 0) {
       const getDevices = async () => {
         try {
           const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/GetDevices`);
           if (response && response.data) {
+            console.log(response.data)
             dispatch(setDevices(response.data.fixedDevices));
-            if (cart.length === 0) {
-              dispatch(setCart(response.data.fixedDevices));
-            }
+            // if (cart.length === 0) {
+            //   dispatch(setCart(response.data.fixedDevices));
+            // }
           }
         } catch (error) {
           console.error("Error fetching devices:", error);
@@ -58,7 +60,7 @@ export const UserDashboard = () => {
       };
       getDevices();
     }
-  }, [dispatch, devices.length]);
+  }, [dispatch, devices]);
   useEffect(() => {
     const getData = async () => {
       try {
@@ -66,7 +68,7 @@ export const UserDashboard = () => {
           const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}`);
           if (response && response.data) {
             // console.log(response.data);
-           
+
             setImage(response.data.UserInfo.img);
           }
         } else {
@@ -79,16 +81,16 @@ export const UserDashboard = () => {
     getData();
   }, []);
 
-  useEffect(()=>{
-    if(UserId == undefined){
+  useEffect(() => {
+    if (UserId == undefined) {
       syncLocalStorage();
       syncLocalCart();
     }
-  },[])
+  }, [])
 
-  useEffect(()=>{
-    window.scroll(0,0);
-  },[])
+  useEffect(() => {
+    window.scroll(0, 0);
+  }, [])
 
 
 

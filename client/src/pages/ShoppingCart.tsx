@@ -21,6 +21,7 @@ export const ShoppingCart = () => {
   const Cart = useSelector((state: RootState) => state.cart.list)
   const localCart = useSelector((state: RootState) => state.localCart.list)
   const deviceData = useSelector((state: RootState) => state.device.devices)
+  const deviceDataArray = Array.isArray(deviceData) ? deviceData : []
 
   const [expandedItem, setExpandedItem] = useState<string | null>(null)
   const [promoCode, setPromoCode] = useState<string>("")
@@ -32,7 +33,7 @@ export const ShoppingCart = () => {
 
   // Function to get device details by ID
   const getDeviceById = (deviceId: string) => {
-    return deviceData.find((device) => device.DeviceId === deviceId)
+    return deviceDataArray.find((device) => device.DeviceId === deviceId)
   }
 
   // Function to increment cart item quantity
@@ -150,7 +151,7 @@ export const ShoppingCart = () => {
 
   // Proceed to checkout
   const proceedToCheckout = async () => {
-    const payDevices = deviceData.filter((device) =>
+    const payDevices = deviceDataArray.filter((device) =>
       Cart.some((item: any) => item.DeviceId === device.DeviceId)
     ).map((device) => {
       const CartItem = Cart.find((item) => item.DeviceId == device.DeviceId)

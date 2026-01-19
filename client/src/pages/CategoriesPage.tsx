@@ -42,7 +42,7 @@ export default function CategoriesPage() {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/GetCategory`);
+        const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/getCategory`);
         if (response?.data) {
           setCategories(response.data);
         }

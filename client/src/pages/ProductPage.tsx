@@ -18,7 +18,8 @@ export const ProductPage: React.FC = () => {
     const localWishList = useSelector((state: RootState) => state.localWishList.list)
     const Cart = useSelector((state: RootState) => state.cart.list)
     const localCart = useSelector((state: RootState) => state.localCart.list)
-    const device = devices.find((d) => d.DeviceId === DeviceId)
+    const devicesArray = Array.isArray(devices) ? devices : []
+    const device = devicesArray.find((d) => d.DeviceId === DeviceId)
     const cart = device ? Cart.find((item) => item.DeviceId === device.DeviceId) : undefined
     const localcart = device ? localCart.find((item) => item.deviceId == DeviceId) : undefined
     const dispatch = useDispatch()
@@ -200,8 +201,8 @@ export const ProductPage: React.FC = () => {
                                     key={index}
                                     onClick={() => setCurrentImageIndex(index)}
                                     className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all duration-200 ${index === currentImageIndex
-                                            ? "ring-2 ring-black ring-offset-2 shadow-md"
-                                            : "border border-gray-200 opacity-70 hover:opacity-100"
+                                        ? "ring-2 ring-black ring-offset-2 shadow-md"
+                                        : "border border-gray-200 opacity-70 hover:opacity-100"
                                         }`}
                                 >
                                     <img
@@ -226,8 +227,8 @@ export const ProductPage: React.FC = () => {
                                 >
                                     <Heart
                                         className={`w-5 h-5 transition-colors duration-300 ${(UserId == undefined ? localWishList : wishlist).some((item) => item === device.DeviceId)
-                                                ? "fill-red-500 text-red-500"
-                                                : "text-gray-700"
+                                            ? "fill-red-500 text-red-500"
+                                            : "text-gray-700"
                                             }`}
                                     />
                                 </button>
@@ -282,10 +283,10 @@ export const ProductPage: React.FC = () => {
                                     }}
                                     disabled={UserId == undefined ? !localcart || localcart.quantity <= 1 : !cart || cart.Quantity <= 1}
                                     className={`p-3 border border-gray-300 rounded-l-md ${UserId == undefined
-                                            ? !localcart || localcart.quantity <= 1
-                                            : (!cart || cart.Quantity <= 1)
-                                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                                : "bg-white hover:bg-gray-100"
+                                        ? !localcart || localcart.quantity <= 1
+                                        : (!cart || cart.Quantity <= 1)
+                                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                            : "bg-white hover:bg-gray-100"
                                         }`}
                                 >
                                     <Minus size={16} />

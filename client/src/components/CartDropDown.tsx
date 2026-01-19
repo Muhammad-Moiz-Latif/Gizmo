@@ -19,18 +19,19 @@ export const CartDropDown: React.FC = () => {
     console.log(Cart);
     const localCart = useSelector((state: RootState) => state.localCart.list);
     const Devices = useSelector((state: RootState) => state.device.devices);
+    const DevicesArray = Array.isArray(Devices) ? Devices : []
     let devicesInCart: any[] = [];
     if (UserId == undefined) {
         if (localCart.length > 0) {
             devicesInCart = localCart.map(cartItem => {
-                const device = Devices.find(device => device.DeviceId === cartItem.deviceId);
+                const device = DevicesArray.find(device => device.DeviceId === cartItem.deviceId);
                 return { ...device, quantity: cartItem.quantity };
             });
         }
     } else {
         if (Cart.length > 0) {
             devicesInCart = Cart.map(cartItem => {
-                const device = Devices.find(device => device.DeviceId === cartItem.DeviceId);
+                const device = DevicesArray.find(device => device.DeviceId === cartItem.DeviceId);
                 return { ...device, quantity: cartItem.Quantity };
             });
         }
@@ -190,7 +191,7 @@ export const CartDropDown: React.FC = () => {
                                 >
                                     {/* Device Image */}
                                     <img
-                                        src={item.Images[1]}
+                                        src={item.Images && item.Images.length > 1 ? item.Images[1] : (item.Images && item.Images.length > 0 ? item.Images[0] : "/placeholder.svg")}
                                         alt={item.DeviceName}
                                         className="w-16 h-16 object-cover rounded-md"
                                     />

@@ -1,0 +1,12 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `Condition` on the `Device` table. All the data in the column will be lost.
+  - You are about to drop the column `SerialNumber` on the `Device` table. All the data in the column will be lost.
+  - You are about to drop the column `status` on the `Device` table. All the data in the column will be lost.
+
+*/
+-- AlterTable
+ALTER TABLE "Device" DROP COLUMN "Condition",
+DROP COLUMN "SerialNumber",
+DROP COLUMN "status";
