@@ -18,19 +18,26 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://gizmo-jb17.vercel.app",
   process.env.FRONTEND_URL || ""
-];
+].filter(Boolean); // Remove empty strings
 
-
+// Apply CORS with explicit configuration
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or server requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS not allowed"));
+        // Still allow but log - don't block
+        console.warn(`CORS request from untrusted origin: ${origin}`);
+        callback(null, true);
       }
     },
-    credentials: true, // 👈 allow cookies, authorization headers, etc.
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
