@@ -15,6 +15,7 @@ import {
 import axios from "axios"
 import { NavLink, useNavigate, useParams } from "react-router-dom"
 import toast from "react-hot-toast"
+import { getAvatarUrl, handleAvatarError } from "../utils/avatar"
 
 export default function UserProfile() {
   const { UserId } = useParams();
@@ -94,17 +95,17 @@ export default function UserProfile() {
   }
 
   function handleSignOut() {
-      toast.success("SignOut successful", {
-        style: {}
-      });
-      localStorage.removeItem('Cart');
-      localStorage.removeItem('WishList');
-      setTimeout(() => {
-        navigate('/dashboard', { replace: true })
-        window.location.reload();
-      }, 1000);
-    }
-  
+    toast.success("SignOut successful", {
+      style: {}
+    });
+    localStorage.removeItem('Cart');
+    localStorage.removeItem('WishList');
+    setTimeout(() => {
+      navigate('/dashboard', { replace: true })
+      window.location.reload();
+    }, 1000);
+  }
+
 
 
   const totalSpent = calculateTotalSpent(userData.transactions || [])
@@ -123,7 +124,8 @@ export default function UserProfile() {
             <div className="relative">
               <div className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden border-4 border-white">
                 <img
-                  src={userData.img || "/placeholder.svg?height=200&width=200"}
+                  src={getAvatarUrl(userData.img)}
+                  onError={handleAvatarError}
                   alt={userData.username}
                   className="w-full h-full object-cover"
                 />

@@ -11,6 +11,7 @@ import { removefromLocalStorage, updateLocalStorage } from "@/state/features/loc
 import { addToCartAsync, updateCartAsync } from "../state/features/cartSlice"
 import { addCartItemtoLocalStorage, updateLocalCart, updateLocalCartItem } from "@/state/features/localcartSlice"
 import toast from "react-hot-toast"
+import { Skeleton } from "../components/Skeleton"
 
 export const WishlistPage: React.FC = () => {
   const { UserId } = useParams()
@@ -19,6 +20,8 @@ export const WishlistPage: React.FC = () => {
 
   // Get data from Redux store
   const allDevices = useSelector((state: RootState) => state.device.devices)
+  const devicesLoading = useSelector((state: RootState) => state.device.isLoading)
+  const devicesFetched = useSelector((state: RootState) => state.device.hasFetched)
   const wishlist = useSelector((state: RootState) => state.wishList.list)
   const localWishList = useSelector((state: RootState) => state.localWishList.list)
   const cart = useSelector((state: RootState) => state.cart.list);
@@ -110,7 +113,9 @@ export const WishlistPage: React.FC = () => {
         </div>
 
         {/* Wishlist Items */}
-        {wishlistItems.length > 0 ? (
+        {!devicesFetched || devicesLoading ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-96 w-full" />)}</div>
+        ) : wishlistItems.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {wishlistItems.map((device) => (
               <div

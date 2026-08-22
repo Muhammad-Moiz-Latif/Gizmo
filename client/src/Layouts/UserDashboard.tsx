@@ -3,28 +3,31 @@ import { UserNavbar } from "../components/UserNavbar";
 import { useEffect, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 
-import { setCategories } from '../state/features/categoriesSlice';
+import { setCategories, setCategoriesLoading } from '../state/features/categoriesSlice';
 import { RootState } from '../state/store';
-import { setDevices } from '../state/features/devicesSlice';
+import { setDevices, setDevicesLoading } from '../state/features/devicesSlice';
 import { useDispatch, useSelector } from "react-redux";
 import { Footer } from "../components/Footer";
 import defaultImg from '../assets/user.png';
 import { syncLocalStorage } from "../state/features/localwishSlice";
 import { syncLocalCart } from "../state/features/localcartSlice";
+import { AvatarSkeleton } from "../components/AvatarSkeleton";
+import { getAvatarUrl } from "../utils/avatar";
 
 
 
 export const UserDashboard = () => {
   const { UserId } = useParams<{ UserId?: string }>();
   const [image, setImage] = useState("");
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const dispatch = useDispatch();
   const categories = useSelector((state: RootState) => state.category.categories);
   const devices = useSelector((state: RootState) => state.device.devices);
-  console.log(devices);
   useEffect(() => {
     const categoriesArray = Array.isArray(categories) ? categories : []
     if (categoriesArray.length === 0) {
       const getCategories = async () => {
+        dispatch(setCategoriesLoading(true));
         try {
           const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/getCategory`);
           if (response && response.data) {
@@ -32,6 +35,7 @@ export const UserDashboard = () => {
           }
         } catch (error) {
           console.error("Error fetching categories:", error);
+          dispatch(setCategories([]));
         }
       };
       getCategories();
@@ -43,10 +47,10 @@ export const UserDashboard = () => {
     const devicesArray = Array.isArray(devices) ? devices : []
     if (devicesArray.length === 0) {
       const getDevices = async () => {
+        dispatch(setDevicesLoading(true));
         try {
           const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/GetDevices`);
           if (response && response.data) {
-            console.log(response.data)
             dispatch(setDevices(response.data.fixedDevices));
             // if (cart.length === 0) {
             //   dispatch(setCart(response.data.fixedDevices));
@@ -54,6 +58,7 @@ export const UserDashboard = () => {
           }
         } catch (error) {
           console.error("Error fetching devices:", error);
+          dispatch(setDevices([]));
         }
       };
       getDevices();
@@ -72,19 +77,21 @@ export const UserDashboard = () => {
         } else {
           setImage(defaultImg);
         }
-      } catch (error) {
+        setIsImageLoading(false);
+      } catch {
         setImage(defaultImg);
+        setIsImageLoading(false);
       }
     }
     getData();
-  }, []);
+  }, [UserId]);
 
   useEffect(() => {
     if (UserId == undefined) {
       syncLocalStorage();
       syncLocalCart();
     }
-  }, [])
+  }, [UserId])
 
   useEffect(() => {
     window.scroll(0, 0);
@@ -94,7 +101,8 @@ export const UserDashboard = () => {
 
   return (
     <div className="max-w-screen min-h-screen">
-      <UserNavbar ImageURl={image} />
+      {isImageLoading ? <div className="fixed right-4 top-4 z-[60]"><AvatarSkeleton /></div> : null}
+      <UserNavbar ImageURl={getAvatarUrl(image)} />
       <Outlet />
       <Footer />
     </div>

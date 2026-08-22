@@ -10,10 +10,13 @@ import toast from "react-hot-toast"
 import { addToWishlistAsync, deleteFromWishListAsync } from "../state/features/wishSlice"
 import { updateLocalCart, addCartItemtoLocalStorage, updateLocalCartItem } from "@/state/features/localcartSlice"
 import { updateLocalStorage, addtoLocalStorage, removefromLocalStorage } from "@/state/features/localwishSlice"
+import { ProductDetailSkeleton } from "../components/ProductDetailSkeleton"
 
 export const ProductPage: React.FC = () => {
     const { DeviceId, UserId } = useParams()
     const devices = useSelector((state: RootState) => state.device.devices)
+    const devicesLoading = useSelector((state: RootState) => state.device.isLoading)
+    const devicesFetched = useSelector((state: RootState) => state.device.hasFetched)
     const wishlist = useSelector((state: RootState) => state.wishList.list)
     const localWishList = useSelector((state: RootState) => state.localWishList.list)
     const Cart = useSelector((state: RootState) => state.cart.list)
@@ -38,6 +41,7 @@ export const ProductPage: React.FC = () => {
     }, [hasMounted])
 
     if (!device) {
+        if (devicesLoading || !devicesFetched) return <ProductDetailSkeleton />
         return <div className="text-center py-10 text-gray-700">Device not found</div>
     }
 

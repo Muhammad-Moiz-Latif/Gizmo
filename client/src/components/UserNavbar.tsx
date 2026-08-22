@@ -9,7 +9,7 @@ import dropdown from "../assets/arrow-down-sign-to-navigate.png";
 import wishlist from '../assets/wishlist1.png';
 import { WishListDropDown } from './WishListDropDown';
 import { CartDropDown } from './CartDropDown';
-import defaultImg from '../assets/log-out.png';
+import { getAvatarUrl, handleAvatarError } from '../utils/avatar';
 import toast from 'react-hot-toast';
 
 
@@ -218,9 +218,10 @@ export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
                         >
                             <button className="flex items-center space-x-1 p-1 rounded-full transition-colors duration-300 hover:opacity-70">
                                 <img
-                                    src={ImageURl || defaultImg}
+                                    src={getAvatarUrl(ImageURl)}
+                                    onError={handleAvatarError}
                                     alt="User profile"
-                                    className="rounded-full w-6 h-6"
+                                    className="rounded-full w-8 h-8 object-cover ring-2 ring-white/20"
                                 />
                                 <img src={dropdown} alt="Dropdown arrow" className={`w-3 transition-transform duration-300 ${!isOpen ? 'transform rotate-180' : ''}`} />
                             </button>

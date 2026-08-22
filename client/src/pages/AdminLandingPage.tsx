@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { Skeleton } from '../components/Skeleton';
 
 const AdminLandingPage: React.FC = () => {
     const [data, setData] = useState({ Users: [], Devices: [], Orders: [], totalPrice: 0 });
@@ -38,7 +39,7 @@ const AdminLandingPage: React.FC = () => {
     ];
 
     if (loading) {
-        return <div className="pl-56 pt-20 pr-5">Loading...</div>;
+        return <div className="pl-56 pt-20 pr-5"><div className="mb-6 h-8 w-48"><Skeleton className="h-full w-full" /></div><div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-28 w-full" />)}</div></div>;
     }
 
     if (error) {

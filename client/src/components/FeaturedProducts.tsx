@@ -10,11 +10,14 @@ import { addToCartAsync, setCartAsync, updateCartAsync } from "../state/features
 import { addtoLocalStorage, removefromLocalStorage, updateLocalStorage } from "../state/features/localwishSlice"
 import { addCartItemtoLocalStorage, updateLocalCart, updateLocalCartItem } from "../state/features/localcartSlice"
 import toast from "react-hot-toast"
+import { ProductCardSkeleton } from "./ProductCardSkeleton"
 
 export const FeaturedProducts: React.FC = () => {
   const { UserId } = useParams()
   const dispatch = useDispatch()
   const allDevices = useSelector((state: RootState) => state.device.devices)
+  const devicesLoading = useSelector((state: RootState) => state.device.isLoading)
+  const devicesFetched = useSelector((state: RootState) => state.device.hasFetched)
   const wishlist = useSelector((state: RootState) => state.wishList.list)
   const localWishList = useSelector((state: RootState) => state.localWishList.list)
   const cart = useSelector((state: RootState) => state.cart.list)
@@ -59,6 +62,7 @@ export const FeaturedProducts: React.FC = () => {
 
   // Calculate the maximum valid index based on the number of products to show at once
   const maxIndex = Math.max(0, featuredDevices.length - productsToShow)
+  const showSkeletons = devicesLoading || !devicesFetched
 
   const nextSlide = () => {
     if (!isAnimating && currentIndex < maxIndex) {
@@ -151,7 +155,11 @@ export const FeaturedProducts: React.FC = () => {
               className="flex transition-transform duration-500 ease-out"
               style={{ transform: `translateX(-${currentIndex * (100 / productsToShow)}%)` }}
             >
-              {featuredDevices.map((device: any, index) => (
+              {showSkeletons ? Array.from({ length: productsToShow }).map((_, index) => (
+                <div key={index} className={`${isMobile ? "w-full" : "w-1/3"} flex-shrink-0 px-2 md:px-3`}>
+                  <ProductCardSkeleton />
+                </div>
+              )) : featuredDevices.map((device: any, index) => (
                 <div key={index} className={`${isMobile ? "w-full" : "w-1/3"} flex-shrink-0 px-2 md:px-3`}>
                   <div className="w-full mx-auto rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-700 transition-all duration-300 bg-gradient-to-b from-gray-900 to-black mb-10">
                     <div className="relative group bg-white">

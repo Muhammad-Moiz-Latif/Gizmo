@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAvatarUrl, handleAvatarError } from "../utils/avatar";
 
 export const AllUsers = () => {
     const [UserData, setUserData] = useState();
@@ -20,18 +21,19 @@ export const AllUsers = () => {
         }
         getUsers();
     }, []);
-    
+
 
     //@ts-ignore
     const Data = UserData?.map((user, index) => {
         var img = user.img;
-        return (            
+        return (
             <div key={user.id} className="grid grid-cols-[1fr,2fr,2fr,2fr] justify-start items-center p-4 hover:bg-gray-50 transition-colors duration-150 border-b border-gray-200 last:border-b-0">
                 {/* Count field */}
                 <span className="text-gray-500">{index + 1}</span>
                 <div className="flex items-center gap-2">
                     <img
-                        src={img}
+                        src={getAvatarUrl(img)}
+                        onError={handleAvatarError}
                         alt={`${user.username}'s avatar`}
                         className="w-10 h-10 rounded-full object-cover border border-gray-200"
                     />

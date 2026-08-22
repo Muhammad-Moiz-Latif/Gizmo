@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom"
 import { updateLocalCart, addCartItemtoLocalStorage, updateLocalCartItem } from "@/state/features/localcartSlice"
 import { updateCartAsync, addToCartAsync } from "@/state/features/cartSlice"
 import toast from "react-hot-toast"
+import { Skeleton } from "./Skeleton"
 
 interface TimeLeft {
   days: number
@@ -19,6 +20,8 @@ interface TimeLeft {
 
 export const DealOfTheDay: React.FC = () => {
   const devices = useSelector((state: RootState) => state.device.devices);
+  const devicesLoading = useSelector((state: RootState) => state.device.isLoading);
+  const devicesFetched = useSelector((state: RootState) => state.device.hasFetched);
   const devicesArray = Array.isArray(devices) ? devices : []
   const cart = useSelector((state: RootState) => state.cart.list);
   const localCart = useSelector((state: RootState) => state.localCart.list);
@@ -88,7 +91,16 @@ export const DealOfTheDay: React.FC = () => {
   };
 
 
-  if (!dealDevice) return null
+  if (!dealDevice) {
+    return devicesLoading || !devicesFetched ? (
+      <section className="w-full bg-white px-4 py-12">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 md:flex-row">
+          <Skeleton className="h-64 w-full max-w-md rounded-full" />
+          <div className="w-full space-y-4 md:w-1/2"><Skeleton className="h-8 w-2/3" /><Skeleton className="h-5 w-full" /><Skeleton className="h-12 w-40" /></div>
+        </div>
+      </section>
+    ) : null
+  }
 
   return (
     <section className="w-full bg-white py-12 px-4">

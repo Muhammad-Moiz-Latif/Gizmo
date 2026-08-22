@@ -11,6 +11,7 @@ import { RemoveFromCartAsync } from "@/state/features/cartSlice"
 import toast from "react-hot-toast"
 import { loadStripe } from "@stripe/stripe-js"
 import axios from "axios"
+import { Skeleton } from "../components/Skeleton"
 
 export const ShoppingCart = () => {
   const { UserId } = useParams()
@@ -21,6 +22,8 @@ export const ShoppingCart = () => {
   const Cart = useSelector((state: RootState) => state.cart.list)
   const localCart = useSelector((state: RootState) => state.localCart.list)
   const deviceData = useSelector((state: RootState) => state.device.devices)
+  const devicesLoading = useSelector((state: RootState) => state.device.isLoading)
+  const devicesFetched = useSelector((state: RootState) => state.device.hasFetched)
   const deviceDataArray = Array.isArray(deviceData) ? deviceData : []
 
   const [expandedItem, setExpandedItem] = useState<string | null>(null)
@@ -226,7 +229,9 @@ export const ShoppingCart = () => {
                   </button>
                 </div>
 
-                {cartItems.length === 0 ? (
+                {!devicesFetched || devicesLoading ? (
+                  <div className="space-y-4">{Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-24 w-full" />)}</div>
+                ) : cartItems.length === 0 ? (
                   <div className="text-center py-8">
                     <ShoppingBag className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                     <h3 className="text-xl font-semibold mb-2 text-black">Your cart is empty</h3>

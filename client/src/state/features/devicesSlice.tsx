@@ -17,21 +17,30 @@ interface Device {
 
 interface DeviceState {
     devices: Device[];
+    isLoading: boolean;
+    hasFetched: boolean;
 }
 
-const initialState : DeviceState = {
-    devices:[]
+const initialState: DeviceState = {
+    devices: [],
+    isLoading: false,
+    hasFetched: false,
 }
 
 const deviceSlice = createSlice({
     name: 'device',
     initialState,
     reducers: {
-        setDevices: (state , action) => {
+        setDevicesLoading: (state, action) => {
+            state.isLoading = action.payload;
+        },
+        setDevices: (state, action) => {
             state.devices = action.payload;
+            state.isLoading = false;
+            state.hasFetched = true;
         }
     }
 })
 
-export const { setDevices } = deviceSlice.actions;
+export const { setDevices, setDevicesLoading } = deviceSlice.actions;
 export default deviceSlice.reducer;

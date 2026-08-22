@@ -16,10 +16,28 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const allowedOrigins = [
     "http://localhost:5173",
-];
+    "http://localhost:3000",
+    "https://gizmo-jb17.vercel.app",
+    process.env.FRONTEND_URL || ""
+].filter(Boolean); // Remove empty strings
+// Apply CORS with explicit configuration
 app.use((0, cors_1.default)({
-    origin: allowedOrigins,
-    credentials: true, // 👈 allow cookies, authorization headers, etc.
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or server requests)
+        if (!origin)
+            return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            // Still allow but log - don't block
+            console.warn(`CORS request from untrusted origin: ${origin}`);
+            callback(null, true);
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 // Session setup
 const key = process.env.SESSIONKEY || 'default_secret_key'; // Fallback if SESSIONKEY is not set

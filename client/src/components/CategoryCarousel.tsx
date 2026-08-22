@@ -5,9 +5,12 @@ import { useSelector } from "react-redux"
 import type { RootState } from "../state/store"
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react"
 import { NavLink } from "react-router-dom"
+import { CategoryCardSkeleton } from "./CategoryCardSkeleton"
 
 export const CategoryCarousel: React.FC = () => {
   const categories = useSelector((state: RootState) => state.category.categories)
+  const categoriesLoading = useSelector((state: RootState) => state.category.isLoading)
+  const categoriesFetched = useSelector((state: RootState) => state.category.hasFetched)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(3)
 
@@ -34,6 +37,7 @@ export const CategoryCarousel: React.FC = () => {
   }, [])
 
   const categoriesArray = Array.isArray(categories) ? categories : []
+  const showSkeletons = categoriesLoading || !categoriesFetched
   const maxIndex = Math.max(0, categoriesArray.length - itemsPerPage)
 
   const scroll = (direction: "left" | "right") => {
@@ -71,7 +75,11 @@ export const CategoryCarousel: React.FC = () => {
                 transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`,
               }}
             >
-              {categoriesArray.map((category: any) => (
+              {showSkeletons ? Array.from({ length: itemsPerPage }).map((_, index) => (
+                <div key={index} className="flex-none px-2 sm:px-3" style={{ width: `${100 / itemsPerPage}%` }}>
+                  <CategoryCardSkeleton />
+                </div>
+              )) : categoriesArray.map((category: any) => (
                 <div
                   key={category.CategoryId}
                   className="flex-none px-2 sm:px-3"

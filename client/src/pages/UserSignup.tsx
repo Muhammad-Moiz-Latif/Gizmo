@@ -35,7 +35,11 @@ export function UserSignup({ toggleForm }: UserSignupProps) {
     e.preventDefault();
     const targetInputName = e.currentTarget.getAttribute("data-name");
 
-    targetInputName === "password" ? setIsHidden(!isHidden) : setHidden(!Hidden);
+    if (targetInputName === "password") {
+      setIsHidden(!isHidden);
+    } else {
+      setHidden(!Hidden);
+    }
   };
 
   const onSubmit = async (data: SignupFormData) => {
@@ -133,7 +137,7 @@ export function UserSignup({ toggleForm }: UserSignupProps) {
       </div>
       <button
         type="button"
-        onClick={() => window.location.href = '${process.env.VITE_PUBLIC_API_URL}/auth/google'}
+        onClick={() => window.location.href = `${import.meta.env.VITE_PUBLIC_API_URL}/auth/google`}
         className="w-full bg-white text-black py-2 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-300 mt-3"
       >
         <div className="flex gap-2 justify-center items-center">

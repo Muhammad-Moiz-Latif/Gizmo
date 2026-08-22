@@ -20,6 +20,19 @@ if (!stripeSecretKey) {
 const stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-12-18.acacia" });
 exports.router = (0, express_1.Router)();
 exports.prisma = new client_1.PrismaClient();
+exports.prisma.$use(async (params, next) => {
+    try {
+        return await next(params);
+    }
+    catch (err) {
+        if (err.code === 'P1001') {
+            console.warn('Stale DB connection, retrying once...');
+            await new Promise(r => setTimeout(r, 300));
+            return await next(params);
+        }
+        throw err;
+    }
+});
 const cloudinary = require('cloudinary').v2;
 // Configure Cloudinary
 cloudinary.config({
@@ -603,8 +616,8 @@ async function main() {
                 payment_method_types: ["card"],
                 line_items: lineItems,
                 mode: "payment",
-                success_url: `http://localhost:5173/success/${UserId}/{CHECKOUT_SESSION_ID}`,
-                cancel_url: `http://localhost:5173/dashboard/${UserId}`,
+                success_url: `${process.env.FRONTEND_URL}/success/${UserId}/{CHECKOUT_SESSION_ID}`,
+                cancel_url: `${process.env.FRONTEND_URL}/dashboard/${UserId}`,
                 metadata: { UserId }
             });
             res.json({ id: session.id });

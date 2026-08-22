@@ -12,6 +12,7 @@ import { addToCartAsync, updateCartAsync } from "../state/features/cartSlice"
 import toast from "react-hot-toast"
 import { updateLocalCart, addCartItemtoLocalStorage, updateLocalCartItem } from "@/state/features/localcartSlice"
 import { updateLocalStorage, addtoLocalStorage, removefromLocalStorage } from "@/state/features/localwishSlice"
+import { ProductCardSkeleton } from "../components/ProductCardSkeleton"
 
 export const ProductsPage: React.FC = () => {
   const { CategoryId, UserId } = useParams()
@@ -20,6 +21,8 @@ export const ProductsPage: React.FC = () => {
 
   // Redux state for devices and categories
   const devices = useSelector((state: RootState) => state.device.devices)
+  const devicesLoading = useSelector((state: RootState) => state.device.isLoading)
+  const devicesFetched = useSelector((state: RootState) => state.device.hasFetched)
   const categories = useSelector((state: RootState) => state.category.categories)
   const wishlist = useSelector((state: RootState) => state.wishList.list)
   const localWishList = useSelector((state: RootState) => state.localWishList.list)
@@ -150,7 +153,11 @@ export const ProductsPage: React.FC = () => {
         </div>
 
         {/* Product Grid */}
-        {filteredDevices.length > 0 ? (
+        {!devicesFetched || devicesLoading ? (
+          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: devicesPerPage }).map((_, index) => <ProductCardSkeleton key={index} />)}
+          </div>
+        ) : filteredDevices.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
               {filteredDevices.slice((currentPage - 1) * devicesPerPage, currentPage * devicesPerPage).map((device) => (

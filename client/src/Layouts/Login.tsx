@@ -7,10 +7,13 @@ import img from "../assets/sarah-dorweiler-QeVmJxZOv3k-unsplash.jpg";
 import adminImg from "../assets/admin-background.jpg";
 import { UserLogin } from "../pages/UserLogin";
 import { UserSignup } from "../pages/UserSignup";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -41,6 +44,14 @@ export const Login = () => {
           </div>
         </div>
         <div className="md:w-1/2 p-6 md:p-8 overflow-auto">
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard')}
+            className="mb-4 flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-black"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to shopping
+          </button>
           <div className="flex justify-center mb-6">
             {/* <NavLink
               to='AdminLogin'
