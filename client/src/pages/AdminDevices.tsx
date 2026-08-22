@@ -30,7 +30,7 @@ export const AdminDevices = () => {
         async function getDevices() {
             try {
                 setIsLoading(true)
-                const response = await axios.get('http://localhost:3000/AdminDashboard/GetDevices')
+                const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/AdminDashboard/GetDevices`)
                 if (response && response.data) {
                     const { fixedDevices, categories } = response.data
 

@@ -26,7 +26,7 @@ export const SuccessTransaction = () => {
     async function getData() {
       try {
         setIsLoading(true)
-        const response = await axios.get(`http://localhost:3000/transactionData/${SessionId}`)
+        const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/transactionData/${SessionId}`)
         setPrice(response.data.data.price)
         setrefNo(response.data.data.TransactionId.substring(0, 8))
         setCreated(format(new Date(response.data.data.createdAt), "dd/MM/yyyy, HH:mm:ss"))

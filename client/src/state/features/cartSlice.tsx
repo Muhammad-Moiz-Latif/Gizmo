@@ -55,7 +55,7 @@ export const updateCartAsync = createAsyncThunk(
 
 export const clearCartAsync = createAsyncThunk(
     'Cart/Clear', async ({ UserId }: { UserId: string }, { dispatch }) => {
-        const response = await axios.post(`http://localhost:3000/UserDashboard/${UserId}/Cart/Clear`);
+        const response = await axios.post(`${import.meta.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}/Cart/Clear`);
         if (response) {
             dispatch(updateCart([]));
         }
