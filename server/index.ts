@@ -26,7 +26,7 @@ app.use(
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or server requests)
       if (!origin) return callback(null, true);
-      
+
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {

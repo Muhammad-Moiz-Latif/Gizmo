@@ -22,6 +22,19 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-12
 export const router = Router();
 export const prisma = new PrismaClient();
 
+prisma.$use(async (params, next) => {
+  try {
+    return await next(params);
+  } catch (err: any) {
+    if (err.code === 'P1001') {
+      console.warn('Stale DB connection, retrying once...');
+      await new Promise(r => setTimeout(r, 300));
+      return await next(params);
+    }
+    throw err;
+  }
+});
+
 const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
