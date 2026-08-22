@@ -699,8 +699,8 @@ async function main() {
         payment_method_types: ["card"],
         line_items: lineItems,
         mode: "payment",
-        success_url: `http://localhost:5173/success/${UserId}/{CHECKOUT_SESSION_ID}`,
-        cancel_url: `http://localhost:5173/dashboard/${UserId}`,
+        success_url: `${process.env.FRONTEND_URL}/success/${UserId}/{CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.FRONTEND_URL}/dashboard/${UserId}`,
         metadata: { UserId }
       });
 
