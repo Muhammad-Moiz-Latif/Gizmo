@@ -1,31 +1,48 @@
 "use client"
 
-import { Mail, MapPin, Clock, Search, ChevronDown, ChevronUp } from "lucide-react"
+import { Mail, MapPin, Clock, Search, ChevronDown, ArrowRight, HelpCircle, BookOpen, Truck, RefreshCw } from "lucide-react"
 import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 
 export const FAQ = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("general")
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({})
 
-  // Toggle accordion open/close state
   const toggleAccordion = (id: string) => {
     setOpenAccordions((prev) => ({
       ...prev,
       [id]: !prev[id],
     }))
-  };
+  }
 
-//to scroll to the top
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  // FAQ data organized by categories
+  // Animation variants
+  const fadeUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    },
+  }
+
+  const stagger = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 },
+    },
+  }
+
   const faqCategories = [
     {
       id: "general",
       name: "General",
+      icon: HelpCircle,
       questions: [
         {
           id: "what-is-gizmo",
@@ -50,6 +67,7 @@ export const FAQ = () => {
     {
       id: "products",
       name: "Products",
+      icon: BookOpen,
       questions: [
         {
           id: "product-warranty",
@@ -74,6 +92,7 @@ export const FAQ = () => {
     {
       id: "orders",
       name: "Orders & Shipping",
+      icon: Truck,
       questions: [
         {
           id: "order-tracking",
@@ -98,6 +117,7 @@ export const FAQ = () => {
     {
       id: "returns",
       name: "Returns & Refunds",
+      icon: RefreshCw,
       questions: [
         {
           id: "return-policy",
@@ -121,252 +141,507 @@ export const FAQ = () => {
     },
   ]
 
-  // Filter questions based on search query
   const filteredFAQs =
     searchQuery.trim() === ""
       ? faqCategories
       : faqCategories
-          .map((category) => ({
-            ...category,
-            questions: category.questions.filter(
-              (q) =>
-                q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                q.answer.toLowerCase().includes(searchQuery.toLowerCase()),
-            ),
-          }))
-          .filter((category) => category.questions.length > 0)
+        .map((category) => ({
+          ...category,
+          questions: category.questions.filter(
+            (q) =>
+              q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              q.answer.toLowerCase().includes(searchQuery.toLowerCase())
+          ),
+        }))
+        .filter((category) => category.questions.length > 0)
+
+  const popularQuestions = [
+    {
+      question: "Do you offer price matching?",
+      answer:
+        "Yes, we offer price matching on identical products from authorized retailers. To request a price match, contact our customer service team with proof of the competitor's current price. Some exclusions apply.",
+    },
+    {
+      question: "How do I redeem a gift card?",
+      answer:
+        "You can redeem a gift card during checkout by entering the gift card code in the designated field. Any remaining balance will be saved to your account for future purchases.",
+    },
+    {
+      question: "Do you offer technical support?",
+      answer:
+        "Yes, we offer basic technical support for all products purchased from Gizmo. For complex issues, we'll connect you with the manufacturer's specialized support team.",
+    },
+    {
+      question: "Can I cancel my order?",
+      answer:
+        "Orders can be canceled within 1 hour of placement if they haven't entered processing. Log into your account or contact support immediately.",
+    },
+  ]
+
 
   return (
-    <div className="bg-white min-h-screen font-sans">
-      {/* Hero Section */}
-      <section className="bg-black text-white py-20 px-4 relative z-20">
-        <div className="absolute inset-0 w-full h-full bg-black opacity-70 z-10"></div>
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-black to-transparent z-20"></div>
+    <div className="min-h-screen w-full overflow-hidden bg-[#F7F7F5] font-sans antialiased">
+      {/* ═══════════════════════════════════════════════════
+          HERO — Cinematic, editorial
+      ═══════════════════════════════════════════════════ */}
+      <section className="relative w-full overflow-hidden bg-black text-white">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 opacity-[0.025] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:70px_70px]" />
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[22vw] font-black leading-none tracking-[-0.09em] text-white/[0.035]">
+            FAQ
+          </div>
+          <div className="absolute left-1/2 top-1/2 h-[480px] w-[480px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.03] blur-3xl" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-white/5" />
+        </div>
 
-        <div className="max-w-6xl mx-auto text-center relative z-30">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Frequently Asked Questions</h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
-            Find answers to common questions about our products, services, and policies.
-          </p>
+        <div className="relative z-10 mx-auto flex min-h-[48vh] max-w-[1600px] flex-col justify-end px-5 pb-14 pt-28 sm:px-8 lg:px-14 xl:px-20">
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-3xl"
+          >
+            <div className="mb-5 flex items-center gap-3">
+              <span className="h-px w-8 bg-white/30" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-white/40">
+                Support
+              </span>
+              <span className="h-px w-8 bg-white/30" />
+            </div>
+
+            <h1 className="text-[2.5rem] font-medium leading-[0.92] tracking-[-0.055em] sm:text-5xl md:text-6xl lg:text-[4.25rem]">
+              Frequently
+              <br />
+              <span className="font-light italic text-white/40">
+                asked questions.
+              </span>
+            </h1>
+
+            <p className="mt-5 max-w-md text-sm leading-7 text-white/40">
+              Clear answers about our products, shipping, returns, and more.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* Search Section */}
-      <section className="py-12 px-4 bg-gray-50">
-        <div className="max-w-3xl mx-auto">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      {/* ═══════════════════════════════════════════════════
+          SEARCH — Clean, minimal
+      ═══════════════════════════════════════════════════ */}
+      <section className="relative w-full border-b border-black/5 py-10 sm:py-12">
+        <div className="mx-auto max-w-2xl px-5 sm:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative"
+          >
+            <Search
+              className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-black/25"
+              strokeWidth={1.5}
+            />
             <input
               type="text"
-              placeholder="Search for answers..."
-              className="w-full pl-10 py-4 text-lg rounded-lg shadow-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              placeholder="Search questions..."
+              className="w-full rounded-2xl border border-black/8 bg-white py-3.5 pl-11 pr-5 text-sm text-black placeholder:text-black/25 outline-none transition-all duration-300 focus:border-black/25 focus:shadow-[0_4px_16px_rgba(0,0,0,0.04)]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Categories Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Custom Tabs */}
-          <div className="w-full">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8">
-              {faqCategories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveTab(category.id)}
-                  className={`text-sm md:text-base py-3 px-4 rounded-md font-medium transition-colors ${
-                    activeTab === category.id ? "bg-black text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-
-            {searchQuery.trim() !== "" ? (
-              <div className="space-y-8">
-                <h2 className="text-2xl font-bold text-black mb-6">Search Results</h2>
-                {filteredFAQs.length > 0 ? (
-                  filteredFAQs.map(
-                    (category) =>
-                      category.questions.length > 0 && (
-                        <div key={category.id} className="mb-8">
-                          <h3 className="text-xl font-semibold text-black mb-4">{category.name}</h3>
-                          <div className="space-y-4">
-                            {category.questions.map((faq) => (
-                              <div key={faq.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                                <button
-                                  onClick={() => toggleAccordion(faq.id)}
-                                  className="w-full flex items-center justify-between px-6 py-4 text-left font-medium text-black focus:outline-none"
-                                >
-                                  <span>{faq.question}</span>
-                                  {openAccordions[faq.id] ? (
-                                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                                  ) : (
-                                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                                  )}
-                                </button>
-                                <div
-                                  className={`px-6 pb-4 pt-0 text-gray-700 transition-all duration-200 ease-in-out ${
-                                    openAccordions[faq.id] ? "block" : "hidden"
-                                  }`}
-                                >
-                                  <div className="pt-2">{faq.answer}</div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ),
-                  )
-                ) : (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No results found for "{searchQuery}"</p>
-                    <p className="text-gray-500 mt-2">Try a different search term or browse categories</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              faqCategories.map((category) => (
-                <div key={category.id} className={`space-y-4 ${activeTab === category.id ? "block" : "hidden"}`}>
-                  <div className="space-y-4">
-                    {category.questions.map((faq) => (
-                      <div key={faq.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                        <button
-                          onClick={() => toggleAccordion(faq.id)}
-                          className="w-full flex items-center justify-between px-6 py-4 text-left font-medium text-black focus:outline-none"
-                        >
-                          <span>{faq.question}</span>
-                          {openAccordions[faq.id] ? (
-                            <ChevronUp className="w-5 h-5 text-gray-500" />
-                          ) : (
-                            <ChevronDown className="w-5 h-5 text-gray-500" />
-                          )}
-                        </button>
-                        <div
-                          className={`px-6 pb-4 pt-0 text-gray-700 transition-all duration-200 ease-in-out ${
-                            openAccordions[faq.id] ? "block" : "hidden"
-                          }`}
-                        >
-                          <div className="pt-2">{faq.answer}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-[0.15em] text-black/25 transition-colors hover:text-black/50"
+              >
+                Clear
+              </button>
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Popular Questions Section */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-12 text-center text-black">Popular Questions</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-4 text-black">Do you offer price matching?</h3>
-              <p className="text-gray-700">
-                Yes, we offer price matching on identical products from authorized retailers. To request a price match,
-                contact our customer service team with proof of the competitor's current price. Some exclusions apply,
-                such as limited-time sales, clearance items, and marketplace sellers.
-              </p>
+      {/* ═══════════════════════════════════════════════════
+          FAQ CONTENT
+      ═══════════════════════════════════════════════════ */}
+      <section className="relative w-full overflow-hidden py-16 sm:py-20 lg:py-24">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 opacity-[0.015] [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] [background-size:60px_60px]" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[900px] px-5 sm:px-8">
+          {searchQuery.trim() !== "" ? (
+            /* ─── Search Results ─── */
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+            >
+              <div className="mb-8 flex items-center gap-3">
+                <span className="h-px w-6 bg-black/25" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                  Results
+                </span>
+                <span className="text-[10px] text-black/20">
+                  {filteredFAQs.reduce((acc, cat) => acc + cat.questions.length, 0)} found
+                </span>
+              </div>
+
+              {filteredFAQs.length > 0 ? (
+                <div className="space-y-10">
+                  {filteredFAQs.map((category) => (
+                    <div key={category.id}>
+                      <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-black/30">
+                        {category.name}
+                      </h3>
+                      <div className="space-y-2.5">
+                        {category.questions.map((faq, index) => (
+                          <motion.div
+                            key={faq.id}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.04 }}
+                          >
+                            <AccordionItem
+                              id={faq.id}
+                              question={faq.question}
+                              answer={faq.answer}
+                              isOpen={!!openAccordions[faq.id]}
+                              onToggle={() => toggleAccordion(faq.id)}
+                            />
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-16 text-center">
+                  <div className="inline-flex h-16 w-16 items-center justify-center rounded-full border border-black/10 bg-white mb-4">
+                    <Search className="h-6 w-6 text-black/20" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-base font-medium text-black/50">
+                    No results for “{searchQuery}”
+                  </p>
+                  <p className="mt-1 text-sm text-black/30">
+                    Try a different term or browse categories below.
+                  </p>
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="mt-6 inline-flex items-center gap-2 rounded-xl bg-black px-6 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-black/90 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+                  >
+                    Clear search
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          ) : (
+            /* ─── Category Tabs + Accordions ─── */
+            <div>
+              {/* Tabs */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mb-10 flex flex-wrap gap-2"
+              >
+                {faqCategories.map((category) => {
+                  const isActive = activeTab === category.id
+                  const Icon = category.icon
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setActiveTab(category.id)}
+                      className={`group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-medium tracking-wide transition-all duration-300 ${isActive
+                        ? "bg-black text-white shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
+                        : "border border-black/8 text-black/50 hover:border-black/20 hover:text-black"
+                        }`}
+                    >
+                      <Icon className={`h-3.5 w-3.5 ${isActive ? "text-white/70" : "text-black/30"}`} strokeWidth={1.5} />
+                      {category.name}
+                    </button>
+                  )
+                })}
+              </motion.div>
+
+              {/* Active category questions */}
+              <AnimatePresence mode="wait">
+                {faqCategories.map((category) => (
+                  <motion.div
+                    key={category.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{
+                      opacity: activeTab === category.id ? 1 : 0,
+                      y: activeTab === category.id ? 0 : 12,
+                      display: activeTab === category.id ? "block" : "none"
+                    }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="space-y-2.5">
+                      {category.questions.map((faq, i) => (
+                        <motion.div
+                          key={faq.id}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: i * 0.04 }}
+                        >
+                          <AccordionItem
+                            id={faq.id}
+                            question={faq.question}
+                            answer={faq.answer}
+                            isOpen={!!openAccordions[faq.id]}
+                            onToggle={() => toggleAccordion(faq.id)}
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-4 text-black">How do I redeem a gift card?</h3>
-              <p className="text-gray-700">
-                You can redeem a gift card during checkout by entering the gift card code in the designated field. The
-                gift card amount will be applied to your order total. Any remaining balance on the gift card will be
-                saved to your account for future purchases.
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-4 text-black">Do you offer technical support for products?</h3>
-              <p className="text-gray-700">
-                Yes, we offer basic technical support for all products purchased from Gizmo. Our support team can help
-                with setup, troubleshooting, and general usage questions. For more complex issues, we'll connect you
-                with the manufacturer's specialized support team.
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold mb-4 text-black">Can I cancel my order after it's been placed?</h3>
-              <p className="text-gray-700">
-                Orders can be canceled within 1 hour of placement if they haven't entered the processing stage. To
-                cancel an order, log into your account and select "Cancel Order" from the order details page, or contact
-                our customer service team immediately.
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
-      {/* Still Have Questions Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-12 text-center text-black">Still Have Questions?</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white mb-4">
-                <MapPin className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2 text-black">Visit Us</h3>
-              <p className="text-gray-600">
-                123 Tech Avenue
-                <br />
-                San Francisco, CA 94107
-                <br />
-                United States
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white mb-4">
-                <Mail className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2 text-black">Email Us</h3>
-              <p className="text-gray-600">
-                info@gizmostore.com
-                <br />
-                support@gizmostore.com
-                <br />
-                sales@gizmostore.com
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white mb-4">
-                <Clock className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2 text-black">Business Hours</h3>
-              <p className="text-gray-600">
-                Monday - Friday: 9am - 6pm
-                <br />
-                Saturday: 10am - 4pm
-                <br />
-                Sunday: Closed
-              </p>
-            </div>
+      {/* ═══════════════════════════════════════════════════
+          POPULAR QUESTIONS — Editorial grid
+      ═══════════════════════════════════════════════════ */}
+      <section className="relative w-full overflow-hidden border-t border-black/5 bg-[#EFEFEC] py-20 sm:py-24">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[18vw] font-black leading-none tracking-[-0.09em] text-black/[0.02]">
+            POPULAR
           </div>
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[1100px] px-5 sm:px-8 lg:px-10">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            className="mb-12"
+          >
+            <div className="mb-5 flex items-center gap-3">
+              <span className="h-px w-8 bg-black/25" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                Popular
+              </span>
+            </div>
+            <h2 className="text-3xl font-medium tracking-[-0.04em] text-black sm:text-4xl">
+              Most
+              <span className="text-black/40 font-light italic ml-2">asked</span>
+            </h2>
+          </motion.div>
+
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid gap-4 sm:grid-cols-2"
+          >
+            {popularQuestions.map((item, i) => (
+              <motion.div
+                key={item.question}
+                variants={fadeUp}
+                className="group rounded-2xl border border-black/5 bg-[#F7F7F5] p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.04)]"
+              >
+                <div className="mb-3 flex items-start justify-between gap-4">
+                  <h3 className="text-[15px] font-medium tracking-tight text-black leading-snug">
+                    {item.question}
+                  </h3>
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-black/10 text-[9px] font-medium text-black/20">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <p className="text-[14px] leading-relaxed text-black/45">
+                  {item.answer}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 px-4 bg-black text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Couldn't Find Your Answer?</h2>
-          <p className="text-xl mb-8 text-gray-300">
-            Our customer support team is ready to help you with any questions you may have.
-          </p>
-          <button className="bg-white text-black px-8 py-3 rounded-md font-semibold hover:bg-gray-200 transition-colors">
-            Contact Support
-          </button>
+      {/* ═══════════════════════════════════════════════════
+          CONTACT CARDS — Premium support options
+      ═══════════════════════════════════════════════════ */}
+      <section className="relative w-full overflow-hidden py-20 sm:py-24">
+        <div className="mx-auto max-w-[1100px] px-5 sm:px-8 lg:px-10">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            className="mb-14 text-center"
+          >
+            <div className="mb-5 flex items-center justify-center gap-3">
+              <span className="h-px w-8 bg-black/20" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/30">
+                Contact
+              </span>
+              <span className="h-px w-8 bg-black/20" />
+            </div>
+            <h2 className="text-3xl font-medium tracking-[-0.04em] text-black sm:text-4xl">
+              Still have
+              <span className="text-black/40 font-light italic ml-2">questions?</span>
+            </h2>
+            <p className="mt-3 text-sm text-black/40">
+              Our support team is ready to help with anything else you need.
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid gap-5 md:grid-cols-3"
+          >
+            {[
+              {
+                icon: MapPin,
+                title: "Visit",
+                subtitle: "Our showroom",
+                lines: ["123 Tech Avenue", "San Francisco, CA 94107"],
+              },
+              {
+                icon: Mail,
+                title: "Email",
+                subtitle: "We reply within 24h",
+                lines: ["support@gizmostore.com", "info@gizmostore.com"],
+              },
+              {
+                icon: Clock,
+                title: "Hours",
+                subtitle: "When to find us",
+                lines: ["Mon–Fri  9am – 6pm", "Sat  10am – 4pm"],
+              },
+            ].map((item) => (
+              <motion.div
+                key={item.title}
+                variants={fadeUp}
+                className="group rounded-2xl border border-black/5 bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.04)]"
+              >
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-black/10 bg-[#F7F7F5] text-black/40 transition-all duration-300 group-hover:border-black group-hover:bg-black group-hover:text-white">
+                  <item.icon className="h-4.5 w-4.5" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-sm font-medium text-black">{item.title}</h3>
+                <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.15em] text-black/25">
+                  {item.subtitle}
+                </p>
+                <div className="space-y-0.5 text-[14px] leading-relaxed text-black/55">
+                  {item.lines.map((line) => (
+                    <p key={line}>{line}</p>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════
+          FINAL CTA — Light section flowing into Footer
+      ═══════════════════════════════════════════════════ */}
+      <section className="relative w-full overflow-hidden bg-[#EFEFEC] py-20 text-black sm:py-24 border-t border-black/5">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[20vw] font-black leading-none tracking-[-0.09em] text-black/[0.030]">
+            GIZMO
+          </div>
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-2xl px-5 text-center sm:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+          >
+            <div className="mb-5 flex items-center justify-center gap-3">
+              <span className="h-px w-8 bg-black/20" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/30">
+                Support
+              </span>
+              <span className="h-px w-8 bg-black/20" />
+            </div>
+
+            <h2 className="mb-4 text-3xl font-medium leading-[1.05] tracking-[-0.04em] text-black sm:text-4xl">
+              Couldn't find
+              <br />
+              <span className="text-black/40 font-light italic">your answer?</span>
+            </h2>
+
+            <p className="mx-auto mb-8 max-w-md text-sm leading-7 text-black/40">
+              Our support team is ready to help with anything else you need.
+            </p>
+
+            <a
+              href="/contact"
+              className="group inline-flex items-center gap-2.5 rounded-full bg-black px-8 py-3.5 text-sm font-medium tracking-wide text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.15)]"
+            >
+              Contact Support
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </a>
+          </motion.div>
         </div>
       </section>
     </div>
   )
 }
 
-export default FAQ
+/* ─── Accordion Item ─────────────────────────────────── */
 
+function AccordionItem({
+  id,
+  question,
+  answer,
+  isOpen,
+  onToggle,
+}: {
+  id: string
+  question: string
+  answer: string
+  isOpen: boolean
+  onToggle: () => void
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_4px_16px_rgba(0,0,0,0.04)]">
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-black/[0.01] sm:px-7 sm:py-5"
+        aria-expanded={isOpen}
+        aria-controls={`faq-${id}`}
+      >
+        <span className={`text-[14px] font-medium tracking-tight transition-colors sm:text-[15px] ${isOpen ? "text-black" : "text-black/70"
+          }`}>
+          {question}
+        </span>
+        <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${isOpen ? "bg-black text-white" : "bg-black/5 text-black/30"
+          }`}>
+          <ChevronDown
+            className={`h-3.5 w-3.5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+              }`}
+            strokeWidth={1.5}
+          />
+        </div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            id={`faq-${id}`}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="border-t border-black/5 px-5 pb-5 pt-4 sm:px-7 sm:pb-6 sm:pt-5">
+              <p className="text-[14px] leading-7 text-black/50 sm:text-[15px]">{answer}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+export default FAQ

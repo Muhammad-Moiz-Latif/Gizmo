@@ -3,9 +3,11 @@
 import type React from "react"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import type { AppDispatch } from "../state/store"
 import type { RootState } from "../state/store"
 import { useParams, useNavigate } from "react-router-dom"
-import { Heart, ShoppingCart, Trash2, ArrowLeft } from "lucide-react"
+import { motion } from "framer-motion"
+import { Heart, ShoppingBag, Trash2, ArrowLeft, ArrowUpRight } from "lucide-react"
 import { deleteFromWishListAsync } from "../state/features/wishSlice"
 import { removefromLocalStorage, updateLocalStorage } from "@/state/features/localwishSlice"
 import { addToCartAsync, updateCartAsync } from "../state/features/cartSlice"
@@ -16,7 +18,7 @@ import { Skeleton } from "../components/Skeleton"
 export const WishlistPage: React.FC = () => {
   const { UserId } = useParams()
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
 
   // Get data from Redux store
   const allDevices = useSelector((state: RootState) => state.device.devices)
@@ -93,101 +95,130 @@ export const WishlistPage: React.FC = () => {
   }, [])
 
   return (
-    <div className="bg-white min-h-screen pt-20 px-4 sm:px-6 lg:px-16 font-roboto">
-      <div className="max-w-7xl mx-auto py-8">
+    <div className="relative min-h-screen bg-[#f7f7f5] font-roboto text-black">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.02] [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] [background-size:60px_60px]" />
+        <div className="absolute left-1/2 top-[6%] -translate-x-1/2 select-none whitespace-nowrap text-[18vw] font-black leading-none tracking-[-0.08em] text-black/[0.02]">
+          GIZMO
+        </div>
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-8 sm:pt-28 lg:px-14 xl:px-20">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <button
-              onClick={() => navigate(UserId ? `/dashboard/${UserId}` : "/dashboard")}
-              className="flex items-center text-gray-600 hover:text-black transition-colors mb-4"
-            >
-              <ArrowLeft size={18} className="mr-2" />
-              <span>Back to Shopping</span>
-            </button>
-            <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
-            <p className="text-gray-500 mt-1">
-              {wishlistItems.length} {wishlistItems.length === 1 ? "item" : "items"}
-            </p>
+        <div className="mb-10">
+          <button
+            onClick={() => navigate(UserId ? `/dashboard/${UserId}` : "/dashboard")}
+            className="mb-6 flex items-center gap-2 text-[13px] font-medium text-black/45 transition-colors hover:text-black"
+          >
+            <ArrowLeft size={15} />
+            Back to shopping
+          </button>
+
+          <div className="mb-4 flex items-center gap-3">
+            <span className="h-px w-8 bg-black/25" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+              {wishlistItems.length} {wishlistItems.length === 1 ? "item" : "items"} saved
+            </span>
           </div>
+
+          <h1 className="text-4xl font-semibold leading-[0.95] tracking-[-0.05em] sm:text-5xl">
+            Your <span className="font-light italic text-black/35">wishlist.</span>
+          </h1>
         </div>
 
         {/* Wishlist Items */}
         {!devicesFetched || devicesLoading ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-96 w-full" />)}</div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="h-96 w-full rounded-[2rem]" />
+            ))}
+          </div>
         ) : wishlistItems.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {wishlistItems.map((device) => (
-              <div
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {wishlistItems.map((device, index) => (
+              <motion.div
                 key={device.DeviceId}
-                className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-lg flex flex-col"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: (index % 8) * 0.05 }}
+                className="group flex flex-col overflow-hidden rounded-[2rem] border border-black/[0.06] bg-white shadow-[0_10px_35px_rgba(0,0,0,0.035)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(0,0,0,0.07)]"
               >
                 {/* Image */}
                 <div
-                  className="relative h-48 overflow-hidden cursor-pointer"
+                  className="relative flex h-56 cursor-pointer items-center justify-center overflow-hidden bg-[#fafaf9]"
                   onClick={() => viewProductDetails(device.DeviceId)}
                 >
                   <img
                     src={device.Images[0] || "/placeholder.svg"}
                     alt={device.DeviceName}
-                    className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+                    className="h-full w-full object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
                       removeFromWishlist(device.DeviceId)
                     }}
-                    className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                    className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-black/5 bg-white/85 shadow-sm backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-red-200 hover:bg-red-50"
                     aria-label="Remove from wishlist"
                   >
-                    <Trash2 size={16} className="text-gray-700" />
+                    <Trash2 size={15} className="text-black/50 transition-colors" />
                   </button>
+
+                  {device.Condition === "New" && (
+                    <div className="absolute left-4 top-4 rounded-full border border-black/5 bg-white/85 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.15em] text-emerald-700 backdrop-blur-md">
+                      New
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}
-                <div className="p-4 flex flex-col flex-grow">
-                  <div className="mb-2">
-                    <span className="text-xs font-medium text-gray-500 uppercase">{device.Brand}</span>
-                    <h2
-                      className="text-lg font-semibold text-gray-900 line-clamp-1 cursor-pointer hover:text-gray-700 transition-colors"
-                      onClick={() => viewProductDetails(device.DeviceId)}
-                    >
-                      {device.DeviceName}
-                    </h2>
+                <div className="flex flex-1 flex-col p-5">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-black/35">
+                    {device.Brand}
+                  </span>
+                  <h2
+                    className="mt-1.5 line-clamp-1 cursor-pointer text-lg font-semibold leading-tight tracking-[-0.02em] transition-colors hover:text-black/70"
+                    onClick={() => viewProductDetails(device.DeviceId)}
+                  >
+                    {device.DeviceName}
+                  </h2>
+
+                  <p className="mt-2 line-clamp-2 flex-1 text-[13px] leading-5 text-black/45">
+                    {device.Description}
+                  </p>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-xl font-bold tracking-[-0.03em]">${device.Price.toFixed(2)}</span>
                   </div>
 
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-grow">{device.Description}</p>
-
-                  <div className="mt-auto">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xl font-bold text-gray-900">${device.Price.toFixed(2)}</span>
-                      {device.Condition === "New" && (
-                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">New</span>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => addToCart(device.DeviceId)}
-                      className="w-full bg-black text-white py-2 rounded-md flex items-center justify-center hover:bg-gray-800 transition-colors"
-                    >
-                      <ShoppingCart size={16} className="mr-2" />
-                      Add to Cart
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => addToCart(device.DeviceId)}
+                    className="mt-4 flex h-11 items-center justify-center gap-2 rounded-full bg-black text-[13px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(0,0,0,0.18)]"
+                  >
+                    <ShoppingBag size={14} />
+                    Add to bag
+                  </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-gray-50 rounded-lg">
-            <Heart size={64} className="mx-auto text-gray-300 mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-700 mb-2">Your wishlist is empty</h2>
-            <p className="text-gray-500 mb-6">Save items you love to your wishlist and find them here anytime.</p>
+          <div className="flex flex-col items-center rounded-[2rem] border border-black/[0.06] bg-white py-20 text-center">
+            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-black/10 bg-[#fafaf9]">
+              <Heart size={26} className="text-black/30" />
+            </div>
+            <h2 className="text-2xl font-semibold tracking-[-0.03em]">Your wishlist is empty</h2>
+            <p className="mt-2 max-w-xs text-sm text-black/45">
+              Save items you love and find them here anytime.
+            </p>
             <button
               onClick={() => navigate(UserId ? `/dashboard/${UserId}` : "/dashboard")}
-              className="px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+              className="group mt-6 flex h-12 items-center gap-2 rounded-full bg-black px-6 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(0,0,0,0.18)]"
             >
-              Start Shopping
+              Start shopping
+              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
             </button>
           </div>
         )}
@@ -195,4 +226,3 @@ export const WishlistPage: React.FC = () => {
     </div>
   )
 }
-

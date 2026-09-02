@@ -23,6 +23,19 @@ export const UserDashboard = () => {
   const dispatch = useDispatch();
   const categories = useSelector((state: RootState) => state.category.categories);
   const devices = useSelector((state: RootState) => state.device.devices);
+
+  useEffect(() => {
+    const pingServer = () => {
+      void axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/status`, { timeout: 10000 })
+        .catch((error) => console.debug("Server keep-alive ping failed:", error.message));
+    };
+
+    pingServer();
+    const intervalId = window.setInterval(pingServer, 10 * 60 * 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
   useEffect(() => {
     const categoriesArray = Array.isArray(categories) ? categories : []
     if (categoriesArray.length === 0) {
@@ -70,7 +83,7 @@ export const UserDashboard = () => {
         if (UserId != undefined) {
           const response = await axios.get(`${import.meta.env.VITE_PUBLIC_API_URL}/UserDashboard/${UserId}`);
           if (response && response.data) {
-            // console.log(response.data);
+            console.log(response.data);
 
             setImage(response.data.UserInfo.img);
           }

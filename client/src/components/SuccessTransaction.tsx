@@ -1,14 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import checked from "../assets/checked.png"
-import home from "../assets/home.png"
-import reciept from "../assets/receipt.png"
 import { format } from "date-fns"
 import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 import { jsPDF } from "jspdf"
 import { useDispatch } from "react-redux"
+import { motion } from "framer-motion"
+import { Check, Home, Receipt } from "lucide-react"
 import { clearCartAsync } from "@/state/features/cartSlice"
 
 export const SuccessTransaction = () => {
@@ -57,23 +56,30 @@ export const SuccessTransaction = () => {
     doc.text(`Total Payment: $${price}`, 20, 80)
 
     doc.save(`Receipt_${refNo}.pdf`)
+  }
 
-
+  function handleNavigation() {
+    //@ts-ignore
+    dispatch(clearCartAsync({ UserId }));
+    navigate(`/dashboard/${UserId}`);
   }
 
   if (IsLoading) {
     return (
-      <div className="w-full min-h-screen flex justify-center items-center font-roboto p-4">
-        <div className="w-full max-w-md rounded-3xl flex flex-col items-center justify-center px-6 py-8 border border-green-200 bg-green-50">
-          <div className="animate-pulse flex flex-col items-center w-full">
-            <div className="rounded-full bg-green-300 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 mb-4"></div>
-            <div className="h-6 bg-green-200 rounded w-1/2 mb-2"></div>
-            <div className="h-4 bg-green-200 rounded w-3/4 mb-4"></div>
-            <div className="grid grid-cols-2 gap-3 w-full">
-              <div className="h-14 bg-green-200 rounded"></div>
-              <div className="h-14 bg-green-200 rounded"></div>
-              <div className="h-14 bg-green-200 rounded"></div>
-              <div className="h-14 bg-green-200 rounded"></div>
+      <div className="relative flex min-h-screen w-full items-center justify-center bg-[#f7f7f5] p-4 font-roboto">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[20vw] font-black leading-none tracking-[-0.08em] text-black/[0.02]">
+          GIZMO
+        </div>
+        <div className="relative z-10 w-full max-w-md rounded-[2rem] border border-black/[0.06] bg-white px-7 py-10">
+          <div className="flex animate-pulse flex-col items-center">
+            <div className="mb-5 h-16 w-16 rounded-full bg-black/[0.06]" />
+            <div className="mb-2 h-5 w-2/3 rounded-full bg-black/[0.06]" />
+            <div className="mb-6 h-9 w-1/3 rounded-full bg-black/[0.06]" />
+            <div className="grid w-full grid-cols-2 gap-3">
+              <div className="h-16 rounded-2xl bg-black/[0.04]" />
+              <div className="h-16 rounded-2xl bg-black/[0.04]" />
+              <div className="h-16 rounded-2xl bg-black/[0.04]" />
+              <div className="h-16 rounded-2xl bg-black/[0.04]" />
             </div>
           </div>
         </div>
@@ -81,80 +87,87 @@ export const SuccessTransaction = () => {
     )
   }
 
-  function handleNavigation(){
-    //@ts-ignore
-    dispatch(clearCartAsync({ UserId }));
-    navigate(`/dashboard/${UserId}`);
-  }
-  
   return (
-    <div className="w-full min-h-screen flex justify-center items-center font-roboto p-4 py-8">
-      <div className="w-full max-w-md rounded-3xl flex flex-col items-center px-4 sm:px-6 md:px-8 py-6 border border-green-200 bg-green-50">
-        {/* Success Icon */}
-        <div className="bg-green-300 rounded-full p-2 mb-4">
-          <div className="bg-green-400 rounded-full p-2">
-            <div className="bg-green-500 rounded-full p-2">
-              <img
-                src={checked || "/placeholder.svg"}
-                alt="Success"
-                className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
-              />
-            </div>
+    <div className="relative flex min-h-screen w-full items-center justify-center bg-[#f7f7f5] p-4 py-12 font-roboto">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.02] [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] [background-size:60px_60px]" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[20vw] font-black leading-none tracking-[-0.08em] text-black/[0.02]">
+          GIZMO
+        </div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 w-full max-w-md rounded-[2rem] border border-black/[0.06] bg-white px-6 py-9 sm:px-8"
+      >
+        {/* Success icon */}
+        <div className="mb-5 flex justify-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-black">
+            <Check className="h-7 w-7 text-white" strokeWidth={2.5} />
           </div>
         </div>
 
-        {/* Title */}
-        <h1 className="text-xl sm:text-2xl font-medium pb-3 text-green-800 text-center">Payment Successful!</h1>
+        {/* Eyebrow + title */}
+        <div className="mb-1 flex items-center justify-center gap-3">
+          <span className="h-px w-6 bg-black/20" />
+          <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">Order confirmed</span>
+          <span className="h-px w-6 bg-black/20" />
+        </div>
+        <h1 className="mb-6 text-center text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
+          Payment <span className="font-light italic text-black/35">successful.</span>
+        </h1>
 
-        {/* Divider */}
-        <hr className="bg-green-600 w-full h-[2px] mb-3" />
+        <div className="mb-6 h-px w-full bg-black/[0.07]" />
 
-        {/* Payment Amount */}
-        <h2 className="text-green-800 text-sm sm:text-base">Total Payment</h2>
-        <p className="text-3xl sm:text-4xl md:text-5xl font-medium text-green-700 mb-4">${price}</p>
+        {/* Amount */}
+        <div className="mb-6 text-center">
+          <h2 className="text-[13px] font-medium uppercase tracking-[0.2em] text-black/40">Total payment</h2>
+          <p className="mt-2 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">${price}</p>
+        </div>
 
-        {/* Transaction Details */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full mb-4">
-          <div className="flex flex-col border border-green-700 bg-green-100 p-2 items-start justify-center rounded-lg">
-            <h1 className="text-green-600 text-xs sm:text-sm">Reference Id</h1>
-            <h1 className="text-green-900 text-xs sm:text-sm font-medium truncate w-full">{refNo}</h1>
+        {/* Details */}
+        <div className="mb-6 grid grid-cols-2 gap-2.5">
+          <div className="rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-3">
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/35">Reference ID</h3>
+            <p className="mt-1 truncate text-[13px] font-medium">{refNo}</p>
           </div>
-          <div className="flex flex-col border border-green-700 bg-green-100 p-2 items-start justify-center rounded-lg">
-            <h1 className="text-green-600 text-xs sm:text-sm">Payment Time</h1>
-            <h1 className="text-green-900 text-xs sm:text-sm font-medium truncate w-full">{created}</h1>
+          <div className="rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-3">
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/35">Payment time</h3>
+            <p className="mt-1 truncate text-[13px] font-medium">{created}</p>
           </div>
-          <div className="flex flex-col border border-green-700 bg-green-100 p-2 items-start justify-center rounded-lg">
-            <h1 className="text-green-600 text-xs sm:text-sm">Payment Method</h1>
-            <h1 className="text-green-900 text-xs sm:text-sm font-medium">Bank Transfer</h1>
+          <div className="rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-3">
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/35">Payment method</h3>
+            <p className="mt-1 text-[13px] font-medium">Bank transfer</p>
           </div>
-          <div className="flex flex-col border border-green-700 bg-green-100 p-2 items-start justify-center rounded-lg">
-            <h1 className="text-green-600 text-xs sm:text-sm">Sender Name</h1>
-            <h1 className="text-green-900 text-xs sm:text-sm font-medium truncate w-full">{name}</h1>
+          <div className="rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-3">
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/35">Sender name</h3>
+            <p className="mt-1 truncate text-[13px] font-medium">{name}</p>
           </div>
         </div>
 
-        {/* Divider */}
-        <hr className="bg-green-600 w-full h-[2px] mb-5" />
+        <div className="mb-6 h-px w-full bg-black/[0.07]" />
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row w-full gap-3 mt-2">
+        {/* Actions */}
+        <div className="flex flex-col gap-3 sm:flex-row">
           <button
             onClick={handleNavigation}
-            className="w-full h-12 border border-green-700 rounded-md text-green-700 flex items-center justify-center hover:bg-green-50 transition-colors"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-black/15 bg-white text-[13px] font-semibold text-black transition-all duration-300 hover:-translate-y-0.5 hover:border-black/30"
           >
-            <img src={home || "/placeholder.svg"} alt="Home" className="w-5 h-5 mr-2" />
-            Continue Shopping
+            <Home className="h-4 w-4" />
+            Continue shopping
           </button>
           <button
             onClick={downloadReceipt}
-            className="w-full h-12 border rounded-md text-white bg-green-700 flex items-center justify-center hover:bg-green-800 transition-colors"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black text-[13px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(0,0,0,0.18)]"
           >
-            <img src={reciept || "/placeholder.svg"} alt="Receipt" className="w-5 h-5 mr-2" />
-            Get Receipt
+            <Receipt className="h-4 w-4" />
+            Get receipt
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
-

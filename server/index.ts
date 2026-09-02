@@ -3,6 +3,8 @@ import session from 'express-session'; // Add this line
 import cors from 'cors';
 import passport from 'passport';
 import { router as authRoutes } from './routes/authRoutes';
+import dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
 import { prisma, router as testRoutes } from './routes/userRoutes';
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
@@ -92,7 +94,6 @@ app.post(
         const userId = session.metadata?.UserId;
         const sessionId = session.id;
         const totalAmount = session.amount_total;
-        const currency = session.currency;
         var UserName = "";
         const User = await prisma.user.findUnique({
           where: { id: userId }
@@ -111,6 +112,8 @@ app.post(
         const transaction = await prisma.transaction.create({
           data: { userId, price: totalAmount ? totalAmount / 100 : 0, paymentStatus: "COMPLETED", sessionId: sessionId }
         });
+
+        console.log('transaction: ', transaction);
 
         // console.log("✅ Transaction stored in DB.",transaction);
       } catch (err) {

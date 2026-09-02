@@ -3,18 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id         String   @id @default(uuid())
-  password   String
-  role       Role     @default(USER)
-  username   String   @unique
-  authType   AuthType @default(EMAIL)
-  identifier String   @unique
-  createdAt  DateTime @default(now())
+  id              String        @id @default(uuid())
+  password        String
+  role            Role          @default(USER)
+  username        String        @unique
+  authType        AuthType      @default(EMAIL)
+  identifier      String        @unique
+  createdAt       DateTime      @default(now())
   img             String
   WishListDevices String[]
   CartDevices     Cart[]
@@ -29,6 +30,7 @@ model Cart {
   Quantity Int
   userId   String
   user     User   @relation(fields: [userId], references: [id])
+
   @@id([DeviceId, userId])
 }
 

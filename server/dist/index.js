@@ -8,6 +8,8 @@ const express_session_1 = __importDefault(require("express-session")); // Add th
 const cors_1 = __importDefault(require("cors"));
 const passport_1 = __importDefault(require("passport"));
 const authRoutes_1 = require("./routes/authRoutes");
+const dns_1 = __importDefault(require("dns"));
+dns_1.default.setDefaultResultOrder('ipv4first');
 const userRoutes_1 = require("./routes/userRoutes");
 const dotenv_1 = __importDefault(require("dotenv"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
@@ -79,7 +81,6 @@ async (req, res) => {
             const userId = (_a = session.metadata) === null || _a === void 0 ? void 0 : _a.UserId;
             const sessionId = session.id;
             const totalAmount = session.amount_total;
-            const currency = session.currency;
             var UserName = "";
             const User = await userRoutes_1.prisma.user.findUnique({
                 where: { id: userId }
@@ -97,6 +98,7 @@ async (req, res) => {
             const transaction = await userRoutes_1.prisma.transaction.create({
                 data: { userId, price: totalAmount ? totalAmount / 100 : 0, paymentStatus: "COMPLETED", sessionId: sessionId }
             });
+            console.log('transaction: ', transaction);
             // console.log("✅ Transaction stored in DB.",transaction);
         }
         catch (err) {

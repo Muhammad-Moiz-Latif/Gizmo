@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useParams, useNavigate } from "react-router-dom"
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CreditCard, Truck, Info, Shield, Clock } from "lucide-react"
+import { motion } from "framer-motion"
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CreditCard, Truck, Info, Shield, Clock, ArrowUpRight } from "lucide-react"
 import type { RootState } from "@/state/store"
 import { updateCartAsync, addToCartAsync } from "@/state/features/cartSlice"
 import { updateLocalCartItem, updateLocalCart, removeCartItemfromLocalStorage } from "@/state/features/localcartSlice"
@@ -202,49 +203,82 @@ export const ShoppingCart = () => {
   }, [])
 
   return (
-    <div className="bg-white min-h-screen font-sans pt-16">
-      {/* Hero Section */}
-      <section className="bg-black text-white py-12 px-4 relative z-20">
-        <div className="absolute inset-0 w-full h-full bg-black opacity-70 z-10"></div>
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-black to-transparent z-20"></div>
+    <div className="min-h-screen bg-[#f7f7f5] font-roboto text-black">
+      {/* =====================================================
+          HERO
+      ===================================================== */}
+      <section className="relative overflow-hidden bg-black py-16 text-white sm:py-20">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[18vw] font-black leading-none tracking-[-0.08em] text-white/[0.04]">
+          GIZMO
+        </div>
 
-        <div className="max-w-6xl mx-auto relative z-30">
-          <h1 className="text-3xl md:text-4xl font-bold">Your Shopping Cart</h1>
-          <p className="text-lg mt-2 text-gray-300">Review your items and proceed to checkout</p>
+        <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-8 lg:px-14">
+          <div className="mb-4 flex items-center gap-3">
+            <span className="h-px w-8 bg-white/30" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-white/50">
+              {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
+            </span>
+          </div>
+          <h1 className="text-4xl font-semibold leading-[0.95] tracking-[-0.05em] sm:text-5xl">
+            Your <span className="font-light italic text-white/40">cart.</span>
+          </h1>
+          <p className="mt-3 max-w-md text-sm leading-6 text-white/45">
+            Review what you've picked, then head to checkout when you're ready.
+          </p>
         </div>
       </section>
 
-      {/* Cart Content */}
-      <section className="py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Cart Items */}
+      {/* =====================================================
+          BODY
+      ===================================================== */}
+      <section className="relative py-14 sm:py-16">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.02] [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] [background-size:60px_60px]" />
+
+        <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-8 lg:px-14">
+          <div className="flex flex-col gap-8 lg:flex-row">
+            {/* =================================================
+                CART ITEMS
+            ================================================= */}
             <div className="lg:w-2/3">
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-black">Cart Items ({cartItems.length})</h2>
-                  <button className="text-black flex items-center hover:underline" onClick={continueShopping}>
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Continue Shopping
+              <div className="rounded-[2rem] border border-black/[0.06] bg-white p-6 sm:p-8">
+                <div className="mb-7 flex items-center justify-between">
+                  <h2 className="text-2xl font-semibold tracking-[-0.03em]">
+                    Cart items <span className="text-black/30">({cartItems.length})</span>
+                  </h2>
+                  <button
+                    className="flex items-center gap-2 text-[13px] font-medium text-black/50 transition-colors hover:text-black"
+                    onClick={continueShopping}
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    Continue shopping
                   </button>
                 </div>
 
                 {!devicesFetched || devicesLoading ? (
-                  <div className="space-y-4">{Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-24 w-full" />)}</div>
+                  <div className="space-y-4">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <Skeleton key={index} className="h-24 w-full rounded-2xl" />
+                    ))}
+                  </div>
                 ) : cartItems.length === 0 ? (
-                  <div className="text-center py-8">
-                    <ShoppingBag className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-xl font-semibold mb-2 text-black">Your cart is empty</h3>
-                    <p className="text-gray-500 mb-6">Looks like you haven't added any items to your cart yet.</p>
+                  <div className="flex flex-col items-center py-16 text-center">
+                    <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-black/10 bg-[#fafaf9]">
+                      <ShoppingBag className="h-7 w-7 text-black/30" />
+                    </div>
+                    <h3 className="text-xl font-semibold tracking-[-0.02em]">Your cart is empty</h3>
+                    <p className="mt-2 max-w-xs text-sm text-black/45">
+                      Looks like you haven't added anything yet.
+                    </p>
                     <button
-                      className="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition-colors"
+                      className="mt-6 flex h-12 items-center gap-2 rounded-full bg-black px-6 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(0,0,0,0.18)]"
                       onClick={continueShopping}
                     >
-                      Start Shopping
+                      Start shopping
+                      <ArrowUpRight className="h-4 w-4" />
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {cartItems.map((item: any) => {
                       const deviceId = UserId ? item.DeviceId : item.deviceId
                       const quantity = UserId ? item.Quantity : item.quantity
@@ -252,89 +286,105 @@ export const ShoppingCart = () => {
                       if (!device) return null
 
                       return (
-                        <div key={deviceId} className="border-b border-gray-200 pb-6">
-                          <div className="flex flex-col md:flex-row items-start">
+                        <motion.div
+                          key={deviceId}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4 }}
+                          className="rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-5"
+                        >
+                          <div className="flex flex-col items-start gap-5 md:flex-row">
                             {/* Product Image */}
-                            <div className="w-full md:w-32 h-32 bg-gray-100 rounded-md overflow-hidden mb-4 md:mb-0 flex-shrink-0">
+                            <div className="h-28 w-28 flex-shrink-0 overflow-hidden rounded-xl bg-white">
                               <img
                                 src={device.Images[0] || "/placeholder.svg"}
                                 alt={device.DeviceName}
-                                className="w-full h-full object-cover"
+                                className="h-full w-full object-contain p-2"
                               />
                             </div>
 
                             {/* Product Details */}
-                            <div className="md:ml-6 flex-grow">
-                              <div className="flex flex-col md:flex-row justify-between">
+                            <div className="w-full flex-grow">
+                              <div className="flex flex-col justify-between gap-3 md:flex-row">
                                 <div>
-                                  <h3 className="text-lg font-semibold text-black">{device.DeviceName}</h3>
-                                  <p className="text-gray-500">
-                                    {device.Brand} | {device.Model}
+                                  <h3 className="text-[17px] font-semibold tracking-[-0.02em]">
+                                    {device.DeviceName}
+                                  </h3>
+                                  <p className="mt-0.5 text-sm text-black/45">
+                                    {device.Brand} · {device.Model}
                                   </p>
-                                  <p className="text-sm text-gray-500 mt-1">Condition: {device.Condition}</p>
+                                  <p className="mt-1 text-[13px] text-black/35">Condition: {device.Condition}</p>
                                   <button
-                                    className="text-sm text-black mt-2 flex items-center hover:underline"
+                                    className="mt-2 flex items-center gap-1.5 text-[13px] font-medium text-black/60 transition-colors hover:text-black"
                                     onClick={() => toggleItemDetails(deviceId)}
                                   >
+                                    <Info className="h-3.5 w-3.5" />
                                     {expandedItem === deviceId ? "Hide details" : "View details"}
-                                    <Info className="w-4 h-4 ml-1" />
                                   </button>
                                 </div>
-                                <div className="mt-4 md:mt-0 text-right">
-                                  <p className="text-lg font-semibold text-black">{formatCurrency(device.Price)}</p>
-                                  <p className="text-sm text-gray-500">{device.Quantity} in stock</p>
+                                <div className="text-right">
+                                  <p className="text-lg font-semibold tracking-[-0.02em]">
+                                    {formatCurrency(device.Price)}
+                                  </p>
+                                  <p className="text-[12px] text-black/35">{device.Quantity} in stock</p>
                                 </div>
                               </div>
 
                               {/* Expanded Details */}
                               {expandedItem === deviceId && (
-                                <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                                  <h4 className="font-medium text-black mb-2">Specifications:</h4>
-                                  <div className="grid grid-cols-2 gap-2">
+                                <div className="mt-4 rounded-xl border border-black/[0.06] bg-white p-4">
+                                  <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-black/35">
+                                    Specifications
+                                  </span>
+                                  <div className="mt-3 grid grid-cols-2 gap-2">
                                     {Object.entries(device.Specifications).map(([key, value]) => (
-                                      <div key={key} className="text-sm">
-                                        <span className="font-medium text-gray-700">{key}:</span>{" "}
-                                        {JSON.stringify(value)}
+                                      <div key={key} className="text-[13px]">
+                                        <span className="font-medium text-black/60">{key}:</span>{" "}
+                                        <span className="text-black/45">{JSON.stringify(value)}</span>
                                       </div>
                                     ))}
                                   </div>
-                                  <p className="text-sm mt-3">{device.Description}</p>
+                                  <p className="mt-3 text-[13px] leading-5 text-black/50">{device.Description}</p>
                                 </div>
                               )}
 
                               {/* Quantity and Actions */}
-                              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-4">
-                                <div className="flex items-center border border-gray-300 rounded-md">
+                              <div className="mt-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+                                <div className="flex items-center gap-2">
                                   <button
-                                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white text-black/60 transition-all duration-300 hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-black/60"
                                     onClick={() => toggleDecrementCart(deviceId)}
                                     disabled={quantity <= 1}
                                   >
-                                    <Minus className="w-4 h-4" />
+                                    <Minus className="h-3.5 w-3.5" />
                                   </button>
-                                  <span className="px-4 py-1 border-x border-gray-300">{quantity}</span>
+                                  <span className="min-w-[28px] text-center text-sm font-semibold">{quantity}</span>
                                   <button
-                                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white text-black/60 transition-all duration-300 hover:bg-black hover:text-white"
                                     onClick={() => toggleIncrementCart(deviceId)}
                                   >
-                                    <Plus className="w-4 h-4" />
+                                    <Plus className="h-3.5 w-3.5" />
                                   </button>
                                 </div>
-                                <div className="flex items-center mt-4 md:mt-0">
-                                  <p className="font-semibold text-black mr-4">
-                                    Subtotal: {formatCurrency(device.Price * quantity)}
+                                <div className="flex items-center gap-4">
+                                  <p className="text-[13px] font-medium text-black/50">
+                                    Subtotal:{" "}
+                                    <span className="font-semibold text-black">
+                                      {formatCurrency(device.Price * quantity)}
+                                    </span>
                                   </p>
                                   <button
-                                    className="text-red-500 hover:text-red-700"
+                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white text-red-500 transition-all duration-300 hover:border-red-200 hover:bg-red-50"
                                     onClick={() => handleRemoval(deviceId)}
+                                    aria-label="Remove item"
                                   >
-                                    <Trash2 className="w-5 h-5" />
+                                    <Trash2 className="h-4 w-4" />
                                   </button>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       )
                     })}
                   </div>
@@ -343,9 +393,14 @@ export const ShoppingCart = () => {
 
               {/* Recommended Products */}
               {cartItems.length > 0 && (
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-xl font-bold text-black mb-4">You Might Also Like</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mt-6 rounded-[2rem] border border-black/[0.06] bg-white p-6 sm:p-8">
+                  <div className="mb-5 flex items-center gap-3">
+                    <span className="h-px w-8 bg-black/25" />
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                      You might also like
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     {deviceData
                       .filter(
                         (device) =>
@@ -353,19 +408,25 @@ export const ShoppingCart = () => {
                       )
                       .slice(0, 2)
                       .map((device) => (
-                        <div key={device.DeviceId} className="flex items-center p-3 border border-gray-200 rounded-md">
-                          <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                        <div
+                          key={device.DeviceId}
+                          className="flex items-center gap-4 rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-4"
+                        >
+                          <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-white">
                             <img
                               src={device.Images[0] || "/placeholder.svg"}
                               alt={device.DeviceName}
-                              className="w-full h-full object-cover"
+                              className="h-full w-full object-contain p-1.5"
                             />
                           </div>
-                          <div className="ml-4 flex-grow">
-                            <h3 className="font-medium text-black">{device.DeviceName}</h3>
-                            <p className="text-black font-semibold mt-1">{formatCurrency(device.Price)}</p>
+                          <div className="flex-grow">
+                            <h3 className="text-sm font-semibold tracking-[-0.01em]">{device.DeviceName}</h3>
+                            <p className="mt-1 text-sm font-semibold text-black/70">{formatCurrency(device.Price)}</p>
                           </div>
-                          <button className="bg-black text-white px-3 py-1 rounded-md text-sm hover:bg-gray-800 transition-colors" onClick={() => addItem(device.DeviceId)}>
+                          <button
+                            className="flex h-9 items-center rounded-full bg-black px-4 text-[12px] font-semibold text-white transition-colors hover:bg-zinc-800"
+                            onClick={() => addItem(device.DeviceId)}
+                          >
                             Add
                           </button>
                         </div>
@@ -375,37 +436,39 @@ export const ShoppingCart = () => {
               )}
             </div>
 
-            {/* Order Summary */}
+            {/* =================================================
+                ORDER SUMMARY
+            ================================================= */}
             <div className="lg:w-1/3">
-              <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
-                <h2 className="text-xl font-bold text-black mb-6">Order Summary</h2>
+              <div className="sticky top-6 rounded-[2rem] border border-black/[0.06] bg-white p-6 sm:p-8">
+                <h2 className="mb-6 text-xl font-semibold tracking-[-0.03em]">Order summary</h2>
 
-                <div className="space-y-4 mb-6">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="text-black font-medium">{formatCurrency(calculateSubtotal())}</span>
+                <div className="mb-6 space-y-3.5">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-black/50">Subtotal</span>
+                    <span className="font-medium">{formatCurrency(calculateSubtotal())}</span>
                   </div>
 
                   {promoApplied && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-sm text-emerald-700">
                       <span>Discount (10%)</span>
                       <span>-{formatCurrency(discountAmount)}</span>
                     </div>
                   )}
 
-                  <div className="border-t border-gray-200 pt-4 mt-4">
+                  <div className="border-t border-black/[0.07] pt-4">
                     <div className="flex justify-between">
-                      <span className="text-lg font-bold text-black">Total</span>
-                      <span className="text-lg font-bold text-black">{formatCurrency(calculateTotal())}</span>
+                      <span className="text-lg font-semibold">Total</span>
+                      <span className="text-lg font-semibold">{formatCurrency(calculateTotal())}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Final price will be calculated at checkout</p>
+                    <p className="mt-1 text-[12px] text-black/35">Final price calculated at checkout</p>
                   </div>
                 </div>
 
                 {/* Promo Code */}
                 <div className="mb-6">
-                  <label htmlFor="promo" className="block text-sm font-medium text-gray-700 mb-1">
-                    Promo Code
+                  <label htmlFor="promo" className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.25em] text-black/40">
+                    Promo code
                   </label>
                   <div className="flex">
                     <input
@@ -413,68 +476,71 @@ export const ShoppingCart = () => {
                       id="promo"
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
-                      className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-black focus:border-black"
+                      className="flex-grow rounded-l-xl border border-r-0 border-black/10 bg-[#fafaf9] px-4 py-2.5 text-[14px] outline-none transition-colors focus:border-black focus:bg-white"
                       placeholder="Enter code"
                       disabled={promoApplied}
                     />
                     <button
                       onClick={applyPromoCode}
                       disabled={promoApplied || !promoCode}
-                      className={`px-4 py-2 font-medium rounded-r-md ${promoApplied ? "bg-green-600 text-white" : "bg-black text-white hover:bg-gray-800"
-                        } transition-colors ${!promoCode && "opacity-50 cursor-not-allowed"}`}
+                      className={`rounded-r-xl px-5 text-[13px] font-semibold transition-colors ${promoApplied ? "bg-emerald-600 text-white" : "bg-black text-white hover:bg-zinc-800"
+                        } ${!promoCode && !promoApplied ? "opacity-40" : ""}`}
                     >
                       {promoApplied ? "Applied" : "Apply"}
                     </button>
                   </div>
-                  {promoApplied && <p className="text-sm text-green-600 mt-1">Promo code applied successfully!</p>}
+                  {promoApplied && (
+                    <p className="mt-2 text-[13px] text-emerald-700">Promo code applied successfully!</p>
+                  )}
                 </div>
 
                 {/* Checkout Button */}
                 <button
                   disabled={cartItems.length === 0}
-                  className={`w-full bg-black text-white py-3 px-4 rounded-md font-medium flex items-center justify-center ${cartItems.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"
-                    } transition-colors mb-4`}
+                  className={`group mb-5 flex h-14 w-full items-center justify-center gap-2.5 rounded-full bg-black text-sm font-semibold text-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] transition-all duration-300 ${cartItems.length === 0
+                      ? "cursor-not-allowed opacity-40"
+                      : "hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(0,0,0,0.22)]"
+                    }`}
                   onClick={proceedToCheckout}
                 >
-                  <CreditCard className="w-5 h-5 mr-2" />
-                  Proceed to Checkout
+                  <CreditCard className="h-4 w-4" />
+                  Proceed to checkout
                 </button>
 
-                {/* Benefits Section (replacing tax and shipping) */}
-                <div className="mt-6 space-y-4">
-                  <div className="p-4 bg-gray-50 rounded-md flex items-start">
-                    <Truck className="w-5 h-5 text-gray-700 mr-3 mt-0.5" />
+                {/* Benefits */}
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-4">
+                    <Truck className="mt-0.5 h-4.5 w-4.5 text-black/45" />
                     <div>
-                      <p className="text-sm font-medium text-black">Fast & Reliable Shipping</p>
-                      <p className="text-xs text-gray-500 mt-1">Most orders delivered within 3-5 business days</p>
+                      <p className="text-[13px] font-medium">Fast & reliable shipping</p>
+                      <p className="mt-0.5 text-[12px] text-black/40">Most orders arrive in 3–5 business days</p>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-gray-50 rounded-md flex items-start">
-                    <Shield className="w-5 h-5 text-gray-700 mr-3 mt-0.5" />
+                  <div className="flex items-start gap-3 rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-4">
+                    <Shield className="mt-0.5 h-4.5 w-4.5 text-black/45" />
                     <div>
-                      <p className="text-sm font-medium text-black">Secure Payment</p>
-                      <p className="text-xs text-gray-500 mt-1">Your payment information is processed securely</p>
+                      <p className="text-[13px] font-medium">Secure payment</p>
+                      <p className="mt-0.5 text-[12px] text-black/40">Your payment details are processed securely</p>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-gray-50 rounded-md flex items-start">
-                    <Clock className="w-5 h-5 text-gray-700 mr-3 mt-0.5" />
+                  <div className="flex items-start gap-3 rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-4">
+                    <Clock className="mt-0.5 h-4.5 w-4.5 text-black/45" />
                     <div>
-                      <p className="text-sm font-medium text-black">30-Day Returns</p>
-                      <p className="text-xs text-gray-500 mt-1">Return any item within 30 days for a full refund</p>
+                      <p className="text-[13px] font-medium">30-day returns</p>
+                      <p className="mt-0.5 text-[12px] text-black/40">Return any item within 30 days, full refund</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Methods */}
-                <div className="mt-6">
-                  <p className="text-sm text-gray-500 mb-2">We accept:</p>
-                  <div className="flex space-x-2">
-                    <div className="w-10 h-6 bg-gray-200 rounded"></div>
-                    <div className="w-10 h-6 bg-gray-200 rounded"></div>
-                    <div className="w-10 h-6 bg-gray-200 rounded"></div>
-                    <div className="w-10 h-6 bg-gray-200 rounded"></div>
+                <div className="mt-6 flex items-center justify-between border-t border-black/[0.07] pt-5">
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-black/30">We accept</span>
+                  <div className="flex gap-1.5">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="h-6 w-9 rounded-md border border-black/10 bg-[#fafaf9]" />
+                    ))}
                   </div>
                 </div>
               </div>
@@ -487,4 +553,3 @@ export const ShoppingCart = () => {
 }
 
 export default ShoppingCart
-

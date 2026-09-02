@@ -1,17 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
-import logo from '../assets/blockchain (1).png';
-import cartimg from '../assets/shopping-cart1.png';
-import search from '../assets/zoom.png';
-import dropdown from "../assets/arrow-down-sign-to-navigate.png";
-import wishlist from '../assets/wishlist1.png';
-import { WishListDropDown } from './WishListDropDown';
-import { CartDropDown } from './CartDropDown';
-import { getAvatarUrl, handleAvatarError } from '../utils/avatar';
-import toast from 'react-hot-toast';
+import React, { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../state/store";
 
+import logo from "../assets/blockchain (1).png";
+import cartimg from "../assets/shopping-cart1.png";
+import search from "../assets/zoom.png";
+import dropdown from "../assets/arrow-down-sign-to-navigate.png";
+import wishlist from "../assets/wishlist1.png";
+
+import { WishListDropDown } from "./WishListDropDown";
+import { CartDropDown } from "./CartDropDown";
+import { getAvatarUrl, handleAvatarError } from "../utils/avatar";
+
+import toast from "react-hot-toast";
 
 interface UserNavbarProps {
     ImageURl: string;
@@ -19,250 +22,1233 @@ interface UserNavbarProps {
 
 export const UserNavbar: React.FC<UserNavbarProps> = ({ ImageURl }) => {
     const { UserId } = useParams();
+    const navigate = useNavigate();
+
     const [isOpen, setIsOpen] = useState(false);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isWishList, setIsWishList] = useState(false);
     const [isCart, setIsCart] = useState(false);
-    const wishList = useSelector((state: RootState) => state.wishList.list);
-    const categories = useSelector((state: RootState) => state.category.categories);
-    const cart = useSelector((state: RootState) => state.cart.list);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+    const [Query, setQuery] = useState("");
+
+    const wishList = useSelector(
+        (state: RootState) => state.wishList.list
+    );
+
+    const categories = useSelector(
+        (state: RootState) => state.category.categories
+    );
+
+    const cart = useSelector(
+        (state: RootState) => state.cart.list
+    );
+
+    const Devices = useSelector(
+        (state: RootState) => state.device.devices
+    );
+
+    const localWishList = useSelector(
+        (state: RootState) => state.localWishList.list
+    );
+
+    const localCart = useSelector(
+        (state: RootState) => state.localCart.list
+    );
+
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
-    const Devices = useSelector((state: RootState) => state.device.devices);
-    // Fix the state types and implement the search functionality
-    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-    const [Query, setQuery] = useState<any>();
-    const localWishList = useSelector((state: RootState) => state.localWishList.list);
-    const localCart = useSelector((state: RootState) => state.localCart.list);
-    const navigate = useNavigate();
-    var wishlistCount = 0;
-    var cartCount = 0;
-    if (UserId == undefined) {
-        wishlistCount = localWishList.length;
-        cartCount = localCart.length;
-    } else {
-        wishlistCount = wishList.length;
-        cartCount = cart.length
-    }
+    const wishlistRef = useRef<HTMLDivElement>(null);
+    const profileRef = useRef<HTMLDivElement>(null);
+
+    /* ------------------------------------------------ */
+    /* Scroll state                                     */
+    /* ------------------------------------------------ */
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 24);
+        };
+
+        handleScroll();
+
+        window.addEventListener("scroll", handleScroll, {
+            passive: true,
+        });
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
+
+    /* ------------------------------------------------ */
+    /* Counts                                           */
+    /* ------------------------------------------------ */
+
+    const wishlistCount =
+        UserId === undefined
+            ? localWishList.length
+            : wishList.length;
+
+    const cartCount =
+        UserId === undefined
+            ? localCart.length
+            : cart.length;
+
+    /* ------------------------------------------------ */
+    /* Logout / Login                                  */
+    /* ------------------------------------------------ */
 
     function handleLogout() {
-        if (UserId == undefined) {
-            navigate('/Login');
-
-        } else {
-            toast.success("Logout successful", {
-                style: {}
-            });
-            localStorage.removeItem('Cart');
-            localStorage.removeItem('WishList');
-            setTimeout(() => {
-                navigate('/dashboard', { replace: true })
-                window.location.reload();
-            }, 1000);
-
+        if (UserId === undefined) {
+            navigate("/Login");
+            return;
         }
+
+        toast.success("Logout successful");
+
+        localStorage.removeItem("Cart");
+        localStorage.removeItem("WishList");
+
+        setTimeout(() => {
+            navigate("/dashboard", { replace: true });
+            window.location.reload();
+        }, 1000);
     }
+
+
+    /* ------------------------------------------------ */
+    /* Outside click                                    */
+    /* ------------------------------------------------ */
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(target)
+            ) {
                 setIsCategoryOpen(false);
             }
-            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+
+            if (
+                searchRef.current &&
+                !searchRef.current.contains(target)
+            ) {
                 setIsSearchOpen(false);
+            }
+
+            if (
+                wishlistRef.current &&
+                !wishlistRef.current.contains(target)
+            ) {
+                setIsWishList(false);
+            }
+
+            if (
+                profileRef.current &&
+                !profileRef.current.contains(target)
+            ) {
+                setIsOpen(false);
             }
         };
 
+        document.addEventListener("mousedown", handleClickOutside);
 
-        document.addEventListener('mousedown', handleClickOutside);
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutside
+            );
         };
-
-
     }, []);
 
-    // Replace the commented out useEffect with this working implementation
+    /* ------------------------------------------------ */
+    /* Product search                                   */
+    /* ------------------------------------------------ */
+
     useEffect(() => {
         if (Query && Query.trim() !== "") {
-            const devicesArray = Array.isArray(Devices) ? Devices : []
-            setFilteredProducts(devicesArray.filter((product) => product.DeviceName.toLowerCase().includes(Query.toLowerCase())))
+            const devicesArray = Array.isArray(Devices)
+                ? Devices
+                : [];
+
+            setFilteredProducts(
+                devicesArray.filter((product) =>
+                    product.DeviceName
+                        ?.toLowerCase()
+                        .includes(Query.toLowerCase())
+                )
+            );
         } else {
-            setFilteredProducts([])
+            setFilteredProducts([]);
         }
-    }, [Query, Devices])
+    }, [Query, Devices]);
+
+    /* ------------------------------------------------ */
+    /* Close mobile menu                                */
+    /* ------------------------------------------------ */
+
+    const closeMobileMenu = () => {
+        setIsMobileMenuOpen(false);
+        setIsCategoryOpen(false);
+        setIsSearchOpen(false);
+    };
+
+    const homePath =
+        UserId === undefined
+            ? "/"
+            : `/dashboard/${UserId}`;
 
     return (
-        <nav className="fixed w-full h-16 font-roboto px-4 md:px-8 lg:px-16 border-b border-ghost_white-900 bg-black z-50">
-            <div className='flex justify-between items-center h-full'>
-                {/* Logo */}
-                <NavLink to={(UserId == undefined) ? "/" : `/dashboard/${UserId}`} className='flex items-center'>
-                    <img src={logo} alt="Gizmo logo" className='w-8 md:w-10' />
-                    <span className='text-lg md:text-xl font-medium text-ghost_white-900 ml-1 tracking-wide'>GIZMO</span>
-                </NavLink>
+        <>
+            {/* ================================================== */}
+            {/* NAVBAR                                              */}
+            {/* ================================================== */}
 
-                {/* Center Section */}
-                <div className='hidden md:flex justify-center items-center space-x-4 ml-20'>
-                    <NavLink to={(UserId != undefined) ? `/dashboard/${UserId}` : "/"} className='text-base text-ghost_white-900 hover:opacity-70 transition-colors duration-300'>HOME</NavLink>
-                    <div className='relative' ref={dropdownRef} onMouseEnter={() => setIsCategoryOpen(true)
-                    }
-                        onMouseLeave={() => setIsCategoryOpen(false)}>
-                        <button
-                            className='flex items-center gap-1 text-base text-ghost_white-900 hover:opacity-70 transition-colors duration-300'
+            <nav
+                className={`
+          fixed
+          left-0
+          top-0
+          z-50
+          w-full
+          px-3
+          pt-3
+          sm:px-5
+          lg:px-8
+          xl:px-12
+          transition-all
+          duration-500
+        `}
+            >
+                <motion.div
+                    initial={{ opacity: 0, y: -12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        duration: 0.6,
+                        ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className={`
+            mx-auto
+            flex
+            max-w-[1500px]
+            items-center
+            justify-between
+            rounded-full
+            border
+            px-3
+            transition-all
+            duration-500
+            sm:px-4
+            ${isScrolled
+                            ? `
+                  h-[56px]
+                  border-black/[0.09]
+                  bg-[#f7f7f5]/[0.94]
+                  shadow-[0_10px_35px_rgba(0,0,0,0.09)]
+                  backdrop-blur-2xl
+                `
+                            : `
+                  h-[60px]
+                  border-black/[0.06]
+                  bg-[#f7f7f5]/[0.78]
+                  shadow-[0_6px_28px_rgba(0,0,0,0.045)]
+                  backdrop-blur-xl
+                `
+                        }
+          `}
+                >
 
+                    {/* ================================================== */}
+                    {/* LOGO                                                 */}
+                    {/* ================================================== */}
+
+                    <NavLink
+                        to={homePath}
+                        onClick={closeMobileMenu}
+                        className="group flex shrink-0 items-center gap-2.5"
+                    >
+                        <div
+                            className="
+                flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                overflow-hidden
+                rounded-full
+                bg-black
+                transition-transform
+                duration-500
+                group-hover:scale-105
+              "
                         >
-                            CATEGORIES
-                            <img src={dropdown} alt="Dropdown arrow" className={`w-3 transition-transform duration-300 ${isCategoryOpen ? 'transform rotate-180' : ''}`} />
-                        </button>
-                        {isCategoryOpen && (
-                            <div className="absolute left-0 w-48 bg-black rounded-md shadow-lg py-1 z-50">
-                                <ul className="divide-y divide-gray-600">
-                                    {(Array.isArray(categories) ? categories : []).map((category: any) => (
-                                        <li key={category.CategoryName}>
+                            <img
+                                src={logo}
+                                alt="Gizmo logo"
+                                className="
+                  w-[22px]
+                  object-contain
+                  brightness-0
+                  invert
+                "
+                            />
+                        </div>
+
+                        <span
+                            className="
+                hidden
+                text-[14px]
+                font-semibold
+                tracking-[0.15em]
+                text-black
+                sm:block
+              "
+                        >
+                            GIZMO
+                        </span>
+                    </NavLink>
+
+                    {/* ================================================== */}
+                    {/* DESKTOP NAVIGATION                                  */}
+                    {/* ================================================== */}
+
+                    <div
+                        className="
+              hidden
+              items-center
+              gap-1
+              lg:flex
+            "
+                    >
+
+                        <NavLink
+                            to={homePath}
+                            className={({ isActive }) =>
+                                `
+                  relative
+                  rounded-full
+                  px-4
+                  py-2.5
+                  text-[10px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.18em]
+                  transition-all
+                  duration-300
+                  ${isActive
+                                    ? "bg-black text-white"
+                                    : "text-black/45 hover:bg-black/[0.045] hover:text-black"
+                                }
+                `
+                            }
+                        >
+                            Home
+                        </NavLink>
+
+                        {/* Categories */}
+                        <div
+                            className="relative"
+                            ref={dropdownRef}
+                            onMouseEnter={() =>
+                                setIsCategoryOpen(true)
+                            }
+                            onMouseLeave={() =>
+                                setIsCategoryOpen(false)
+                            }
+                        >
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setIsCategoryOpen(!isCategoryOpen)
+                                }
+                                className="
+                  flex
+                  items-center
+                  gap-1.5
+                  rounded-full
+                  px-4
+                  py-2.5
+                  text-[10px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.18em]
+                  text-black/45
+                  transition-all
+                  duration-300
+                  hover:bg-black/[0.045]
+                  hover:text-black
+                "
+                            >
+                                Categories
+
+                                <motion.img
+                                    animate={{
+                                        rotate: isCategoryOpen ? 180 : 0,
+                                    }}
+                                    transition={{ duration: 0.25 }}
+                                    src={dropdown}
+                                    alt=""
+                                    className="
+                    h-2
+                    w-2
+                    brightness-0
+                    opacity-40
+                  "
+                                />
+                            </button>
+
+                            <AnimatePresence>
+                                {isCategoryOpen && (
+                                    <motion.div
+                                        initial={{
+                                            opacity: 0,
+                                            y: -6,
+                                            scale: 0.98,
+                                        }}
+                                        animate={{
+                                            opacity: 1,
+                                            y: 0,
+                                            scale: 1,
+                                        }}
+                                        exit={{
+                                            opacity: 0,
+                                            y: -6,
+                                            scale: 0.98,
+                                        }}
+                                        transition={{
+                                            duration: 0.2,
+                                            ease: [0.22, 1, 0.36, 1],
+                                        }}
+                                        className="
+                      absolute
+                      left-1/2
+                      top-full
+                      mt-3
+                      w-56
+                      -translate-x-1/2
+                      overflow-hidden
+                      rounded-2xl
+                      border
+                      border-black/[0.07]
+                      bg-[#f7f7f5]/95
+                      p-2
+                      shadow-[0_20px_50px_rgba(0,0,0,0.12)]
+                      backdrop-blur-2xl
+                    "
+                                    >
+                                        <div
+                                            className="
+                        px-3
+                        pb-2
+                        pt-1
+                        text-[8px]
+                        font-bold
+                        uppercase
+                        tracking-[0.28em]
+                        text-black/25
+                      "
+                                        >
+                                            Browse collection
+                                        </div>
+
+                                        {(Array.isArray(categories)
+                                            ? categories
+                                            : []
+                                        ).map((category: any) => (
                                             <NavLink
                                                 key={category.CategoryId}
                                                 to={`Category/${category.CategoryId}`}
-                                                className="block px-4 py-2 text-sm text-ghost_white-900 hover:bg-ghost_white hover:text-black transition-colors duration-300"
+                                                onClick={() => {
+                                                    setIsCategoryOpen(false);
+                                                    closeMobileMenu();
+                                                }}
+                                                className="
+                          group
+                          flex
+                          items-center
+                          justify-between
+                          rounded-xl
+                          px-3
+                          py-2.5
+                          text-sm
+                          font-medium
+                          text-black/55
+                          transition-all
+                          duration-200
+                          hover:bg-black
+                          hover:text-white
+                        "
                                             >
                                                 {category.CategoryName}
+
+                                                <span className="text-white opacity-0 transition-opacity duration-200 group-hover:opacity-60">
+                                                    ↗
+                                                </span>
                                             </NavLink>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                            </div>
-                        )}
-                    </div>
-                    <NavLink to="aboutus" className='bg-ghost_white-900 text-black rounded-md h-9 pt-[2px] px-4 hover:bg-black hover:text-ghost_white-900 border-ghost_white border-2 hover:border-ghost_white-900 transition-colors duration-300 ease-in-out active:opacity-50 text-lg font-roboto tracking-tight'>
-                        About Us
-                    </NavLink>
-                </div>
-
-                {/* Right Section */}
-                <div className='flex items-center space-x-4 md:space-x-2'>
-                    <div className="relative" ref={searchRef}>
-                        <button
-                            onClick={() => setIsSearchOpen(!isSearchOpen)}
-                            className="p-2 rounded-full transition-colors duration-300"
-                        >
-                            <img src={search || "/placeholder.svg"} alt="Search" className="w-5 h-5" />
-                        </button>
-                        {isSearchOpen && (
-                            <div className="absolute -right-28 lg:right-0 mt-2 w-72 bg-ghost_white rounded-md shadow-lg p-2">
-                                <input
-                                    type="text"
-                                    placeholder="Search for a product"
-                                    className="w-full h-9 px-3 outline-none rounded-lg border border-indigo_dye-300 focus:border-black focus:ring-1 focus:ring-black transition-all duration-300"
-                                    value={Query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                />
-                                {filteredProducts && filteredProducts.length > 0 && (
-                                    <div className="mt-2 max-h-60 overflow-y-auto bg-black rounded-md">
-                                        {filteredProducts.map((product: any) => (
-                                            <div
-                                                key={product.DeviceId}
-                                                className="flex items-center p-2 hover:opacity-55 cursor-pointer border-b border-gray-700"
-                                                onClick={() => {
-                                                    navigate(UserId ? `/dashboard/${UserId}/Device/${product.DeviceId}` : `/dashboard/Device/${product.DeviceId}`)
-                                                    setIsSearchOpen(false)
-                                                    setQuery("")
-                                                }}
-                                            >
-                                                <img
-                                                    src={product.Images && product.Images.length > 0 ? product.Images[0] : "/placeholder.svg"}
-                                                    alt={product.DeviceName}
-                                                    className="w-10 h-10 object-cover rounded-md mr-2"
-                                                />
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-medium text-ghost_white-900 group-hover:text-black truncate">
-                                                        {product.DeviceName}
-                                                    </p>
-                                                    <p className="text-xs text-ghost_white-500">${product.Price.toFixed(2)}</p>
-                                                </div>
-                                            </div>
                                         ))}
-                                    </div>
+                                    </motion.div>
                                 )}
-                            </div>
-                        )}
+                            </AnimatePresence>
+                        </div>
+
+                        <NavLink
+                            to="aboutus"
+                            className={({ isActive }) =>
+                                `
+                  rounded-full
+                  px-4
+                  py-2.5
+                  text-[10px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.18em]
+                  transition-all
+                  duration-300
+                  ${isActive
+                                    ? "bg-black text-white"
+                                    : "text-black/45 hover:bg-black/[0.045] hover:text-black"
+                                }
+                `
+                            }
+                        >
+                            About
+                        </NavLink>
                     </div>
-                    <NavLink to={(UserId == undefined) ? "/dashboard/wishlist" : `/dashboard/${UserId}/wishlist`} className='p-2  rounded-full transition-colors duration-300 relative' onMouseEnter={() => setIsWishList(true)}
-                        onMouseLeave={() => setIsWishList(false)}>
-                        <img src={wishlist} alt="Wishlist" className='w-5 h-5' />
-                        {wishlistCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-engineering_orange-700 text-ghost_white-500 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                                {wishlistCount}
-                            </span>
-                        )}
-                        {
-                            isWishList && <WishListDropDown />
-                        }
-                    </NavLink>
-                    <div className='p-2 rounded-full transition-colors duration-300 relative hover:cursor-pointer' onClick={() => setIsCart(!isCart)}>
-                        <img src={cartimg} alt="Shopping cart" className='w-5 h-5' />
-                        {cartCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-engineering_orange-700 text-ghost_white-500 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                                {cartCount}
-                            </span>
-                        )}
-                        {
-                            isCart && <CartDropDown />
-                        }
-                    </div>
-                    <div className="relative">
+
+                    {/* ================================================== */}
+                    {/* RIGHT ACTIONS                                       */}
+                    {/* ================================================== */}
+
+                    <div className="flex items-center gap-0.5 sm:gap-1">
+
+                        {/* Search */}
                         <div
                             className="relative"
-                            onMouseEnter={() => setIsOpen(true)}
-                            onMouseLeave={() => setIsOpen(false)}
+                            ref={searchRef}
                         >
-                            <button className="flex items-center space-x-1 p-1 rounded-full transition-colors duration-300 hover:opacity-70">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsSearchOpen(!isSearchOpen);
+                                    setIsCart(false);
+                                    setIsWishList(false);
+                                    setIsOpen(false);
+                                }}
+                                className="
+                  group
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-full
+                  transition-all
+                  duration-300
+                  hover:bg-black/[0.06]
+                "
+                                aria-label="Search"
+                            >
+                                <img
+                                    src={search}
+                                    alt=""
+                                    className="
+                    h-[16px]
+                    w-[16px]
+                    object-contain
+                    brightness-0
+                    opacity-50
+                    transition-opacity
+                    duration-300
+                    group-hover:opacity-100
+                  "
+                                />
+                            </button>
+
+                            <AnimatePresence>
+                                {isSearchOpen && (
+                                    <motion.div
+                                        initial={{
+                                            opacity: 0,
+                                            y: -6,
+                                            scale: 0.98,
+                                        }}
+                                        animate={{
+                                            opacity: 1,
+                                            y: 0,
+                                            scale: 1,
+                                        }}
+                                        exit={{
+                                            opacity: 0,
+                                            y: -6,
+                                            scale: 0.98,
+                                        }}
+                                        className="
+                      absolute
+                      right-0
+                      top-full
+                      mt-3
+                      w-[310px]
+                      overflow-hidden
+                      rounded-2xl
+                      border
+                      border-black/[0.07]
+                      bg-[#f7f7f5]/95
+                      p-3
+                      shadow-[0_20px_50px_rgba(0,0,0,0.12)]
+                      backdrop-blur-2xl
+                    "
+                                    >
+                                        <div
+                                            className="
+                        mb-2
+                        px-1
+                        text-[8px]
+                        font-bold
+                        uppercase
+                        tracking-[0.28em]
+                        text-black/25
+                      "
+                                        >
+                                            Search Gizmo
+                                        </div>
+
+                                        <input
+                                            type="text"
+                                            autoFocus
+                                            placeholder="Search for a product..."
+                                            className="
+                        h-11
+                        w-full
+                        rounded-xl
+                        border
+                        border-black/[0.08]
+                        bg-white
+                        px-4
+                        text-sm
+                        text-black
+                        outline-none
+                        transition-all
+                        placeholder:text-black/25
+                        focus:border-black/20
+                        focus:ring-2
+                        focus:ring-black/[0.035]
+                      "
+                                            value={Query}
+                                            onChange={(e) =>
+                                                setQuery(e.target.value)
+                                            }
+                                        />
+
+                                        {filteredProducts.length > 0 && (
+                                            <div
+                                                className="
+                          mt-2
+                          max-h-64
+                          overflow-y-auto
+                          rounded-xl
+                          border
+                          border-black/[0.06]
+                          bg-white
+                        "
+                                            >
+                                                {filteredProducts.map(
+                                                    (product: any) => (
+                                                        <div
+                                                            key={product.DeviceId}
+                                                            className="
+                                flex
+                                cursor-pointer
+                                items-center
+                                gap-3
+                                border-b
+                                border-black/[0.05]
+                                p-3
+                                last:border-0
+                                hover:bg-black/[0.025]
+                              "
+                                                            onClick={() => {
+                                                                navigate(
+                                                                    UserId
+                                                                        ? `/dashboard/${UserId}/Device/${product.DeviceId}`
+                                                                        : `/dashboard/Device/${product.DeviceId}`
+                                                                );
+
+                                                                setIsSearchOpen(false);
+                                                                setQuery("");
+                                                            }}
+                                                        >
+                                                            <img
+                                                                src={
+                                                                    product.Images &&
+                                                                        product.Images.length > 0
+                                                                        ? product.Images[0]
+                                                                        : "/placeholder.svg"
+                                                                }
+                                                                alt={product.DeviceName}
+                                                                className="
+                                  h-11
+                                  w-11
+                                  rounded-lg
+                                  object-cover
+                                "
+                                                            />
+
+                                                            <div className="min-w-0 flex-1">
+                                                                <p
+                                                                    className="
+                                    truncate
+                                    text-xs
+                                    font-semibold
+                                    text-black
+                                  "
+                                                                >
+                                                                    {product.DeviceName}
+                                                                </p>
+
+                                                                <p
+                                                                    className="
+                                    mt-1
+                                    text-[11px]
+                                    text-black/40
+                                  "
+                                                                >
+                                                                    ${product.Price.toFixed(2)}
+                                                                </p>
+                                                            </div>
+
+                                                            <span className="text-xs text-black/20">
+                                                                ↗
+                                                            </span>
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Wishlist */}
+                        <div
+                            className="relative"
+                            ref={wishlistRef}
+                            onMouseEnter={() =>
+                                setIsWishList(true)
+                            }
+                            onMouseLeave={() =>
+                                setIsWishList(false)
+                            }
+                        >
+                            <NavLink
+                                to={
+                                    UserId === undefined
+                                        ? "/dashboard/wishlist"
+                                        : `/dashboard/${UserId}/wishlist`
+                                }
+                                className="
+                  group
+                  relative
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-full
+                  transition-all
+                  duration-300
+                  hover:bg-black/[0.06]
+                "
+                                aria-label="Wishlist"
+                            >
+                                <img
+                                    src={wishlist}
+                                    alt=""
+                                    className="
+                    h-[16px]
+                    w-[16px]
+                    object-contain
+                    brightness-0
+                    opacity-50
+                    transition-opacity
+                    duration-300
+                    group-hover:opacity-100
+                  "
+                                />
+
+                                {wishlistCount > 0 && (
+                                    <span
+                                        className="
+                      absolute
+                      right-0
+                      top-0
+                      flex
+                      h-[16px]
+                      min-w-[16px]
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-black
+                      px-1
+                      text-[8px]
+                      font-bold
+                      text-white
+                    "
+                                    >
+                                        {wishlistCount}
+                                    </span>
+                                )}
+                            </NavLink>
+
+                            {isWishList && (
+                                <WishListDropDown />
+                            )}
+                        </div>
+
+                        {/* Cart */}
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsCart(!isCart);
+                                    setIsSearchOpen(false);
+                                    setIsWishList(false);
+                                    setIsOpen(false);
+                                }}
+                                className="
+                  group
+                  relative
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-full
+                  transition-all
+                  duration-300
+                  hover:bg-black/[0.06]
+                "
+                                aria-label="Shopping cart"
+                            >
+                                <img
+                                    src={cartimg}
+                                    alt=""
+                                    className="
+                    h-[17px]
+                    w-[17px]
+                    object-contain
+                    brightness-0
+                    opacity-50
+                    transition-opacity
+                    duration-300
+                    group-hover:opacity-100
+                  "
+                                />
+
+                                {cartCount > 0 && (
+                                    <span
+                                        className="
+                      absolute
+                      right-0
+                      top-0
+                      flex
+                      h-[16px]
+                      min-w-[16px]
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-black
+                      px-1
+                      text-[8px]
+                      font-bold
+                      text-white
+                    "
+                                    >
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </button>
+
+                        </div>
+
+                        {/* Profile */}
+                        <div
+                            ref={profileRef}
+                            className="relative ml-1"
+                            onMouseEnter={() =>
+                                setIsOpen(true)
+                            }
+                            onMouseLeave={() =>
+                                setIsOpen(false)
+                            }
+                        >
+                            <button
+                                type="button"
+                                className="
+                  group
+                  flex
+                  items-center
+                  gap-1.5
+                  rounded-full
+                  p-0.5
+                  transition-all
+                  duration-300
+                  hover:bg-black/[0.05]
+                "
+                                aria-label="Account menu"
+                            >
                                 <img
                                     src={getAvatarUrl(ImageURl)}
                                     onError={handleAvatarError}
                                     alt="User profile"
-                                    className="rounded-full w-8 h-8 object-cover ring-2 ring-white/20"
+                                    className="
+                    h-8
+                    w-8
+                    rounded-full
+                    bg-slate-100
+                    object-cover
+                    ring-1
+                    ring-black/[0.07]
+                    transition-all
+                    duration-300
+                    group-hover:ring-black/20
+                  "
                                 />
-                                <img src={dropdown} alt="Dropdown arrow" className={`w-3 transition-transform duration-300 ${!isOpen ? 'transform rotate-180' : ''}`} />
+
+                                <img
+                                    src={dropdown}
+                                    alt=""
+                                    className={`
+                    hidden
+                    h-2
+                    w-2
+                    brightness-0
+                    opacity-30
+                    transition-transform
+                    duration-300
+                    sm:block
+                    ${isOpen
+                                            ? "rotate-180"
+                                            : ""
+                                        }
+                  `}
+                                />
                             </button>
 
-                            {isOpen && (
-                                <div className="absolute right-0 w-48 bg-black rounded-md shadow-lg py-1 z-50">
-                                    <ul className="divide-y divide-gray-600">
-                                        {[
-                                            ...(UserId ? [{ name: 'Profile', path: 'profile' }] : []), // Ensures uniform structure
-                                            // { name: 'Help & Support', path: '#' }, // Use '#' instead of an empty string
-                                        ].map((item, index) => (
-                                            <li key={index}>
-                                                <NavLink
-                                                    to={item.path}
-                                                    className="block px-4 py-2 text-sm text-ghost_white hover:bg-ghost_white-500 hover:text-rich_black transition-colors duration-300"
-                                                >
-                                                    {item.name}
-                                                </NavLink>
-                                            </li>
-                                        ))}
-                                    </ul>
-
-
-                                    {/* Divider above Logout */}
-                                    <div className="my-1 border-t border-gray-600"></div>
-
-                                    <button
-                                        onClick={handleLogout}
-                                        className={`w-full pr-[120px] py-2 text-sm text-ghost_white ${UserId == undefined ? "hover:bg-green-700" : "hover:bg-red-700"} hover:text-ghost_white transition-colors duration-300`}
+                            <AnimatePresence>
+                                {isOpen && (
+                                    <motion.div
+                                        initial={{
+                                            opacity: 0,
+                                            y: -6,
+                                            scale: 0.98,
+                                        }}
+                                        animate={{
+                                            opacity: 1,
+                                            y: 0,
+                                            scale: 1,
+                                        }}
+                                        exit={{
+                                            opacity: 0,
+                                            y: -6,
+                                            scale: 0.98,
+                                        }}
+                                        transition={{ duration: 0.2 }}
+                                        className="
+                      absolute
+                      right-0
+                      top-full
+                      mt-3
+                      w-52
+                      overflow-hidden
+                      rounded-2xl
+                      border
+                      border-black/[0.07]
+                      bg-[#f7f7f5]/95
+                      p-2
+                      shadow-[0_20px_50px_rgba(0,0,0,0.12)]
+                      backdrop-blur-2xl
+                    "
                                     >
-                                        {UserId == undefined ? "Login" : "Logout"}
-                                    </button>
+                                        {UserId && (
+                                            <NavLink
+                                                to="profile"
+                                                className="
+                          block
+                          rounded-xl
+                          px-3
+                          py-2.5
+                          text-sm
+                          font-medium
+                          text-black/55
+                          transition-all
+                          duration-200
+                          hover:bg-black
+                          hover:text-white
+                        "
+                                            >
+                                                Profile
+                                            </NavLink>
+                                        )}
 
-                                </div>
-                            )}
+                                        <div className="my-1 border-t border-black/[0.07]" />
+
+                                        <button
+                                            type="button"
+                                            onClick={handleLogout}
+                                            className="
+                        w-full
+                        rounded-xl
+                        px-3
+                        py-2.5
+                        text-left
+                        text-sm
+                        font-medium
+                        text-black/55
+                        transition-all
+                        duration-200
+                        hover:bg-black
+                        hover:text-white
+                      "
+                                        >
+                                            {UserId === undefined
+                                                ? "Login"
+                                                : "Logout"}
+                                        </button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
-                    </div>
 
-                </div>
-            </div>
-        </nav>
+                        {/* Mobile menu */}
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setIsMobileMenuOpen(
+                                    !isMobileMenuOpen
+                                )
+                            }
+                            className="
+                ml-1
+                flex
+                h-9
+                w-9
+                flex-col
+                items-center
+                justify-center
+                gap-1.5
+                rounded-full
+                border
+                border-black/[0.07]
+                transition-all
+                duration-300
+                hover:border-black/20
+                hover:bg-black/[0.04]
+                lg:hidden
+              "
+                            aria-label="Toggle menu"
+                            aria-expanded={isMobileMenuOpen}
+                        >
+                            <span
+                                className={`
+                  h-px
+                  w-4
+                  bg-black
+                  transition-transform
+                  duration-300
+                  ${isMobileMenuOpen
+                                        ? "translate-y-[3px] rotate-45"
+                                        : ""
+                                    }
+                `}
+                            />
+
+                            <span
+                                className={`
+                  h-px
+                  w-4
+                  bg-black
+                  transition-opacity
+                  duration-300
+                  ${isMobileMenuOpen
+                                        ? "opacity-0"
+                                        : ""
+                                    }
+                `}
+                            />
+
+                            <span
+                                className={`
+                  h-px
+                  w-4
+                  bg-black
+                  transition-transform
+                  duration-300
+                  ${isMobileMenuOpen
+                                        ? "-translate-y-[3px] -rotate-45"
+                                        : ""
+                                    }
+                `}
+                            />
+                        </button>
+                    </div>
+                </motion.div>
+
+                {/* ================================================== */}
+                {/* MOBILE NAVIGATION                                  */}
+                {/* ================================================== */}
+
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <motion.div
+                            initial={{
+                                opacity: 0,
+                                height: 0,
+                                y: -8,
+                            }}
+                            animate={{
+                                opacity: 1,
+                                height: "auto",
+                                y: 0,
+                            }}
+                            exit={{
+                                opacity: 0,
+                                height: 0,
+                                y: -8,
+                            }}
+                            transition={{
+                                duration: 0.35,
+                                ease: [0.22, 1, 0.36, 1],
+                            }}
+                            className="
+                mx-auto
+                mt-3
+                w-full
+                max-w-[1500px]
+                overflow-hidden
+                rounded-3xl
+                border
+                border-black/[0.07]
+                bg-[#f7f7f5]/95
+                shadow-[0_20px_50px_rgba(0,0,0,0.1)]
+                backdrop-blur-2xl
+                lg:hidden
+              "
+                        >
+                            <div className="p-3">
+
+                                {/* Home */}
+                                <NavLink
+                                    to={homePath}
+                                    onClick={closeMobileMenu}
+                                    className={({ isActive }) =>
+                                        `
+                      block
+                      rounded-2xl
+                      px-4
+                      py-3
+                      text-sm
+                      font-semibold
+                      uppercase
+                      tracking-[0.16em]
+                      transition-all
+                      duration-300
+                      ${isActive
+                                            ? "bg-black text-white"
+                                            : "text-black/55 hover:bg-black/[0.05] hover:text-black"
+                                        }
+                    `
+                                    }
+                                >
+                                    Home
+                                </NavLink>
+
+                                {/* Categories */}
+                                <div className="px-4 pb-1 pt-5">
+                                    <span
+                                        className="
+                      text-[8px]
+                      font-bold
+                      uppercase
+                      tracking-[0.28em]
+                      text-black/25
+                    "
+                                    >
+                                        Categories
+                                    </span>
+                                </div>
+
+                                <div className="space-y-0.5">
+                                    {(Array.isArray(categories)
+                                        ? categories
+                                        : []
+                                    ).map((category: any) => (
+                                        <NavLink
+                                            key={category.CategoryId}
+                                            to={`Category/${category.CategoryId}`}
+                                            onClick={closeMobileMenu}
+                                            className="
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-2.5
+                        text-sm
+                        text-black/50
+                        transition-all
+                        duration-200
+                        hover:bg-black/[0.05]
+                        hover:text-black
+                      "
+                                        >
+                                            {category.CategoryName}
+
+                                            <span className="text-black/20">
+                                                ↗
+                                            </span>
+                                        </NavLink>
+                                    ))}
+                                </div>
+
+                                {/* About */}
+                                <NavLink
+                                    to="aboutus"
+                                    onClick={closeMobileMenu}
+                                    className="
+                    mt-2
+                    block
+                    rounded-2xl
+                    px-4
+                    py-3
+                    text-sm
+                    font-semibold
+                    uppercase
+                    tracking-[0.16em]
+                    text-black/55
+                    transition-all
+                    duration-300
+                    hover:bg-black
+                    hover:text-white
+                  "
+                                >
+                                    About Us
+                                </NavLink>
+
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </nav>
+            <AnimatePresence>
+                {isCart && <CartDropDown />}
+            </AnimatePresence>
+        </>
     );
 };
-

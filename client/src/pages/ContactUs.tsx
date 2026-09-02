@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
 import {
   Mail,
   Phone,
@@ -13,18 +14,16 @@ import {
   Users,
   ShoppingBag,
   HelpCircle,
-  ChevronDown,
-  ChevronUp,
   Facebook,
   Twitter,
   Instagram,
   Linkedin,
   Check,
+  ArrowUpRight,
 } from "lucide-react"
 
 export const ContactUs = () => {
   const [activeTab, setActiveTab] = useState<string>("general")
-  const [activeFaq, setActiveFaq] = useState<string | null>(null)
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
   const [formData, setFormData] = useState({
     name: "",
@@ -33,81 +32,30 @@ export const ContactUs = () => {
     message: "",
   })
 
-  // Toggle FAQ visibility
-  const toggleFaq = (id: string) => {
-    setActiveFaq(activeFaq === id ? null : id)
-  }
 
-  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setFormStatus("submitting")
-
-    // Simulate form submission
     setTimeout(() => {
       setFormStatus("success")
-      // Reset form after 3 seconds
       setTimeout(() => {
         setFormStatus("idle")
-        setFormData({
-          name: "",
-          email: "",
-          subject: "",
-          message: "",
-        })
+        setFormData({ name: "", email: "", subject: "", message: "" })
       }, 3000)
     }, 1500)
   }
 
-  // FAQ data
-  const faqs = [
-    {
-      id: "response-time",
-      question: "What is your typical response time?",
-      answer:
-        "We strive to respond to all inquiries within 24 hours during business days. For urgent matters, please call our customer service line for immediate assistance.",
-    },
-    {
-      id: "business-hours",
-      question: "What are your business hours?",
-      answer:
-        "Our customer service team is available Monday through Friday from 9:00 AM to 6:00 PM EST, and Saturday from 10:00 AM to 4:00 PM EST. We are closed on Sundays and major holidays.",
-    },
-    {
-      id: "order-status",
-      question: "How can I check my order status?",
-      answer:
-        "You can check your order status by logging into your account on our website and navigating to the 'Orders' section. Alternatively, you can contact our customer service team with your order number.",
-    },
-    {
-      id: "bulk-orders",
-      question: "Do you offer special pricing for bulk orders?",
-      answer:
-        "Yes, we offer special pricing for bulk orders. Please contact our sales team with details about your requirements, and they will provide you with a custom quote.",
-    },
-    {
-      id: "international-support",
-      question: "Do you provide international customer support?",
-      answer:
-        "Yes, we provide international customer support. Our team is available via email and phone. Please note that response times may vary depending on time zone differences.",
-    },
-  ]
 
-  // Department contact information
   const departments = [
     {
       id: "general",
       name: "General Inquiries",
-      icon: <MessageSquare className="w-6 h-6" />,
+      icon: <MessageSquare className="h-4 w-4" />,
       email: "info@gizmostore.com",
       phone: "+1 (555) 123-4567",
       description: "For general questions about our products, services, or company.",
@@ -115,215 +63,316 @@ export const ContactUs = () => {
     {
       id: "sales",
       name: "Sales Department",
-      icon: <ShoppingBag className="w-6 h-6" />,
+      icon: <ShoppingBag className="h-4 w-4" />,
       email: "sales@gizmostore.com",
       phone: "+1 (555) 234-5678",
-      description: "For inquiries about pricing, bulk orders, or business partnerships.",
+      description: "For pricing, bulk orders, or business partnerships.",
     },
     {
       id: "support",
       name: "Customer Support",
-      icon: <HelpCircle className="w-6 h-6" />,
+      icon: <HelpCircle className="h-4 w-4" />,
       email: "support@gizmostore.com",
       phone: "+1 (555) 345-6789",
-      description: "For technical assistance, product troubleshooting, or order issues.",
+      description: "For technical assistance, troubleshooting, or order issues.",
     },
     {
       id: "careers",
       name: "Careers",
-      icon: <Users className="w-6 h-6" />,
+      icon: <Users className="h-4 w-4" />,
       email: "careers@gizmostore.com",
       phone: "+1 (555) 456-7890",
-      description: "For job opportunities and information about working at Gizmo.",
+      description: "For job opportunities and life at Gizmo.",
     },
-  ];
+  ]
 
-  useEffect(()=>{
-    window.scroll(0,0);
-  })
+  useEffect(() => {
+    window.scroll(0, 0)
+  }, [])
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    },
+  }
+
+  const activeDept = departments.find((d) => d.id === activeTab) ?? departments[0]
+
+  const inputBase =
+    "peer w-full border-b border-black/15 bg-transparent px-0 py-3 text-[15px] text-black placeholder-transparent outline-none transition-colors duration-300 focus:border-black"
+  const labelBase =
+    "pointer-events-none absolute left-0 top-3 text-[15px] text-black/35 transition-all duration-300 peer-focus:-translate-y-5 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-[0.2em] peer-focus:text-black/50 peer-[:not(:placeholder-shown)]:-translate-y-5 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:uppercase peer-[:not(:placeholder-shown)]:tracking-[0.2em] peer-[:not(:placeholder-shown)]:text-black/50"
 
   return (
-    <div className="bg-white min-h-screen font-sans">
-      {/* Hero Section */}
-      <section className="bg-black text-white py-20 px-4 relative z-20">
-        <div className="absolute inset-0 w-full h-full bg-black opacity-70 z-10"></div>
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-black to-transparent z-20"></div>
+    <div className="min-h-screen w-full bg-[#f7f7f5] font-roboto text-primary-dark antialiased">
+      {/* =====================================================
+          HERO
+          ===================================================== */}
+      <section className="relative flex min-h-[56vh] w-full items-end overflow-hidden bg-black text-white">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 opacity-[0.03] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:80px_80px]" />
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap select-none text-[22vw] font-black leading-none tracking-[-0.08em] text-white/[0.045]">
+            GIZMO
+          </div>
+        </div>
 
-        <div className="max-w-6xl mx-auto text-center relative z-30">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
-            We're here to help. Reach out to us with any questions, concerns, or feedback.
-          </p>
+        <div className="relative z-10 mx-auto w-full max-w-[1600px] px-5 pb-16 pt-32 sm:px-8 lg:px-14 lg:pb-20 xl:px-20">
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-3xl"
+          >
+            <div className="mb-6 flex items-center gap-3">
+              <span className="h-px w-8 bg-white/30" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.35em] text-white/45">
+                Contact
+              </span>
+            </div>
+
+            <h1 className="max-w-2xl text-5xl font-semibold leading-[0.95] tracking-[-0.05em] md:text-7xl lg:text-[5rem]">
+              We're here
+              <br />
+              <span className="font-light italic text-white/45">to help.</span>
+            </h1>
+
+            <p className="mt-7 max-w-md text-sm leading-7 text-white/45 md:text-base">
+              Questions, feedback, or something gone wrong — reach out and a real
+              person on our team will get back to you.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* Contact Information Cards */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-md flex flex-col items-center text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-black text-white mb-6">
-                <Phone className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3 text-black">Call Us</h3>
-              <p className="text-gray-600 mb-4">Our friendly team is here to help.</p>
-              <a href="tel:+15551234567" className="text-lg font-medium text-black hover:underline">
-                +1 (555) 123-4567
-              </a>
-              <p className="text-sm text-gray-500 mt-2">Monday-Friday: 9am-6pm EST</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-md flex flex-col items-center text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-black text-white mb-6">
-                <Mail className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3 text-black">Email Us</h3>
-              <p className="text-gray-600 mb-4">We'll respond as soon as possible.</p>
-              <a href="mailto:info@gizmostore.com" className="text-lg font-medium text-black hover:underline">
-                info@gizmostore.com
-              </a>
-              <p className="text-sm text-gray-500 mt-2">24/7 email support</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-md flex flex-col items-center text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-black text-white mb-6">
-                <MapPin className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3 text-black">Visit Us</h3>
-              <p className="text-gray-600 mb-4">Come say hello at our office.</p>
-              <p className="text-lg font-medium text-black">
-                123 Tech Avenue
-                <br />
-                San Francisco, CA 94107
-              </p>
-              <p className="text-sm text-gray-500 mt-2">Get directions →</p>
-            </div>
+      {/* =====================================================
+          QUICK CONTACT CARDS
+          ===================================================== */}
+      <section className="w-full py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-14 xl:px-20">
+          <div className="grid gap-5 md:grid-cols-3">
+            {[
+              {
+                icon: Phone,
+                title: "Call us",
+                description: "Our team picks up during business hours.",
+                primary: "+1 (555) 123-4567",
+                href: "tel:+15551234567",
+                meta: "Mon–Fri, 9am–6pm EST",
+              },
+              {
+                icon: Mail,
+                title: "Email us",
+                description: "We answer every message we get.",
+                primary: "info@gizmostore.com",
+                href: "mailto:info@gizmostore.com",
+                meta: "24/7 email support",
+              },
+              {
+                icon: MapPin,
+                title: "Visit us",
+                description: "Come say hello at our showroom.",
+                primary: "123 Tech Avenue, San Francisco, CA 94107",
+                href: "#location",
+                meta: "Get directions",
+              },
+            ].map((card, i) => (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.07 }}
+                className="group rounded-2xl border border-black/[0.06] bg-[#fafaf9] p-8 transition-colors duration-500 hover:bg-white"
+              >
+                <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-black/45 transition-all duration-500 group-hover:border-black group-hover:bg-black group-hover:text-white">
+                  <card.icon className="h-4 w-4" strokeWidth={1.5} />
+                </div>
+                <h3 className="mb-2 text-[13px] font-medium uppercase tracking-[0.18em] text-black/40">
+                  {card.title}
+                </h3>
+                <p className="mb-4 text-sm text-black/45">{card.description}</p>
+                <a
+                  href={card.href}
+                  className="block text-[15px] font-medium leading-relaxed text-black hover:underline"
+                >
+                  {card.primary}
+                </a>
+                <p className="mt-2 text-xs text-black/35">{card.meta}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Department Tabs and Contact Form */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-5 gap-8">
-            {/* Department Tabs */}
-            <div className="md:col-span-2">
-              <h2 className="text-2xl font-bold mb-6 text-black">Contact Departments</h2>
-              <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                {departments.map((dept) => (
-                  <button
-                    key={dept.id}
-                    className={`w-full text-left p-4 border-b border-gray-200 flex items-center ${
-                      activeTab === dept.id ? "bg-gray-100" : "hover:bg-gray-50"
-                    }`}
-                    onClick={() => setActiveTab(dept.id)}
-                  >
-                    <div
-                      className={`mr-4 p-2 rounded-full ${
-                        activeTab === dept.id ? "bg-black text-white" : "bg-gray-200 text-gray-600"
-                      }`}
+      {/* =====================================================
+          DEPARTMENTS + FORM
+          ===================================================== */}
+      <section className="w-full bg-[#EFEFEC] py-20 sm:py-24 lg:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-14 xl:px-20">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+            {/* Departments */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={fadeUp}
+              className="lg:col-span-5"
+            >
+              <div className="mb-5 flex items-center gap-3">
+                <span className="h-px w-10 bg-black/25" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                  Departments
+                </span>
+              </div>
+              <h2 className="mb-8 text-3xl font-semibold leading-[1.05] tracking-[-0.04em] md:text-4xl">
+                Talk to the
+                <br />
+                <span className="font-light italic text-black/35">right team.</span>
+              </h2>
+
+              <div className="border-t border-black/[0.08]">
+                {departments.map((dept) => {
+                  const isActive = activeTab === dept.id
+                  return (
+                    <button
+                      key={dept.id}
+                      onClick={() => setActiveTab(dept.id)}
+                      className="group flex w-full items-center gap-4 border-b border-black/[0.08] py-5 text-left transition-colors"
                     >
-                      {dept.icon}
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-black">{dept.name}</h3>
-                      <p className="text-sm text-gray-500">{dept.email}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Department Details */}
-              <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
-                {departments.map(
-                  (dept) =>
-                    activeTab === dept.id && (
-                      <div key={`details-${dept.id}`}>
-                        <h3 className="text-xl font-semibold mb-3 text-black">{dept.name}</h3>
-                        <p className="text-gray-600 mb-4">{dept.description}</p>
-
-                        <div className="flex items-center mb-3">
-                          <Mail className="w-5 h-5 text-gray-500 mr-2" />
-                          <a href={`mailto:${dept.email}`} className="text-black hover:underline">
-                            {dept.email}
-                          </a>
-                        </div>
-
-                        <div className="flex items-center">
-                          <Phone className="w-5 h-5 text-gray-500 mr-2" />
-                          <a href={`tel:${dept.phone.replace(/\D/g, "")}`} className="text-black hover:underline">
-                            {dept.phone}
-                          </a>
-                        </div>
-
-                        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-                          <div className="flex items-start">
-                            <Clock className="w-5 h-5 text-gray-500 mr-2 mt-0.5" />
-                            <div>
-                              <p className="text-sm font-medium text-black">Response Time</p>
-                              <p className="text-sm text-gray-600">
-                                We typically respond within 24 hours during business days.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+                      <div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${isActive
+                          ? "border-black bg-black text-white"
+                          : "border-black/10 text-black/40 group-hover:border-black/30"
+                          }`}
+                      >
+                        {dept.icon}
                       </div>
-                    ),
-                )}
+                      <div>
+                        <h3
+                          className={`text-[15px] font-medium tracking-[-0.01em] transition-colors ${isActive ? "text-black" : "text-black/60"
+                            }`}
+                        >
+                          {dept.name}
+                        </h3>
+                        <p className="text-xs text-black/35">{dept.email}</p>
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
-            </div>
 
-            {/* Contact Form */}
-            <div className="md:col-span-3">
-              <h2 className="text-2xl font-bold mb-6 text-black">Send Us a Message</h2>
-              <div className="bg-white p-8 rounded-lg shadow-md">
+              <motion.div
+                key={activeDept.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mt-8 rounded-2xl border border-black/[0.07] bg-white p-7"
+              >
+                <p className="mb-5 text-sm leading-6 text-black/50">
+                  {activeDept.description}
+                </p>
+                <div className="space-y-3 text-[14px]">
+                  <a
+                    href={`mailto:${activeDept.email}`}
+                    className="flex items-center gap-3 text-black/70 hover:text-black"
+                  >
+                    <Mail className="h-4 w-4 text-black/35" />
+                    {activeDept.email}
+                  </a>
+                  <a
+                    href={`tel:${activeDept.phone.replace(/\D/g, "")}`}
+                    className="flex items-center gap-3 text-black/70 hover:text-black"
+                  >
+                    <Phone className="h-4 w-4 text-black/35" />
+                    {activeDept.phone}
+                  </a>
+                </div>
+                <div className="mt-6 flex items-start gap-3 border-t border-black/[0.07] pt-5">
+                  <Clock className="mt-0.5 h-4 w-4 shrink-0 text-black/30" />
+                  <p className="text-xs leading-relaxed text-black/40">
+                    We typically respond within 24 hours on business days.
+                  </p>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Form */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={fadeUp}
+              className="lg:col-span-7"
+            >
+              <div className="mb-5 flex items-center gap-3">
+                <span className="h-px w-10 bg-black/25" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                  Message
+                </span>
+              </div>
+              <h2 className="mb-8 text-3xl font-semibold leading-[1.05] tracking-[-0.04em] md:text-4xl">
+                Send us a
+                <br />
+                <span className="font-light italic text-black/35">note.</span>
+              </h2>
+
+              <div className="rounded-2xl border border-black/[0.07] bg-white p-8 sm:p-10">
                 {formStatus === "success" ? (
-                  <div className="text-center py-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-500 mb-4">
-                      <Check className="w-8 h-8" />
+                  <div className="flex flex-col items-center py-10 text-center">
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-black bg-black text-white">
+                      <Check className="h-5 w-5" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-black">Message Sent!</h3>
-                    <p className="text-gray-600">
-                      Thank you for reaching out. We'll get back to you as soon as possible.
+                    <h3 className="mb-2 text-lg font-semibold tracking-[-0.02em]">
+                      Message sent.
+                    </h3>
+                    <p className="max-w-xs text-sm leading-relaxed text-black/45">
+                      Thank you for reaching out — we'll get back to you as soon as
+                      possible.
                     </p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit}>
-                    <div className="grid md:grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                          Your Name
-                        </label>
+                    <div className="grid gap-8 sm:grid-cols-2">
+                      <div className="relative">
                         <input
                           type="text"
                           id="name"
                           name="name"
                           value={formData.name}
                           onChange={handleChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-                          placeholder="John Doe"
+                          placeholder="Your name"
                           required
+                          className={inputBase}
                         />
-                      </div>
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                          Your Email
+                        <label htmlFor="name" className={labelBase}>
+                          Your name
                         </label>
+                      </div>
+                      <div className="relative">
                         <input
                           type="email"
                           id="email"
                           name="email"
                           value={formData.email}
                           onChange={handleChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-                          placeholder="john@example.com"
+                          placeholder="Your email"
                           required
+                          className={inputBase}
                         />
+                        <label htmlFor="email" className={labelBase}>
+                          Your email
+                        </label>
                       </div>
                     </div>
 
-                    <div className="mb-6">
-                      <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="mt-8">
+                      <label
+                        htmlFor="subject"
+                        className="mb-2 block text-[10px] uppercase tracking-[0.2em] text-black/40"
+                      >
                         Subject
                       </label>
                       <select
@@ -331,8 +380,8 @@ export const ContactUs = () => {
                         name="subject"
                         value={formData.subject}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
                         required
+                        className="w-full border-b border-black/15 bg-transparent py-3 text-[15px] text-black outline-none transition-colors duration-300 focus:border-black"
                       >
                         <option value="">Select a subject</option>
                         <option value="General Inquiry">General Inquiry</option>
@@ -345,30 +394,30 @@ export const ContactUs = () => {
                       </select>
                     </div>
 
-                    <div className="mb-6">
-                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                        Your Message
-                      </label>
+                    <div className="relative mt-8">
                       <textarea
                         id="message"
                         name="message"
                         value={formData.message}
                         onChange={handleChange}
-                        rows={5}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-                        placeholder="How can we help you?"
+                        rows={4}
+                        placeholder="How can we help?"
                         required
-                      ></textarea>
+                        className={`${inputBase} resize-none`}
+                      />
+                      <label htmlFor="message" className={labelBase}>
+                        How can we help?
+                      </label>
                     </div>
 
-                    <div className="flex items-center mb-6">
+                    <div className="mt-8 flex items-center gap-3">
                       <input
                         type="checkbox"
                         id="privacy"
-                        className="h-4 w-4 text-black focus:ring-black border-gray-300 rounded"
                         required
+                        className="h-4 w-4 rounded border-black/20 text-black focus:ring-black/30"
                       />
-                      <label htmlFor="privacy" className="ml-2 block text-sm text-gray-700">
+                      <label htmlFor="privacy" className="text-sm text-black/50">
                         I agree to the{" "}
                         <a href="/privacy-policy" className="text-black underline">
                           Privacy Policy
@@ -379,14 +428,13 @@ export const ContactUs = () => {
                     <button
                       type="submit"
                       disabled={formStatus === "submitting"}
-                      className={`w-full bg-black text-white py-3 px-4 rounded-md font-medium flex items-center justify-center ${
-                        formStatus === "submitting" ? "opacity-70 cursor-not-allowed" : "hover:bg-gray-800"
-                      }`}
+                      className={`group mt-10 flex h-14 w-full items-center justify-center gap-3 rounded-full bg-black px-9 text-sm font-semibold tracking-wide text-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(0,0,0,0.22)] sm:w-auto ${formStatus === "submitting" ? "cursor-not-allowed opacity-70" : ""
+                        }`}
                     >
                       {formStatus === "submitting" ? (
                         <>
                           <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            className="h-4 w-4 animate-spin text-white"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -398,205 +446,182 @@ export const ContactUs = () => {
                               r="10"
                               stroke="currentColor"
                               strokeWidth="4"
-                            ></circle>
+                            />
                             <path
                               className="opacity-75"
                               fill="currentColor"
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
+                            />
                           </svg>
-                          Sending...
+                          Sending…
                         </>
                       ) : (
                         <>
-                          <Send className="w-5 h-5 mr-2" />
                           Send Message
+                          <Send className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                         </>
                       )}
                     </button>
                   </form>
                 )}
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Office Hours & Location */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Office Hours */}
-            <div>
-              <h2 className="text-2xl font-bold mb-6 text-black">Office Hours</h2>
-              <div className="bg-white p-8 rounded-lg shadow-md">
-                <div className="flex items-center mb-6">
-                  <Clock className="w-8 h-8 text-black mr-4" />
-                  <h3 className="text-xl font-semibold text-black">When We're Available</h3>
-                </div>
+      {/* =====================================================
+          HOURS + LOCATION
+          ===================================================== */}
+      <section id="location" className="w-full py-20 sm:py-24 lg:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-14 xl:px-20">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+            {/* Hours */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="lg:col-span-5"
+            >
+              <div className="mb-5 flex items-center gap-3">
+                <span className="h-px w-10 bg-black/25" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                  Hours
+                </span>
+              </div>
+              <h2 className="mb-8 text-3xl font-semibold tracking-[-0.04em] md:text-4xl">
+                When we're
+                <br />
+                <span className="font-light italic text-black/35">available.</span>
+              </h2>
 
-                <div className="space-y-4">
-                  <div className="flex justify-between py-3 border-b border-gray-100">
-                    <span className="font-medium text-black">Monday - Friday</span>
-                    <span className="text-gray-600">9:00 AM - 6:00 PM EST</span>
+              <div className="border-t border-black/[0.08]">
+                {[
+                  { day: "Monday – Friday", hours: "9:00 AM – 6:00 PM EST" },
+                  { day: "Saturday", hours: "10:00 AM – 4:00 PM EST" },
+                  { day: "Sunday", hours: "Closed" },
+                ].map((row) => (
+                  <div
+                    key={row.day}
+                    className="flex items-center justify-between border-b border-black/[0.08] py-5"
+                  >
+                    <span className="text-[15px] font-medium text-black/75">
+                      {row.day}
+                    </span>
+                    <span className="text-sm text-black/40">{row.hours}</span>
                   </div>
-                  <div className="flex justify-between py-3 border-b border-gray-100">
-                    <span className="font-medium text-black">Saturday</span>
-                    <span className="text-gray-600">10:00 AM - 4:00 PM EST</span>
-                  </div>
-                  <div className="flex justify-between py-3 border-b border-gray-100">
-                    <span className="font-medium text-black">Sunday</span>
-                    <span className="text-gray-600">Closed</span>
-                  </div>
-                </div>
+                ))}
+              </div>
 
-                <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium text-black">Holiday Hours:</span> We observe major holidays and may
-                    have limited hours or be closed. Please check our website for holiday schedules.
+              <p className="mt-6 text-xs leading-relaxed text-black/35">
+                We observe major holidays and may run limited hours — check the site
+                for the current schedule.
+              </p>
+            </motion.div>
+
+            {/* Location */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="lg:col-span-7"
+            >
+              <div className="mb-5 flex items-center gap-3">
+                <span className="h-px w-10 bg-black/25" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                  Headquarters
+                </span>
+              </div>
+              <h2 className="mb-8 text-3xl font-semibold tracking-[-0.04em] md:text-4xl">
+                Come say
+                <br />
+                <span className="font-light italic text-black/35">hello.</span>
+              </h2>
+
+              <div className="relative flex h-64 items-center justify-center overflow-hidden rounded-[1.5rem] bg-[#EFEFEC] sm:h-72">
+                <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] [background-size:40px_40px]" />
+                <div className="relative flex flex-col items-center gap-2 text-center">
+                  <MapPin className="h-7 w-7 text-black/30" strokeWidth={1.5} />
+                  <p className="text-xs uppercase tracking-[0.2em] text-black/30">
+                    Map view
                   </p>
                 </div>
               </div>
-            </div>
 
-            {/* Location Map */}
-            <div>
-              <h2 className="text-2xl font-bold mb-6 text-black">Our Location</h2>
-              <div className="bg-white p-8 rounded-lg shadow-md">
-                <div className="flex items-center mb-6">
-                  <MapPin className="w-8 h-8 text-black mr-4" />
-                  <h3 className="text-xl font-semibold text-black">Headquarters</h3>
-                </div>
-
-                <div className="bg-gray-200 h-64 rounded-lg mb-6 flex items-center justify-center">
-                  {/* This would be replaced with an actual map component */}
-                  <div className="text-center">
-                    <MapPin className="w-12 h-12 text-black mx-auto mb-2" />
-                    <p className="text-gray-600">Map view would appear here</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <p className="text-gray-600">
-                    <span className="font-medium text-black">Address:</span>
+              <div className="mt-7 flex flex-wrap items-end justify-between gap-6">
+                <div className="space-y-3 text-sm leading-relaxed text-black/50">
+                  <p>
+                    <span className="font-medium text-black">Address</span>
                     <br />
-                    123 Tech Avenue
-                    <br />
-                    San Francisco, CA 94107
-                    <br />
-                    United States
+                    123 Tech Avenue, San Francisco, CA 94107
                   </p>
-
-                  <p className="text-gray-600">
-                    <span className="font-medium text-black">Directions:</span>
+                  <p>
+                    <span className="font-medium text-black">Directions</span>
                     <br />
-                    Located in the SoMa district, two blocks from the Caltrain station.
+                    SoMa district, two blocks from the Caltrain station.
                   </p>
-
-                  <button className="mt-2 inline-flex items-center px-4 py-2 border border-black text-black rounded-md hover:bg-gray-100 transition-colors">
-                    Get Directions
-                    <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </button>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* FAQs */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-center text-black">Frequently Asked Questions</h2>
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <div key={faq.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <button
-                  className="w-full text-left p-6 flex items-center justify-between focus:outline-none"
-                  onClick={() => toggleFaq(faq.id)}
+                <a
+                  href="#"
+                  className="group flex h-12 items-center gap-2 rounded-full border border-black/15 px-6 text-sm font-medium text-black/70 transition-all duration-300 hover:-translate-y-1 hover:border-black hover:text-black"
                 >
-                  <h3 className="text-lg font-medium text-black">{faq.question}</h3>
-                  {activeFaq === faq.id ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                  )}
-                </button>
-                <div className={`px-6 pb-6 ${activeFaq === faq.id ? "block" : "hidden"}`}>
-                  <p className="text-gray-600">{faq.answer}</p>
-                </div>
+                  Get Directions
+                  <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </a>
               </div>
-            ))}
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Social Media */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-8 text-black">Connect With Us</h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Follow us on social media for the latest updates, promotions, and behind-the-scenes content.
-          </p>
-          <div className="flex justify-center space-x-6">
-            <a
-              href="#"
-              className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-            >
-              <Facebook className="w-6 h-6" />
-            </a>
-            <a
-              href="#"
-              className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-            >
-              <Twitter className="w-6 h-6" />
-            </a>
-            <a
-              href="#"
-              className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-            >
-              <Instagram className="w-6 h-6" />
-            </a>
-            <a
-              href="#"
-              className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-            >
-              <Linkedin className="w-6 h-6" />
-            </a>
-          </div>
+
+
+      {/* =====================================================
+          SOCIAL
+          ===================================================== */}
+      <section className="w-full py-20 sm:py-24">
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="mb-5 flex items-center justify-center gap-3">
+              <span className="h-px w-10 bg-black/25" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                Follow
+              </span>
+              <span className="h-px w-10 bg-black/25" />
+            </div>
+            <h2 className="mb-4 text-3xl font-semibold tracking-[-0.04em] md:text-4xl">
+              Connect with us.
+            </h2>
+            <p className="mx-auto mb-10 max-w-md text-sm leading-7 text-black/45">
+              Updates, promotions, and the occasional behind-the-scenes look.
+            </p>
+
+            <div className="flex justify-center gap-3">
+              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+                <a
+                  key={i}
+                  href="#"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 text-black/45 transition-all duration-300 hover:-translate-y-1 hover:border-black hover:bg-black hover:text-white"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 px-4 bg-black text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Need Immediate Assistance?</h2>
-          <p className="text-xl mb-8 text-gray-300">
-            Our customer support team is available to help you with any questions or concerns.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a
-              href="tel:+15551234567"
-              className="bg-white text-black px-8 py-3 rounded-md font-semibold hover:bg-gray-200 transition-colors inline-flex items-center justify-center"
-            >
-              <Phone className="w-5 h-5 mr-2" />
-              Call Us Now
-            </a>
-            <a
-              href="#"
-              className="bg-transparent border border-white text-white px-8 py-3 rounded-md font-semibold hover:bg-white hover:text-black transition-colors inline-flex items-center justify-center"
-            >
-              <MessageSquare className="w-5 h-5 mr-2" />
-              Live Chat
-            </a>
-          </div>
-        </div>
-      </section>
+
     </div>
   )
 }
 
 export default ContactUs
-

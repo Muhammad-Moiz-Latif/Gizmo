@@ -236,9 +236,14 @@ async function main() {
     });
     exports.router.get('/AdminDashboard/getCategory', async (req, res) => {
         console.log(req.body);
-        const allCategories = await exports.prisma.category.findMany();
+        const allCategories = await exports.prisma.category.findMany({
+            include: { _count: { select: { devices: true } } }
+        });
         if (allCategories) {
-            res.json(allCategories);
+            res.json(allCategories.map(({ _count, ...category }) => ({
+                ...category,
+                ProductCount: _count.devices,
+            })));
         }
     });
     exports.router.post('/AdminDashboard/AddDevice', upload.array('images'), async (req, res) => {
@@ -628,20 +633,26 @@ async function main() {
         }
     });
     exports.router.get('/transactionData/:sessionId', async (req, res) => {
-        const { sessionId } = req.params;
-        const data = await exports.prisma.transaction.findUnique({
-            where: { sessionId: sessionId }
-        });
-        if (data) {
-            const User = await exports.prisma.user.findUnique({
-                where: { id: data.userId }
+        try {
+            const { sessionId } = req.params;
+            const data = await exports.prisma.transaction.findUnique({
+                where: { sessionId: sessionId }
             });
-            if (User) {
-                console.log(data, User);
-                res.status(200).send({ data, User });
+            if (data) {
+                const User = await exports.prisma.user.findUnique({
+                    where: { id: data.userId }
+                });
+                if (User) {
+                    console.log(data, User);
+                    res.status(200).send({ data, User });
+                }
             }
+            ;
         }
-        ;
+        catch (error) {
+            console.error(error);
+            res.status(500).json('internal server error');
+        }
     });
 }
 main()

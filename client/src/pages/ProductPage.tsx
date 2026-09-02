@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import type { AppDispatch } from "../state/store"
 import type { RootState } from "../state/store"
 import { useParams } from "react-router-dom"
+import { motion } from "framer-motion"
 import { addToCartAsync, updateCartAsync } from "../state/features/cartSlice"
-import { ChevronLeft, ChevronRight, Plus, Minus, ShoppingCart, Heart, Check, Truck, Shield } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Minus, ShoppingBag, Heart, Check, Truck, Shield, ArrowUpRight } from "lucide-react"
 import toast from "react-hot-toast"
 import { addToWishlistAsync, deleteFromWishListAsync } from "../state/features/wishSlice"
 import { updateLocalCart, addCartItemtoLocalStorage, updateLocalCartItem } from "@/state/features/localcartSlice"
@@ -25,7 +27,7 @@ export const ProductPage: React.FC = () => {
     const device = devicesArray.find((d) => d.DeviceId === DeviceId)
     const cart = device ? Cart.find((item) => item.DeviceId === device.DeviceId) : undefined
     const localcart = device ? localCart.find((item) => item.deviceId == DeviceId) : undefined
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
     const [activeSpec, setActiveSpec] = useState<string | null>(null)
     const [hasMounted, setHasMounted] = useState(false)
@@ -42,7 +44,13 @@ export const ProductPage: React.FC = () => {
 
     if (!device) {
         if (devicesLoading || !devicesFetched) return <ProductDetailSkeleton />
-        return <div className="text-center py-10 text-gray-700">Device not found</div>
+        return (
+            <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 bg-[#f7f7f5] text-center">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/30">Gizmo</span>
+                <p className="text-2xl font-semibold tracking-[-0.03em] text-black/70">Device not found</p>
+                <p className="text-sm text-black/40">This listing may have been removed or the link is incorrect.</p>
+            </div>
+        )
     }
 
     const nextImage = () => {
@@ -140,7 +148,7 @@ export const ProductPage: React.FC = () => {
             } else {
                 dispatch(addCartItemtoLocalStorage({ deviceId: DeviceId }))
                 dispatch(updateLocalCart())
-                toast.success("Item added to Cart")
+                toast.success("Item added to cart")
             }
         } else {
             const cartItem = Cart.find((item) => item.DeviceId === DeviceId)
@@ -151,194 +159,212 @@ export const ProductPage: React.FC = () => {
             } else {
                 //@ts-ignore
                 dispatch(addToCartAsync({ UserId, Quantity: 1, DeviceId: DeviceId }))
-                toast.success("Item added to Cart")
+                toast.success("Item added to cart")
             }
         }
     }
 
+    const wishlisted = (UserId == undefined ? localWishList : wishlist).some((item) => item === device.DeviceId)
+    const quantity = UserId == undefined ? localcart?.quantity || 0 : cart?.Quantity || 0
+    const canDecrement = UserId == undefined ? !!localcart && localcart.quantity > 1 : !!cart && cart.Quantity > 1
+
     return (
-        <div className="bg-white text-black min-h-screen font-sans pt-16 px-4 sm:px-6 lg:px-16">
-            <div className="max-w-7xl mx-auto py-8">
+        <div className="relative min-h-screen bg-[#f7f7f5] font-roboto text-black">
+            {/* Background */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.02] [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] [background-size:60px_60px]" />
+                <div className="absolute left-1/2 top-[10%] -translate-x-1/2 select-none whitespace-nowrap text-[18vw] font-black leading-none tracking-[-0.08em] text-black/[0.02]">
+                    GIZMO
+                </div>
+            </div>
+
+            <div className="relative z-10 mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-8 sm:pt-28 lg:px-14 xl:px-20">
                 {/* Breadcrumb */}
-                <div className="mb-6 text-sm text-gray-500">
-                    <span className="hover:text-black cursor-pointer">Home</span> /
-                    <span className="hover:text-black cursor-pointer"> {device.Brand}</span> /
-                    <span className="text-black font-medium"> {device.Model}</span>
+                <div className="mb-8 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-black/35">
+                    <span className="cursor-pointer transition-colors hover:text-black">Home</span>
+                    <span className="text-black/20">/</span>
+                    <span className="cursor-pointer transition-colors hover:text-black">{device.Brand}</span>
+                    <span className="text-black/20">/</span>
+                    <span className="text-black">{device.Model}</span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {/* Image Gallery */}
-                    <div className="bg-white rounded-xl overflow-hidden">
-                        <div className="relative aspect-square overflow-hidden bg-gray-50 rounded-xl border border-gray-100">
+                <motion.div
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16"
+                >
+                    {/* =================================================
+                        IMAGE GALLERY
+                    ================================================= */}
+                    <div>
+                        <div className="relative aspect-square overflow-hidden rounded-[2rem] border border-black/[0.06] bg-[#fafaf9]">
                             <img
                                 src={device.Images[currentImageIndex] || "/placeholder.svg"}
                                 alt={device.DeviceName}
-                                className="w-full h-full object-contain p-4 transition-all duration-300 transform hover:scale-105"
+                                className="h-full w-full object-contain p-10 transition-transform duration-700 ease-out hover:scale-105"
                             />
 
-                            {/* Navigation Arrows */}
                             <button
                                 onClick={prevImage}
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white text-black p-3 rounded-full shadow-lg hover:bg-gray-100 transition duration-200 z-10"
+                                className="absolute left-5 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white/85 text-black shadow-sm backdrop-blur-md transition-all duration-300 hover:bg-black hover:text-white"
                                 aria-label="Previous image"
                             >
-                                <ChevronLeft size={20} />
+                                <ChevronLeft size={18} />
                             </button>
                             <button
                                 onClick={nextImage}
-                                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white text-black p-3 rounded-full shadow-lg hover:bg-gray-100 transition duration-200 z-10"
+                                className="absolute right-5 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white/85 text-black shadow-sm backdrop-blur-md transition-all duration-300 hover:bg-black hover:text-white"
                                 aria-label="Next image"
                             >
-                                <ChevronRight size={20} />
+                                <ChevronRight size={18} />
                             </button>
 
-                            {/* Image counter */}
-                            <div className="absolute bottom-4 right-4 bg-black bg-opacity-70 text-white text-xs px-3 py-1 rounded-full">
-                                {currentImageIndex + 1} / {device.Images.length}
+                            <div className="absolute bottom-5 right-5 rounded-full border border-black/5 bg-white/85 px-3 py-1.5 font-mono text-[10px] tracking-[0.2em] text-black/60 backdrop-blur-md">
+                                {String(currentImageIndex + 1).padStart(2, "0")} / {String(device.Images.length).padStart(2, "0")}
                             </div>
                         </div>
 
                         {/* Thumbnails */}
-                        <div className="flex mt-4 space-x-3 overflow-x-auto py-2 px-1">
+                        <div className="mt-4 flex gap-3 overflow-x-auto py-1">
                             {device.Images.map((img, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setCurrentImageIndex(index)}
-                                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all duration-200 ${index === currentImageIndex
-                                        ? "ring-2 ring-black ring-offset-2 shadow-md"
-                                        : "border border-gray-200 opacity-70 hover:opacity-100"
+                                    className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl transition-all duration-300 ${index === currentImageIndex
+                                        ? "ring-2 ring-black ring-offset-2 ring-offset-[#f7f7f5]"
+                                        : "border border-black/10 opacity-60 hover:opacity-100"
                                         }`}
                                 >
                                     <img
                                         src={img || "/placeholder.svg"}
                                         alt={`${device.DeviceName} thumbnail ${index + 1}`}
-                                        className="w-full h-full object-cover"
+                                        className="h-full w-full object-cover"
                                     />
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Product Info */}
+                    {/* =================================================
+                        PRODUCT INFO
+                    ================================================= */}
                     <div className="flex flex-col">
-                        {/* Brand and badges */}
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">{device.Brand}</div>
-                            <div className="flex space-x-2">
-                                <button
-                                    onClick={() => toggleWishlist(device.DeviceId)}
-                                    className="p-2 rounded-full bg-black/10 hover:bg-black/20 transition-all duration-300 transform hover:scale-110 backdrop-blur-sm"
-                                >
-                                    <Heart
-                                        className={`w-5 h-5 transition-colors duration-300 ${(UserId == undefined ? localWishList : wishlist).some((item) => item === device.DeviceId)
-                                            ? "fill-red-500 text-red-500"
-                                            : "text-gray-700"
-                                            }`}
-                                    />
-                                </button>
-                            </div>
+                        <div className="mb-4 flex items-center justify-between">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">
+                                {device.Brand}
+                            </span>
+                            <button
+                                onClick={() => toggleWishlist(device.DeviceId)}
+                                className="flex h-11 w-11 items-center justify-center rounded-full border border-black/5 bg-white/85 shadow-sm backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white"
+                                aria-label="Add to wishlist"
+                            >
+                                <Heart className={`h-4.5 w-4.5 transition-colors duration-300 ${wishlisted ? "fill-red-500 text-red-500" : "text-black/35"}`} />
+                            </button>
                         </div>
 
-                        {/* Product title */}
-                        <h1 className="text-3xl font-bold mb-2">{device.DeviceName}</h1>
-                        <p className="text-gray-600 mb-4">{device.Model}</p>
+                        <h1 className="text-4xl font-semibold leading-[0.95] tracking-[-0.05em] sm:text-5xl">
+                            {device.DeviceName}
+                        </h1>
+                        <p className="mt-2 text-sm text-black/40">{device.Model}</p>
 
                         {/* Price */}
-                        <div className="mb-6 flex items-baseline">
-                            <p className="text-4xl font-bold mr-3">${device.Price.toFixed(2)}</p>
+                        <div className="mt-6 flex flex-wrap items-baseline gap-3">
+                            <span className="text-4xl font-bold tracking-[-0.04em]">${device.Price.toFixed(2)}</span>
                             {device.Price > 1000 && (
-                                <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">Free shipping</span>
+                                <span className="rounded-full border border-black/10 bg-white px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-black/50">
+                                    Free shipping
+                                </span>
                             )}
                         </div>
 
-                        {/* Availability */}
-                        <div className="flex items-center mb-6 text-green-600">
-                            <Check size={18} className="mr-2" />
-                            <span>In Stock</span>
+                        <div className="mt-4 flex items-center gap-2 text-emerald-700">
+                            <Check size={15} />
+                            <span className="text-[13px] font-medium">In stock</span>
                         </div>
 
                         {/* Description */}
-                        <div className="mb-6 bg-gray-50 p-4 rounded-lg border-l-4 border-gray-200">
-                            <h2 className="text-xl font-semibold mb-2">About this item</h2>
-                            <p className="text-gray-700 leading-relaxed">{device.Description}</p>
+                        <div className="mt-7 rounded-[2rem] border border-black/[0.06] bg-white p-6">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-black/35">About this item</span>
+                            <p className="mt-3 text-sm leading-6 text-black/55">{device.Description}</p>
                         </div>
 
                         {/* Benefits */}
-                        <div className="mb-6 grid grid-cols-2 gap-3">
-                            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                <Truck className="text-gray-700 mr-3" size={20} />
-                                <span className="text-sm">Fast Delivery</span>
+                        <div className="mt-5 grid grid-cols-2 gap-3">
+                            <div className="flex items-center gap-3 rounded-2xl border border-black/[0.06] bg-white p-4">
+                                <Truck className="text-black/50" size={18} />
+                                <span className="text-[13px] font-medium text-black/70">Fast delivery</span>
                             </div>
-                            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                <Shield className="text-gray-700 mr-3" size={20} />
-                                <span className="text-sm">1 Year Warranty</span>
+                            <div className="flex items-center gap-3 rounded-2xl border border-black/[0.06] bg-white p-4">
+                                <Shield className="text-black/50" size={18} />
+                                <span className="text-[13px] font-medium text-black/70">1 year warranty</span>
                             </div>
                         </div>
 
-                        {/* Quantity Selector */}
-                        <div className="mb-6">
-                            <h2 className="text-lg font-semibold mb-3">Quantity</h2>
-                            <div className="flex items-center">
+                        {/* Quantity */}
+                        <div className="mt-7">
+                            <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.3em] text-black/35">Quantity</span>
+                            <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => {
-                                        if (UserId == undefined ? localcart && localcart.quantity > 1 : cart && cart.Quantity > 1) {
-                                            toggleDecrementCart(device.DeviceId)
-                                        }
+                                        if (canDecrement) toggleDecrementCart(device.DeviceId)
                                     }}
-                                    disabled={UserId == undefined ? !localcart || localcart.quantity <= 1 : !cart || cart.Quantity <= 1}
-                                    className={`p-3 border border-gray-300 rounded-l-md ${UserId == undefined
-                                        ? !localcart || localcart.quantity <= 1
-                                        : (!cart || cart.Quantity <= 1)
-                                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                            : "bg-white hover:bg-gray-100"
+                                    disabled={!canDecrement}
+                                    className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 ${canDecrement
+                                        ? "border-black/10 bg-white hover:bg-black hover:text-white"
+                                        : "cursor-not-allowed border-black/5 bg-black/[0.02] text-black/20"
                                         }`}
                                 >
-                                    <Minus size={16} />
+                                    <Minus size={15} />
                                 </button>
-                                <div className="px-6 py-3 border-t border-b border-gray-300 min-w-[60px] text-center font-medium">
-                                    {UserId == undefined ? localcart?.quantity || 0 : cart?.Quantity || 0}
-                                </div>
+                                <div className="min-w-[48px] text-center text-lg font-semibold tracking-[-0.02em]">{quantity}</div>
                                 <button
                                     onClick={() => toggleIncrementCart(device.DeviceId)}
-                                    className="p-3 border border-gray-300 rounded-r-md bg-white hover:bg-gray-100"
+                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white transition-all duration-300 hover:bg-black hover:text-white"
                                 >
-                                    <Plus size={16} />
+                                    <Plus size={15} />
                                 </button>
                             </div>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+                        {/* Actions */}
+                        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                             <button
-                                className="flex-1 bg-black text-white py-4 px-6 rounded-lg flex items-center justify-center hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                className="group flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full bg-black text-sm font-semibold text-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(0,0,0,0.22)]"
                                 onClick={() => addCart(device.DeviceId)}
                             >
-                                <ShoppingCart size={20} className="mr-2" />
-                                <span className="font-medium">Add to Cart</span>
+                                <ShoppingBag size={17} />
+                                Add to bag
                             </button>
-                            <button className="flex-1 bg-white text-black py-4 px-6 rounded-lg border-2 border-black hover:bg-gray-50 transition-all duration-300 font-medium shadow-sm hover:shadow-md">
-                                Buy Now
+                            <button className="group flex h-14 flex-1 items-center justify-center gap-2 rounded-full border border-black/15 bg-white text-sm font-semibold text-black transition-all duration-300 hover:-translate-y-0.5 hover:border-black/30">
+                                Buy now
+                                <ArrowUpRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                             </button>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
-                {/* Specifications */}
-                <div className="mt-16">
-                    <h2 className="text-2xl font-bold mb-8 pb-2 border-b border-gray-200 flex items-center">
-                        <span className="bg-black text-white w-8 h-8 inline-flex items-center justify-center rounded-full mr-3 text-sm">
-                            S
-                        </span>
-                        Specifications
+                {/* =====================================================
+                    SPECIFICATIONS
+                ===================================================== */}
+                <div className="mt-20">
+                    <div className="mb-8 flex items-center gap-3">
+                        <span className="h-px w-8 bg-black/25" />
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black/40">Details</span>
+                    </div>
+                    <h2 className="mb-10 text-3xl font-semibold tracking-[-0.05em] sm:text-4xl">
+                        Full <span className="font-light italic text-black/35">specifications.</span>
                     </h2>
 
-                    {/* Spec categories */}
-                    <div className="mb-8 flex flex-wrap gap-3">
+                    {/* Category filter */}
+                    <div className="mb-8 flex flex-wrap gap-2.5">
                         {Object.keys(groupedSpecs).map((category) => (
                             <button
                                 key={category}
                                 onClick={() => setActiveSpec(activeSpec === category ? null : category)}
-                                className={`px-4 py-2 rounded-full transition-all ${activeSpec === category ? "bg-black text-white" : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                className={`rounded-full px-5 py-2 text-[12px] font-semibold uppercase tracking-[0.1em] transition-all duration-300 ${activeSpec === category
+                                    ? "bg-black text-white shadow-[0_10px_25px_rgba(0,0,0,0.18)]"
+                                    : "border border-black/10 bg-white text-black/60 hover:border-black/25 hover:text-black"
                                     }`}
                             >
                                 {category}
@@ -346,36 +372,45 @@ export const ProductPage: React.FC = () => {
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {Object.entries(groupedSpecs).map(([category, specs]) => (
-                            <div
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        {Object.entries(groupedSpecs).map(([category, specs], groupIndex) => (
+                            <motion.div
                                 key={category}
-                                className={`transition-all duration-300 ${activeSpec && activeSpec !== category ? "opacity-50" : ""}`}
+                                initial={{ opacity: 0, y: 16 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-40px" }}
+                                transition={{ duration: 0.5, delay: groupIndex * 0.06 }}
+                                className={`transition-opacity duration-300 ${activeSpec && activeSpec !== category ? "opacity-40" : ""}`}
                             >
-                                <h3 className="text-lg font-bold mb-4 capitalize text-gray-800 border-b border-gray-200 pb-2">
+                                <h3 className="mb-4 border-b border-black/[0.07] pb-3 text-sm font-semibold uppercase tracking-[0.15em] text-black/50">
                                     {category}
                                 </h3>
-                                <div className="space-y-4">
+                                <div className="space-y-3">
                                     {specs.map(({ key, value }, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+                                            className="rounded-2xl border border-black/[0.06] bg-white p-4 transition-shadow duration-300 hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)]"
                                         >
-                                            <h4 className="text-base font-medium capitalize mb-2 text-gray-800">
+                                            <h4 className="mb-1.5 text-[13px] font-medium capitalize text-black/45">
                                                 {key.replace(/_/g, " ").replace(category, "").trim()}
                                             </h4>
-                                            <p className="text-gray-700 break-words">
+                                            <p className="break-words text-[15px] text-black">
                                                 {typeof value === "object" ? JSON.stringify(value, null, 2) : value.toString()}
                                             </p>
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
+                </div>
+
+                {/* Bottom signature */}
+                <div className="mt-16 flex items-center justify-between border-t border-black/[0.07] pt-5">
+                    <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-black/30">Gizmo / Product details</span>
+                    <span className="font-mono text-[9px] tracking-[0.2em] text-black/25">SKU / {device.DeviceId}</span>
                 </div>
             </div>
         </div>
     )
 }
-

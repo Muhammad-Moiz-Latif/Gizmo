@@ -261,9 +261,14 @@ async function main() {
 
   router.get('/AdminDashboard/getCategory', async (req: Request, res: Response) => {
     console.log(req.body);
-    const allCategories = await prisma.category.findMany();
+    const allCategories = await prisma.category.findMany({
+      include: { _count: { select: { devices: true } } }
+    });
     if (allCategories) {
-      res.json(allCategories);
+      res.json(allCategories.map(({ _count, ...category }) => ({
+        ...category,
+        ProductCount: _count.devices,
+      })));
     }
   })
 
@@ -712,19 +717,24 @@ async function main() {
   });
 
   router.get('/transactionData/:sessionId', async (req: Request, res: Response) => {
-    const { sessionId } = req.params;
-    const data = await prisma.transaction.findUnique({
-      where: { sessionId: sessionId }
-    });
-    if (data) {
-      const User = await prisma.user.findUnique({
-        where: { id: data.userId }
+    try {
+      const { sessionId } = req.params;
+      const data = await prisma.transaction.findUnique({
+        where: { sessionId: sessionId }
       });
-      if (User) {
-        console.log(data, User);
-        res.status(200).send({ data, User });
-      }
-    };
+      if (data) {
+        const User = await prisma.user.findUnique({
+          where: { id: data.userId }
+        });
+        if (User) {
+          console.log(data, User);
+          res.status(200).send({ data, User });
+        }
+      };
+    } catch (error) {
+      console.error(error);
+      res.status(500).json('internal server error');
+    }
   })
 }
 
